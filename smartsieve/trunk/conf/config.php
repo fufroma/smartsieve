@@ -28,7 +28,7 @@ $default->scriptfile = 'smartsieve';
 
 /* should we provide a box on the login page for users to specify which 
  * script to edit? This does not apply if allow_multi_scripts = false. */
-$default->user_supply_scriptfile = true;
+$default->user_supply_scriptfile = false;
 
 // base url for app. must have trailing slash '/'.
 $default->baseurl = '/smartsieve/';
