@@ -10,148 +10,148 @@
  * $Id$
  */
 
-// set following as default language. would be taken, if user set nothing
-// else
+// Set following as default language.
 $default->language = "en_GB";
 
-// set following as default character set.
+// Set following as default character set.
 $default->charset = "ISO-8859-15";
 
-// should we allow the user to select which language they wish to view 
+// Should we allow the user to select which language they wish to view 
 // SmartSieve in? If false $default->language will always be used.
 $default->user_select_lang = true;
 
-// should we allow the user to choose from a list of servers?
-// the list itself is in servers.php.
-// if this is false, the first entry in servers.php will be used.
+// Should we allow the user to choose from a list of servers? The list 
+// itself is in servers.php. If this is false, the first entry in 
+// servers.php will be used.
 $default->user_select_server = true;
 
-/* will we allow the user to access multiple scripts?
- * If true, the user will be able to create and modify multiple scripts 
- * on the server. If false, the user will only be able to access the 
- * script $default->scriptfile.
- */
+// Will we allow the user to access multiple scripts?
+// If true, the user will be able to create and modify multiple scripts 
+// on the server. If false, the user will only be able to access the 
+// script $default->scriptfile.
 $default->allow_multi_scripts = true;
 
 // If SmartSieve does not recognise the encoding on a Sieve script, it 
-// will allow the user to edit it's content in direct edit mode. If, 
+// will allow the user to edit it's content in a direct edit mode. If, 
 // however, you do not want users to be able to modify scripts which were 
 // not created using SmartSieve or Websieve, set this to false.
 $default->allow_write_unrecognised_scripts = true;
 
-/* Websieve 0.61 includes a feature which will automatically use the ':matches' 
- * comparator where the match string contains the special wildcard characters 
- * ? or *. Setting websieve_auto_matches to true will keep compatibility with 
- * this behaviour. Warning: unless you want full backwards compatibility with 
- * Websieve you should set this to false, as users may get unexpected results.
- */
+// Websieve 0.61 includes a feature which will automatically use the ':matches' 
+// comparator where the match string contains the special wildcard characters 
+// ? or *. Setting websieve_auto_matches to true will keep compatibility with 
+// this behaviour. Warning: unless you want full backwards compatibility with 
+// Websieve you should set this to false, as users may get unexpected results.
 $default->websieve_auto_matches = false;
 
-/* default script filename. note that timsieved will add a .script 
- * extension when saving on the server. */
+// Default script to use on the server. This is only used if the user has no 
+// existing scripts, or if $default->allow_multi_scripts is set to false. Note 
+// that timsieved will add a '.script' extension to the file name on the server.
 $default->scriptfile = 'smartsieve';
 
-/* should we provide a box on the login page for users to specify which 
- * script to edit? This does not apply if allow_multi_scripts = false. */
+// Should we provide a box on the login page for users to specify which 
+// script to edit? This is ignored if allow_multi_scripts = false.
 $default->user_supply_scriptfile = false;
 
-// base url for app. must have trailing slash '/'.
+// The base url for SmartSieve. Must have a trailing slash.
 $default->baseurl = '/smartsieve/';
 
-// location of include files
+// Location of include files.
 $default->include_dir = './include';
 
-// location of config files
+// Location of config files.
 $default->config_dir = './conf';
 
-// location of language files
+// Location of language files.
 $default->lang_dir = $default->config_dir.'/locale';
 
-// location of library files
+// Location of library files.
 $default->lib_dir = './lib';
 
-/* location of images. */
+// Location of images.
 $default->image_dir = './images';
 
-// what name should we use for the php session.
+// What name should we use for the php session?
 $default->session_name = 'SmartSieve';
 
-// this should be the same as $default->baseurl.
+// Cookie domain. This should be the name of the server SmartSieve is running 
+// on. If the URL you are using is different from your web-server's server name 
+// you will probably need to set this to an empty string.
 $default->cookie_domain = $GLOBALS['HTTP_SERVER_VARS']['SERVER_NAME'];
 
-/* only scripts under this path will be able to access cookie data 
- * set during a SmartSieve session. unless this is set to the SmartSieve 
- * directory under the web root, cookie data will be accessible by all 
- * scripts at $default->cookie_domain. */
-//$default->cookie_path = '/smartsieve';
-$default->cookie_path = '/';
+// Cookie path. This should be the location of SmartSieve under your web root.
+// If you leave this empty, all scripts on the server will have access to the 
+// cookie data.
+$default->cookie_path = '/smartsieve';
 
-// title of each page
+// Title of each page
 $default->page_title = 'SmartSieve';
 
-/* welcome message on the login page. */
+// Welcome message on the login page.
 $default->login_page_heading = '&nbsp; Welcome to SmartSieve';
 
 /* Vacation settings. */
 
-// should we always include the vacation days argument when setting a vacation rule?
-// if this is set to true, and the user does not supply a value for this field, we 
+// Should we always include the vacation days argument when setting a vacation rule?
+// If this is set to true, and the user does not supply a value for this field, we 
 // will use $default->vacation_days if set, or demand the user supply one. If false, 
 // we will not include the days argument if the user does not supply a value and the 
 // server will use its default value.
 $default->require_vacation_days = true;;
 
-// the default number to use in the :days argument of a vacation rule. if 
+// The default number to use in the :days argument of a vacation rule. If 
 // $default->require_vacation_days is set, this will be used if the user does 
-// not supply a value. if empty and require_vacation_days is set, we will demand 
+// not supply a value. If empty and require_vacation_days is set, we will demand 
 // the user supply a value.
 $default->vacation_days = '7';
 
-// what is the maximum number of vacation days to have the user choose from?
+// What is the maximum number of vacation days to have the user choose from?
 $default->max_vacation_days = '30';
 
-// should we always include the :addresses argument when setting a vacation rule?
-// if set to true, and the user does not supply any addresses, we will include 
+// Should we always include the :addresses argument when setting a vacation rule?
+// If set to true, and the user does not supply any addresses, we will include 
 // user@maildomain in this field. if maildomain is not set for this server in 
 // conf/servers.php we will demand the user supply at least one address. If false, 
 // we will not include the :addresses argument at all if the user does not supply 
 // any extra vacation addresses.
 $default->require_vacation_addresses = true;
 
-// if this is anything other than empty this will be used as the default text 
+// If this is anything other than empty this will be used as the default text 
 // to send in vacation auto-responses when the user doesn't supply any. If empty, 
 // we will always demand the user supply this.
 $default->vacation_text = '';
 
-/* what is the maximum number of characters an input field should accept? */
+// What is the maximum number of characters an input field should accept?
 $default->max_field_chars = 50;
 
-/* what is the maximum number of characters a text box should accept?
- * e.g. the reject message on the rule page. */
+// What is the maximum number of characters a text box should accept?
+// e.g. the reject message on the rule page.
 $default->max_textbox_chars = 500;
 
-// should we set the working script as the active script when saving?
+// Should we set the working script as the active script when saving? Note that 
+// the working script will always be set as the active script if there are no 
+// other scripts, or if allow_multi_scripts is false.
 $default->update_activate_script = false;
 
-// should we allow regular expression matching in sieve rules?
+// Should we allow regular expression matching in sieve rules?
 $default->allow_regex = true;
 
-// should we allow users to create custom sieve rules?
+// Should we allow users to create custom sieve rules?
 // Note: existing custom rules will always be handled.
 $default->allow_custom = true;
 
-// should we enable the "Forward Mail" interface?
+// Should we enable the "Forward Mail" interface?
 $default->use_forward_mail_interface = true;
 
-/* should we return to view all rules page following updates? */
+// Should we return to the View All Rules page following rule changes?
 $default->return_after_update = false;
 
-/* what date format do we want on the script head? */
-/* see http://www.php.net/manual/en/function.date.php */
+// What format should we use for the date on the script head?
+// See http://www.php.net/manual/en/function.date.php
 $default->script_date_format = 'Y/m/d H:i:s';
 
-// increase the timeout on the socket if you are experiencing empty 
-// bad response errors.
+// The timeout (in seconds) to use when reading from the socket. Increase 
+// this if you are experiencing empty bad response errors.
 $default->socket_timeout = 5;
 
 // SmartSieve will select a cryptography library to use for encryption. You 
@@ -159,53 +159,53 @@ $default->socket_timeout = 5;
 // 'MCRYPT', 'RC4', 'HCEMD5', and ''.
 $default->crypt_lib = '';
 
-// an array containing any values needed by the Crypt object.
+// An array containing any values needed by the Crypt object.
 $default->crypt_args = array();
 
 // SmartSieve will auto negotiate which SASL mechanism to use to authenticate.
 // If you want to specify a mechanism instead set this to something other 
-// than an empty string. Currently, only 'plain' is supported.
+// than an empty string. Currently, 'plain' and 'digest-md5' are supported.
 $default->sasl_mech = '';
 
-// logging
+// Logging options.
 
-// should we log messages?
+// Should we log messages?
 $default->logging = false;
 
-// at what level should we log? Can be LOG_EMERG, LOG_ALERT, LOG_CRIT, LOG_ERR, 
+// At what level should we log? Can be LOG_EMERG, LOG_ALERT, LOG_CRIT, LOG_ERR, 
 // LOG_WARNING, LOG_NOTICE, LOG_INFO, and LOG_DEBUG.
 $default->logging_level = LOG_INFO;
 
-// logging method. can be 'file', 'syslog'
+// Logging method. Can be 'file', 'syslog'
 $default->logging_method = 'file';
 
-// this should either be a filename if logging_method = 'file', or 
+// This should either be a filename if logging_method = 'file', or 
 // a syslog facility (eg. LOG_LOCAL4) if logging_method = 'syslog'
 //$default->logging_facility = LOG_LOCAL4;
 $default->logging_facility = "/var/log/smartsieve.log";
 
-// what identifier should we use to identify log messages in the log?
+// What identifier should we use to identify log messages in the log?
 $default->logging_ident = 'smartsieve';
 
-/* help links. */
+/* Help links. */
 
-/* if this is anything other than empty, a help menu link will be 
- * displayed on the main page linked to this URL. */
+// If this is anything other than empty, a help menu link will be 
+// displayed on the main page linked to this URL.
 // $default->main_help_url = 'http://example.co.uk/help.html';
 $default->main_help_url = '';
 
-/* if this is anything other than empty, a help menu link will be
- * displayed on the rule page linked to this URL. */
+// If this is anything other than empty, a help menu link will be
+// displayed on the rule page linked to this URL.
 // $default->rule_help_url = 'http://example.co.uk/help.html';
 $default->rule_help_url = '';
 
-/* if this is anything other than empty, a help menu link will be
- * displayed on the vacation page linked to this URL. */
+// If this is anything other than empty, a help menu link will be
+// displayed on the vacation page linked to this URL.
 // $default->vacation_help_url = 'http://example.co.uk/help.html';
 $default->vacation_help_url = '';
 
-/* if this is anything other than empty, a help menu link will be
- * displayed on the manage scripts page linked to this URL. */
+// If this is anything other than empty, a help menu link will be
+// displayed on the manage scripts page linked to this URL.
 // $default->scripts_help_url = 'http://example.co.uk/help.html';
 $default->scripts_help_url = '';
 
