@@ -61,7 +61,7 @@ if (isset($GLOBALS['HTTP_POST_VARS']['ruleID'])) {
     $ruleID = AppSession::getFormValue('ruleID');
     $rule = getRulePOSTValues($ruleID);
 }
-elseif (getForwardRule($script)) {
+elseif (getForwardRule($script) !== false) {
     $ruleID = getForwardRule($script);
     if (isset($script->rules[$ruleID]))
         $rule = $script->rules[$ruleID];

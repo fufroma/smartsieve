@@ -1,17 +1,13 @@
 SmartSieve - TODO
 
 More htmlspecialchars()
-Den's mbox_names_convert stuff
 Handle referrals.
-fix getForwardRule return zero/false bug in forward.php.
 call $sieve->initialWorkingScript() from delete and rename actions of scripts.php.
 maybe copy raw script text when renaming script in rename action of scripts.php.
 
 
 TODO for 0.5.2
 
-* finish work on i18n, merge i18n branch into CVS HEAD
-* finish forward.php
 * add direct edit mode
 * fix digest-md5 authentication for cyrus-2.0.x
 * add support for cram-md5 authentication
