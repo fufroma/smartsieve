@@ -1,6 +1,9 @@
 Smartsieve - Changes file
 -------------------------
 
+30 July 2004 S Grier
+* Fixed document.scripts clash (bug #994671).
+
 29 July 2004 S Grier
 * Fixed bug in matching message size of 0 (bug #1000041).
 
