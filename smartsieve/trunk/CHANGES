@@ -2,6 +2,7 @@ Smartsieve - Changes file
 -------------------------
 
 04 Nov 2002 S Grier
+* 2 small fixes to make alt_namespace work.
 * more concise $default->script_head_format.
 * fixed namespace support. now done in new SmartSieve::getMailboxName() 
   function. handles user and shared namespaces also.
