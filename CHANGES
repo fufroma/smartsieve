@@ -1,6 +1,10 @@
 Smartsieve - Changes file
 -------------------------
 
+12 May 2003 S Grier
+* rule.php:
+   strip colons from end of mail header field.
+
 30 April 2003 S Grier
 * login.php:
    now tries to authenticate when a SmartSieve session already exists. If this 
