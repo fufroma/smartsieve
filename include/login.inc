@@ -11,14 +11,11 @@
 
   <TR>
     <TD ALIGN="center" COLSPAN="2">&nbsp;
-<?php if ($reason == 'failure') { ?>
+<?php if ($reason == 'failure'): ?>
       <?php echo SmartSieve::text("Login failed! Please try again");?>.
-<?php }
-      elseif ($reason == 'logout'){ ?>
+<?php elseif ($reason == 'logout'): ?>
       <?php echo SmartSieve::text("You have been logged out");?>.
-<?php }
-      $tabindex = 1;
-?>
+<?php endif; ?>
     </TD>
   </TR>
 

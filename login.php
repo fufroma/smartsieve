@@ -97,6 +97,7 @@ if (isset($_POST['auth']) && isset($_POST['passwd'])) {
 // we assume no login has yet been submitted (or perhaps not filled in right).
 
 
+$tabindex = 1;
 $jsfile = 'login.js';
 $jsonload = 'setFocus()';
 
