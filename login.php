@@ -37,7 +37,7 @@ if (isset($HTTP_SESSION_VARS['sieve']) && is_object($HTTP_SESSION_VARS['sieve'])
         // we have a session. if we can authenticate, redirect to main.php.
         // if not, we have a cookie problem.
         if ($HTTP_SESSION_VARS['sieve']->authenticate()) {
-	    header('Location: ' . AppSession::setUrl('main.php'),true);
+	    header('Location: ' . AppSession::setUrl('main.php'));
 	    exit;
         }
         else {
@@ -71,7 +71,7 @@ if (isset($HTTP_POST_VARS['sieveuid']) && isset($HTTP_POST_VARS['passwd'])) {
             print 'ERROR: failed to set scripts array in session<BR>';
         }
 
-	header('Location: ' . AppSession::setUrl('main.php'),true);
+	header('Location: ' . AppSession::setUrl('main.php'));
 	exit;
     }
 
