@@ -57,12 +57,14 @@ $action = SmartSieve::getFormValue('thisAction');
 
 if ($action == 'enable') {
     if ($script->vacation){
+        $status = $script->vacation['status'];
         $script->vacation['status'] = 'on';
         /* write and save the new script. */
         if (!$script->updateScript()) {
             SmartSieve::setError(SmartSieve::text('ERROR: ') . $script->errstr);
             SmartSieve::writeToLog(sprintf('failed writing script "%s" for %s: %s',
                 $script->name, $_SESSION['smartsieve']['authz'], $script->errstr), LOG_ERR);
+            $script->vacation['status'] = $status;
         } else {
             SmartSieve::setNotice(SmartSieve::text('vacation settings successfully enabled.'));
             if (SmartSieve::getConf('return_after_update') === true) {
@@ -77,12 +79,14 @@ if ($action == 'enable') {
 }
 if ($action == 'disable') {
     if ($script->vacation){
+        $status = $script->vacation['status'];
         $script->vacation['status'] = 'off';
         /* write and save the new script. */
         if (!$script->updateScript()) {
             SmartSieve::setError(SmartSieve::text('ERROR: ') . $script->errstr);
             SmartSieve::writeToLog(sprintf('failed writing script "%s" for %s: %s',
                 $script->name, $_SESSION['smartsieve']['authz'], $script->errstr), LOG_ERR);
+            $script->vacation['status'] = $status;
         } else {
             SmartSieve::setNotice(SmartSieve::text('vacation settings successfully disabled.'));
             if (SmartSieve::getConf('return_after_update') === true) {
@@ -98,11 +102,19 @@ if ($action == 'disable') {
 if ($action == 'save') 
 {
     if (($ret = checkRule($vacation)) === true){
+        if (isset($script->vacation)) {
+            $oldvacation = $script->vacation;
+        }
         $script->vacation = $vacation;
         if (!$script->updateScript()) {
             SmartSieve::setError(SmartSieve::text('ERROR: ') . $script->errstr);
             SmartSieve::writeToLog(sprintf('failed writing script "%s" for %s: %s',
                 $script->name, $_SESSION['smartsieve']['authz'], $script->errstr), LOG_ERR);
+            if (isset($oldvacation)) {
+                $script->vacation = $oldvacation;
+            } else {
+                unset($script->vacation);
+            }
         } else {
             SmartSieve::setNotice(SmartSieve::text('your changes have been successfully saved.'));
             if (SmartSieve::getConf('return_after_update') === true) {

@@ -67,12 +67,14 @@ $action = SmartSieve::getFormValue('thisAction');
 if ($action == 'enable') 
 {
     if (isset($script->rules[$ruleID])){
+        $status = $script->rules[$ruleID]['status'];
         $script->rules[$ruleID]['status'] = 'ENABLED';
 	// write and save the new script.
 	if (!$script->updateScript()) {
             SmartSieve::setError(SmartSieve::text('ERROR: ') . $script->errstr);
             SmartSieve::writeToLog(sprintf('failed writing script "%s" for %s: %s',
                 $script->name, $_SESSION['smartsieve']['authz'], $script->errstr), LOG_ERR);
+            $script->rules[$ruleID]['status'] = $status;
 	} else {
             SmartSieve::setNotice(SmartSieve::text('rule successfully enabled.'));
             if (SmartSieve::getConf('return_after_update') === true) {
@@ -88,12 +90,14 @@ if ($action == 'enable')
 if ($action == 'disable') 
 {
     if (isset($script->rules[$ruleID])){
+        $status = $script->rules[$ruleID]['status'];
         $script->rules[$ruleID]['status'] = 'DISABLED';
 	// write and save the new script.
 	if (!$script->updateScript()) {
             SmartSieve::setError(SmartSieve::text('ERROR: ') . $script->errstr);
             SmartSieve::writeToLog(sprintf('failed writing script "%s" for %s: %s',
                 $script->name, $_SESSION['smartsieve']['authz'], $script->errstr), LOG_ERR);
+            $script->rules[$ruleID]['status'] = $status;
 	} else {
             SmartSieve::setNotice(SmartSieve::text('rule successfully disabled.'));
             if (SmartSieve::getConf('return_after_update') === true) {
@@ -109,13 +113,17 @@ if ($action == 'disable')
 if ($action == 'delete') 
 {
     if (isset($script->rules[$ruleID])){
+        $status = $script->rules[$ruleID]['status'];
         $script->rules[$ruleID]['status'] = 'DELETED';
 	// write and save the new script.
 	if (!$script->updateScript()) {
             SmartSieve::setError(SmartSieve::text('ERROR: ') . $script->errstr);
             SmartSieve::writeToLog(sprintf('failed writing script "%s" for %s: %s',
                 $script->name, $_SESSION['smartsieve']['authz'], $script->errstr), LOG_ERR);
+            $script->rules[$ruleID]['status'] = $status;
 	} else {
+            unset($script->rules[$ruleID]);
+            $script->rules = array_values($script->rules);
             SmartSieve::setNotice(SmartSieve::text('Rule successfully deleted.'));
 	    header('Location: ' . SmartSieve::setUrl('main.php'),true);
 	    exit;
@@ -131,6 +139,7 @@ if ($action == 'save')
 
         // if existing rule, update. add new if not.
 	if (isset($script->rules[$ruleID])){
+            $oldrule = $script->rules[$ruleID];
 	    $script->rules[$ruleID] = $rule;
 	} else {
 	    $ruleID = array_push($script->rules, $rule) - 1;
@@ -140,6 +149,11 @@ if ($action == 'save')
             SmartSieve::setError(SmartSieve::text('ERROR: ') . $script->errstr);
             SmartSieve::writeToLog(sprintf('failed writing script "%s" for %s: %s',
                 $script->name, $_SESSION['smartsieve']['authz'], $script->errstr), LOG_ERR);
+            if (isset($oldrule)) {
+                $script->rules[$ruleID] = $oldrule;
+            } else {
+                unset($script->rules[$ruleID]);
+            }
 	} else {
             SmartSieve::setNotice(SmartSieve::text('your changes have been successfully saved.'));
             if (SmartSieve::getConf('return_after_update') === true) {
