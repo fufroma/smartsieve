@@ -107,6 +107,9 @@ $default->allow_regex = true;
 // Note: existing custom rules will always be handled.
 $default->allow_custom = true;
 
+// should we enable the "Forward Mail" interface?
+$default->use_forward_mail_interface = true;
+
 /* should we return to view all rules page following updates? */
 $default->return_after_update = false;
 

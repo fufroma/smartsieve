@@ -1,6 +1,9 @@
 Smartsieve - Changes file
 -------------------------
 
+23 Oct 2003 S Grier
+* added forward mail interface forward.php.
+
 26 Sept 2003 S Grier
 * added a javascript confirmation popup when a match string contains wildcard chars with 
   $default->websieve_auto_matches = true to warn them that :matches will be used.

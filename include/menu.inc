@@ -11,6 +11,9 @@
           <a href="<?php print AppSession::setUrl('login.php?reason=logout');?>">Logout</a>
         | <a href="<?php print AppSession::setUrl('main.php');?>">View All Rules</a>
 <?php if ($scripts[$sieve->workingscript]->mode != 'advanced'){ ?>
+<?php     if ($default->use_forward_mail_interface){ ?>
+        | <A HREF="<?php print AppSession::setUrl('forward.php');?>">Forward Mail</A>
+<?php     } ?>
         | <a href="<?php print AppSession::setUrl('vacation.php');?>">Vacation Settings</a>
         | <a href="<?php print AppSession::setUrl('rule.php');?>">New Filter Rule</a>
 <?php } //end if $script->mode = 'advanced'

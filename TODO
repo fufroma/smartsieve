@@ -2,6 +2,8 @@ SmartSieve - TODO
 
 More htmlspecialchars()
 Den's mbox_names_convert stuff
+Handle referrals.
+Finish moving html to templates.
 
 
 TODO for 0.5.2
@@ -11,6 +13,7 @@ TODO for 0.5.2
 * add direct edit mode
 * fix digest-md5 authentication for cyrus-2.0.x
 * add support for cram-md5 authentication
+* move SieveSession object from $_SESSION to $GLOBALS scope.
 
 
 TODO for 0.6
