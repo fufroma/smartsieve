@@ -11,7 +11,7 @@
           <a href="<?php print AppSession::setUrl('login.php?reason=logout');?>"><?php echo SmartSieve::text('Logout');?></a>
         | <a href="<?php print AppSession::setUrl('main.php');?>"><?php echo SmartSieve::text('View All Rules');?></a>
 <?php if ($scripts[$sieve->workingscript]->mode != 'advanced'){ ?>
-<?php     if ($default->use_forward_mail_interface){ ?>
+<?php     if (!empty($default->use_forward_mail_interface)){ ?>
         | <A HREF="<?php print AppSession::setUrl('forward.php');?>"><?php echo SmartSieve::text('Forward Mail');?></A>
 <?php     } ?>
         | <a href="<?php print AppSession::setUrl('vacation.php');?>"><?php echo SmartSieve::text('Vacation Settings');?></a>

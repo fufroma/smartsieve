@@ -148,7 +148,7 @@
   </TD>
   <TD>&nbsp;</TD>
 </TR>
-<?php if ($default->allow_custom || $rule['action'] == 'custom'){ ?>
+<?php if (!empty($default->allow_custom) || $rule['action'] == 'custom'){ ?>
 <TR>
   <TD>
     <INPUT TYPE="radio" NAME="action" VALUE="custom" <?php if ($rule['action'] == 'custom') print "CHECKED"; ?> > <?php echo SmartSieve::text('Custom Rule');?>:

@@ -254,7 +254,7 @@ function setMatchType (&$matchstr, $regex = false)
     if (preg_match("/\s*!/", $matchstr)) 
         $match = SmartSieve::text('does not contain');
     if (preg_match("/\*|\?/", $matchstr) &&
-        $GLOBALS['default']->websieve_auto_matches == true){
+        !empty($GLOBALS['default']->websieve_auto_matches)){
         $match = SmartSieve::text('matches');
         if (preg_match("/\s*!/", $matchstr))
             $match = SmartSieve::text('does not match');
