@@ -48,6 +48,18 @@ class SmartSieve {
 
 class AppSession {
 
+  var $user;          /* authentication user. */
+  var $proxy;         /* proxy authorization user. */
+  var $passwd;        /* authentication user's password. */
+  var $scriptfile;    /* name of script file. */
+  var $server;        /* sieve server to connect to. */
+  var $sieveport;     /* port on sieve server to connect to. */
+  var $imapport;      /* port on imapd to connect to. */
+  var $alt_namespace; /* boolean: using alternative namespace? */
+  var $namespace_user_prefix;   /* alt_namespace user prefix. */
+  var $namespace_shared_prefix; /* alt_namespace shared prefix. */
+  var $maildomain;    /* ie $user@$maildomain. */
+
   // class constructor
   function AppSession () {
     global $default;
@@ -96,13 +108,20 @@ class AppSession {
 	    $server = $servers[$HTTP_POST_VARS['server']];
 	    if (!is_array($server)) return false;
 
-	    $this->server = $server['server'];
-	    $this->sieveport = $server['sieveport'];
-	    $this->imapport = $server['imapport'];
-	    $this->alt_namespace = $server['alt_namespace'];
-            $this->namespace_user_prefix = $server['namespace_user_prefix'];
-            $this->namespace_shared_prefix = $server['namespace_shared_prefix'];
-	    $this->maildomain = $server['maildomain'];
+	    if (isset($server['server'])) 
+                $this->server = $server['server'];
+	    if (isset($server['sieveport'])) 
+                $this->sieveport = $server['sieveport'];
+	    if (isset($server['imapport'])) 
+                $this->imapport = $server['imapport'];
+	    if (isset($server['alt_namespace'])) 
+                $this->alt_namespace = $server['alt_namespace'];
+            if (isset($server['namespace_user_prefix'])) 
+                $this->namespace_user_prefix = $server['namespace_user_prefix'];
+            if (isset($server['namespace_shared_prefix'])) 
+                $this->namespace_shared_prefix = $server['namespace_shared_prefix'];
+	    if (isset($server['maildomain'])) 
+                $this->maildomain = $server['maildomain'];
 	}
 
 	$GLOBALS['HTTP_SESSION_VARS']['sieve'] = &$this;
@@ -344,6 +363,13 @@ class AppSession {
 
 class Script {
 
+  var $scriptfile;   /* filename of script. */
+  var $script;       /* full ascii text of script from server. */
+  var $rules;        /* array of sieve rules. */
+  var $vacation;     /* vacation settings. */
+  var $scriptlist;   /* list of user's scripts on server. */
+  var $pcount;       /* highest priority value in ruleset. */
+
   // class constructor
   function Script ($scriptfile) {
 
@@ -352,7 +378,7 @@ class Script {
 	$this->rules = array();
 	$this->vacation = array();
 	$this->scriptlist = array();
-	$this->pcount = 0;            /* highest priority value in ruleset */
+	$this->pcount = 0;
   }
   // end contructor
 
