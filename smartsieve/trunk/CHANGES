@@ -1,6 +1,9 @@
 Smartsieve - Changes file
 -------------------------
 
+23 Sept 2003 S Grier
+* small change to imapport comment.
+
 19 Sept 2003 S Grier
 * sieve.lib: changes to socket handling:
   - initialize $this->socket false.
