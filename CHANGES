@@ -1,6 +1,10 @@
 Smartsieve - Changes file
 -------------------------
 
+01 Oct 2002 S Grier
+* added note on PLAIN SASL auth requirement to INSTALL.
+* improved alt namespace support. still not right. NOTE: temporarily broken.
+
 30 Oct 2002 S Grier
 * sieve.lib: checks for "STARTTLS" capability. this is new in timesieved-1.1.0
   (cyrus-imapd-2.1).
