@@ -104,6 +104,15 @@ $default->return_after_update = false;
 /* see http://www.php.net/manual/en/function.date.php */
 $default->script_date_format = 'Y/m/d H:i:s';
 
+// increase the timeout on the socket if you are experiencing empty 
+// bad response errors.
+$default->socket_timeout = 5;
+
+// SmartSieve will select a cryptography library to use for encryption. You 
+// can override the one it chooses by setting this option. Choices are 
+// 'MCRYPT', 'RC5', 'HCEMD5', and ''.
+$default->crypt_lib = '';
+
 // logging
 
 // should we log messages?

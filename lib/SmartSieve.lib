@@ -180,7 +180,8 @@ class AppSession {
                                           $this->sieveport,
                                           $this->user,
                                           $passwd,
-                                          $this->proxy );
+                                          $this->proxy,
+                                          $default->socket_timeout ? $default->socket_timeout : 5 );
     if (!$this->connection){
         $this->errstr = 'openSieveSession: failed to initialize SieveSession';
         return false;
