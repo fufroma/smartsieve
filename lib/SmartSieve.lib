@@ -91,7 +91,12 @@ class AppSession {
 
 	// can't to much if user didn't supply these
 	// from the login form
-	if (!$GLOBALS['HTTP_POST_VARS']['sieveuid'] || !$GLOBALS['HTTP_POST_VARS']['passwd']) {
+	if (!$GLOBALS['HTTP_POST_VARS']['sieveuid']){
+            $this->errstr = 'initialize: no username supplied';
+            return false;
+        }
+        if (!$GLOBALS['HTTP_POST_VARS']['passwd']){
+            $this->errstr = 'initialize: no password supplied';
 	    return false;
 	}
 
@@ -106,7 +111,10 @@ class AppSession {
 	if (isset($GLOBALS['HTTP_POST_VARS']['server']))
 	{
 	    $server = $servers[$HTTP_POST_VARS['server']];
-	    if (!is_array($server)) return false;
+	    if (!is_array($server)){
+                $this->errstr = 'initialize: server ' . $HTTP_POST_VARS['server'] . ' is not an array';
+                return false;
+            }
 
 	    if (isset($server['server'])) 
                 $this->server = $server['server'];
@@ -153,7 +161,8 @@ class AppSession {
 
     require_once $GLOBALS['default']->lib_dir . "/Encrypt.php";
 
-    if (!isset($HTTP_SESSION_VARS['sieve'])){
+    if (!is_object($HTTP_SESSION_VARS['sieve'])){
+        $this->errstr = 'openSieveSession: session not yet initialized';
         return false;
     }
 
@@ -165,11 +174,15 @@ class AppSession {
                                           $this->user,
                                           $passwd,
                                           $this->proxy );
-    if (!$this->connection) 
+    if (!$this->connection){
+        $this->errstr = 'openSieveSession: failed to initialize SieveSession';
         return false;
+    }
  
-    if (!$this->connection->start())
+    if (!$this->connection->start()){
+        $this->errstr = 'openSieveSession: failed opening sieve session: ' . $this->connection->errstr;
         return false;
+    }
 
     return true;
   }
@@ -181,13 +194,16 @@ class AppSession {
     global $HTTP_SESSION_VARS;
 
     if (!isset($this->connection)) {
+        $this->errstr = 'closeSieveSession: no sieve session open';
 	return false;
     }
 
-    if (!$this->connection->close())
+    if (!$this->connection->close()){
+        $this->errstr = 'closeSieveSession: failed closing sieve session: ' . $this->connection->errstr;
         return false;
+    }
 
-    $this->connection = null;
+    unset($this->connection);
     return true;
   }
 
@@ -412,6 +428,7 @@ class Script {
     $regexbit = 128;
  
     if (!isset($this->scriptfile)){
+        $this->errstr = 'retrieveRules: no script name specified';
         return false;
     }
     if (!is_object($connection)) {
@@ -440,7 +457,7 @@ class Script {
     $script = $connection->getscript($this->scriptfile);
  
     if ($connection->errstr) {
-	$this->errstr = $connection->errstr;
+	$this->errstr = 'retrieveRules: failed getting script: ' . $connection->errstr;
         return false;
     }
  
@@ -713,18 +730,17 @@ class Script {
     $scriptfile = $this->scriptfile;
     if (!$connection->putscript($scriptfile,$newscript))
     {
-	$this->errstr = $connection->errstr;
+	$this->errstr = 'updateScript: putscript failed: ' . $connection->errstr;
         return false;
     }
 
     if ($default->update_activate_script && 
 	$this->scriptfile != $this->activescript) {
 	if (!$connection->activatescript($this->scriptfile)) {
-	    $this->errstr = $connection->errstr;
+	    $this->errstr = 'updateScript: activatescript failed: ' . $connection->errstr;
 	    return false;
 	}
 	if (!$this->listScripts($connection)) {
-	    $this->errstr = $connection->errstr;
 	    return false;
 	}
     }

@@ -30,9 +30,9 @@ if (!is_object($sieve) || !$sieve->authenticate()) {
 
 // start sieve session, and get the rules via the script object
 if (!$sieve->openSieveSession()) {
-    print "ERROR: " . $sieve->connection->errstr . "<BR>\n";
+    print "ERROR: " . $sieve->errstr . "<BR>\n";
     $sieve->writeToLog("ERROR: openSieveSession failed for " . $sieve->user .
-	': ' . $sieve->connection->errstr, LOG_ERROR);
+	': ' . $sieve->errstr, LOG_ERROR);
     exit;
 }
 if (!$script->retrieveRules($sieve->connection)) {
