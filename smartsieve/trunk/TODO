@@ -2,7 +2,6 @@ SmartSieve - TODO
 
 
 Re-do custom rule to make it clearer, and don't set other conditions.
-Fix non-ascii mailbox names. These should go as mUTF7 to the script.
 
 TODO for 0.6
 

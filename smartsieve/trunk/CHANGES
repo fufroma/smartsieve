@@ -1,6 +1,9 @@
 Smartsieve - Changes file
 -------------------------
 
+11 Nov 2004 S Grier
+* Keep mailbox names encoded as mUTF-7. Only convert to local charset for display.
+
 10 Nov 2004 S Grier
 * Convert charset of user supplied strings to correctly handle non-ascii content.
   Sieve scripts should always be UTF-8 on the server.

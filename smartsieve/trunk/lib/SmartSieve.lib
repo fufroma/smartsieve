@@ -563,7 +563,7 @@ class SmartSieve {
    /**
     * Get the list of mailboxes for the current user.
     *
-    * @return array of mailbox names, or string error on failure
+    * @return mixed An array of mUTF7 encoded mailbox names, or string error on failure
     */
     function getMailboxList()
     {
@@ -588,7 +588,6 @@ class SmartSieve {
         }
 
         foreach ($mboxes as $mbox) {
-            $mbox = SmartSieve::mutf7Decode($mbox);
             $label = str_replace($connstr, '', $mbox);
             $mboxlist[] = $label;
         }
