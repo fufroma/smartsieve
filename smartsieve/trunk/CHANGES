@@ -1,6 +1,9 @@
 Smartsieve - Changes file
 -------------------------
 
+12 Sept 2003 S Grier
+* rule.php: set wrap="off" for custom rule textarea.
+
 22 August 2003 S Grier
 * htmlspecialchar() rule and vacation sumarries to avoid garbled output.
 

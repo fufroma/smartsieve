@@ -332,7 +332,7 @@ Match
     <INPUT TYPE="radio" NAME="action" VALUE="custom" <?php if ($rule['action'] == 'custom') print "CHECKED"; ?> > Custom Rule:
   </TD>
   <TD>
-    <TEXTAREA NAME="custom" ROWS="3" COLS="40" WRAP="hard" TABINDEX="15">
+    <TEXTAREA NAME="custom" ROWS="3" COLS="40" WRAP="off" TABINDEX="15">
 <?php if ($rule['action'] == 'custom') print $rule['action_arg']; ?>
 </TEXTAREA>
   </TD>
