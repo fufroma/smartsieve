@@ -2,6 +2,7 @@ Smartsieve - Changes file
 -------------------------
 
 05 July 2004 S Grier
+* Set charsets in conf/locales.php.
 * Only read translations file on first call to SmartSieve::text().
 
 25 June 2004 S Grier
