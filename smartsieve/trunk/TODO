@@ -1,6 +1,9 @@
 SmartSieve - TODO
 
 
+Move charset value for each locale to conf/locales.php.
+Look at the hard wrap on vacation message (reject text?) textbox.
+
 TODO for 0.6
 
 * test against Cyrus 2.2.x and virtual domains. handle domain in usernames
