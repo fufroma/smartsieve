@@ -1,6 +1,9 @@
 Smartsieve - Changes file
 -------------------------
 
+06 Nov 2002 S Grier
+* lib/Encrypt.php: changed include_one calls to require_once.
+
 04 Nov 2002 S Grier
 * added welcome heading to login.php. can be formatted via 
   $default->login_page_heading and .welcome stylesheet item.
