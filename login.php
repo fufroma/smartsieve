@@ -16,22 +16,26 @@ require "$default->lib_dir/SmartSieve.lib";
 session_name($default->session_name);
 @session_start();
 
+$reason = AppSession::getFormValue('reason');
+
 // if a session already exists, go to main page
 // unless failure or logout
 if (isset($HTTP_SESSION_VARS['sieve']) && is_object($HTTP_SESSION_VARS['sieve'])) {
-
-    if (isset($HTTP_GET_VARS['reason']) && $HTTP_GET_VARS['reason'] == 'logout') {
+    if ($reason == 'logout') {
 	if (!$HTTP_SESSION_VARS['sieve']->writeToLog("logout: " . 
 				$HTTP_SESSION_VARS['sieve']->user, LOG_INFO))
 	    print "ERROR: " . $HTTP_SESSION_VARS['sieve']->errstr . "<BR>";
-	$HTTP_SESSION_VARS['sieve'] = null;
+	unset($HTTP_SESSION_VARS['sieve']);
 	session_unregister('sieve');
-        $HTTP_SESSION_VARS['scripts'] = null;
+        unset($HTTP_SESSION_VARS['scripts']);
         session_unregister('scripts');
+        session_destroy();
+        session_start();
     }
-    elseif (isset($HTTP_GET_VARS['reason']) && $HTTP_GET_VARS['reason'] == 'failure') {
-	$HTTP_SESSION_VARS['sieve'] = null;
+    elseif ($reason == 'failure') {
+	unset($HTTP_SESSION_VARS['sieve']);
 	session_unregister('sieve');
+        unset($HTTP_SESSION_VARS['scripts']);
     }
     else {
         // we have a session. if we can authenticate, redirect to main.php.
@@ -43,9 +47,9 @@ if (isset($HTTP_SESSION_VARS['sieve']) && is_object($HTTP_SESSION_VARS['sieve'])
         else {
             echo 'ERROR: failed to authenticate. please check your SmartSieve cookie settings<BR>';
             $HTTP_SESSION_VARS['sieve']->writeToLog('ERROR: login.php: cookie problem', LOG_ERR);
-            $HTTP_SESSION_VARS['sieve'] = null;
+            unset($HTTP_SESSION_VARS['sieve']);
             session_unregister('sieve');
-            $HTTP_SESSION_VARS['scripts'] = null;
+            unset($HTTP_SESSION_VARS['scripts']);
             session_unregister('scripts');
         }
     }

@@ -11,10 +11,10 @@
 
   <TR>
     <TD ALIGN="center" COLSPAN="2">&nbsp;
-<?php if (isset($HTTP_GET_VARS['reason']) && $HTTP_GET_VARS['reason'] == 'failure') { ?>
+<?php if ($reason == 'failure') { ?>
       Login failed! Please try again.
 <?php }
-      elseif (isset($HTTP_GET_VARS['reason']) && $HTTP_GET_VARS['reason'] == 'logout'){ ?>
+      elseif ($reason == 'logout'){ ?>
       You have been logged out.
 <?php }
       $tabindex = 1;

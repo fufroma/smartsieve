@@ -3,6 +3,8 @@ SmartSieve - TODO
 More htmlspecialchars()
 Den's mbox_names_convert stuff
 Handle referrals.
+write a start_php_session() function to do session_name, start_session, 
+ ini_set('trans_sid',0), and session_set_cookie_params(). use static $session_started to make sure session_start called only once per page..
 
 
 TODO for 0.5.2
