@@ -13,8 +13,11 @@ require "$default->lib_dir/sieve.lib";
 require "$default->lib_dir/SmartSieve.lib";
 require "$default->config_dir/style.php";
 
+ini_set('session.use_trans_sid', 0);
+session_set_cookie_params(0, $default->cookie_path, $default->cookie_domain);
 session_name($default->session_name);
 @session_start();
+
 $errors = array();
 $msgs = array();
 
