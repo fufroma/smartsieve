@@ -42,7 +42,7 @@ REQUIREMENTS
    versions 4.1.1 and earlier are vulnerable to a remote vulnerability 
    in the way it handles multipart/form-data. Version 4.1.2 is 
    currently known to work fine with SmartSieve, as are versions 
-   4.2.2, 4.2.3 and php-4.3.0pre2.
+   4.2.2, 4.2.3 and php-4.3.1.
 
    Note: php-4.2 and above install with register_globals set to 
    off by default. SmartSieve is no longer dependent on the value of 
@@ -88,8 +88,10 @@ REQUIREMENTS
 
 5. SmartSieve requires the Crypt/HCEMD5.php PEAR library.  PEAR is 
    the PHP Extension and Application Repository, and is included in 
-   all distributions of PHP since php-4.x, so will already be 
-   installed if you have successfully installed php-4.x. 
+   all distributions of PHP since php-4.x. This library was not 
+   included in php-4.3.x. If you have installed php-4.3.x you will 
+   need to get this library from the php-4.2.x source.
+
    Crypt/HCEMD5.php needs to be in the PHP include_path for scripts 
    to be able to find it.
 
@@ -135,8 +137,8 @@ Edit the SmartSieve configuration files as necessary. They can be
 found under conf/. You will certainly need to add entries for each of 
 the mail servers you wish to access in conf/servers.php.
 
-You should now be able to access SmartSieve by pointing a cookie 
-enabled web browser at http://yourserver/smartsieve/.
+You should now be able to access SmartSieve by pointing a web browser 
+at http://yourserver/smartsieve/.
 
 
 PROBLEMS
@@ -154,10 +156,9 @@ can browse the tracker at:
 
 http://sourceforge.net/tracker/?atid=501286&group_id=62641&func=browse
 
-There is a help forum for the SmartSieve project. You will find it at:
+Please report any bugs by using the bug tracker, at:
 
-http://sourceforge.net/forum/forum.php?forum_id=211286
-
+https://sourceforge.net/tracker/?group_id=62641&atid=501285
 
 
 $Id$
