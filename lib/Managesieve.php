@@ -725,6 +725,7 @@ class Managesieve {
         }
         fputs($this->_socket,"CAPABILITY\r\n");
         return ($this->parseCapability()) ? $this->_capabilities : false;
+// FIXME: Extra NO response with Cyrus v2.0
     }
 
 
@@ -872,13 +873,11 @@ class Managesieve {
             return true;
         }
         $this->_errstr = "putScript: could not put script \"$name\": " . $this->responseToString();
-//FIXME: Work-around for bug in Cyrus 2.0.
         /* Work-around for extra response bug in Cyrus 2.0. */
         if ($this->resp['state'] == F_NO && 
             $this->resp['errstr'][0] == 'Did not specify script data' &&
-            !preg_match("/Cyrus timsieved (v1\.1|v2\.\d)/", $this->_capabilities['implementation'])){
-            while ($str = $this->read()) {
-                $this->_errstr .= $str;
+            substr($this->_capabilities['implementation'], -6) == 'v1.0.0') {
+            while ($this->read()) {
             }
         } 
         return false;
