@@ -1,6 +1,10 @@
 Smartsieve - Changes file
 -------------------------
 
+14 Nov 2003 S Grier
+* use AppSession::getFormValue() to get reason value in login.php. and call 
+  session_destroy() on logout.
+
 12 Nov 2003 S Grier
 * call session_name() and session_start() from index.php in order to redirect
   correctly, and call AppSession::setUrl() to work with cookieless sessions.
