@@ -7,7 +7,7 @@
     <TABLE WIDTH="100%" CELLPADDING="5" BORDER="0" CELLSPACING="0">
     <TR CLASS="heading">
       <TD>
-<?php if ($ruleID && $ruleID != 'new'): ?>
+<?php if (isset($ruleID) && $ruleID !== 'new'): ?>
         <?php echo SmartSieve::text("Edit Forward Rule");?> 
       </TD>
       <TD CLASS="<?php echo (isset($rule['status']) && $rule['status'] == 'ENABLED') ? 'enabled' : 'disabled';?>">
@@ -56,7 +56,7 @@
       <TD CLASS="options" COLSPAN="2">
         <BR>
         <A CLASS="option" HREF="" onclick="Submit('save'); return false;" onmouseover="window.status='<?php echo SmartSieve::text('Save Changes');?>'; return true;" onmouseout="window.status='';"><?php echo SmartSieve::text('Save Changes');?></a>
-<?php if ($ruleID && $ruleID != 'new'): ?>
+<?php if (isset($ruleID) && $ruleID !== 'new'): ?>
           |
         <A CLASS="option" HREF="" onclick="Submit('enable'); return false;" onmouseover="window.status='<?php echo SmartSieve::text('Enable');?>'; return true;" onmouseout="window.status='';"><?php echo SmartSieve::text('Enable');?></a>
           |
@@ -77,7 +77,7 @@
 <INPUT TYPE="hidden" NAME="status" VALUE="<?php echo (isset($rule['status'])) ? $rule['status'] : 'ENABLED';?>">
 <INPUT TYPE="hidden" NAME="flg" VALUE="<?php echo (isset($rule['flg'])) ? $rule['flg'] : '';?>">
 <INPUT TYPE="hidden" NAME="thisAction" VALUE="">
-<INPUT TYPE="hidden" NAME="ruleID" VALUE="<?php echo ($ruleID) ? $ruleID : 'new';?>">
+<INPUT TYPE="hidden" NAME="ruleID" VALUE="<?php echo (isset($ruleID)) ? $ruleID : 'new';?>">
 <INPUT TYPE="hidden" NAME="anyof" VALUE="">
 <INPUT TYPE="hidden" NAME="from" VALUE="">
 <INPUT TYPE="hidden" NAME="to" VALUE="">
