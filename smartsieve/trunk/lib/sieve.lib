@@ -259,7 +259,7 @@ class SieveSession {
                 // data portion of the SASL response code. With SASL v1.x, however, the server 
                 // sends this as a separate response and we must send an extra empty request 
                 // before the server sends the final SASL response.
-                if (!preg_match("/Cyrus timsieved (v1\.1|2\.\d)/", $this->implementation)){
+                if (!preg_match("/Cyrus timsieved (v1\.1|v2\.\d)/", $this->implementation)){
                     // Response should be either "{xxx}\r\nresponse string\r\n" or "NO".
                     if (preg_match("/^\{\d+\}/", $said)){
                         $said = $this->read();

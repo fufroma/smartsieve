@@ -1,6 +1,9 @@
 Smartsieve - Changes file
 -------------------------
 
+12 Mar 2004 S Grier
+* Match Cyrus version v2.x correctly in SieveSession::_authenticate()
+
 04 Mar 2004 S Grier
 * release_0_5_2
 * Fix typo in config.php
