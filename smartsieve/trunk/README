@@ -20,8 +20,9 @@ SmartSieve, and visa-versa.
 
 SmartSieve is not a Sieve script 'parser'. It cannot directly read 
 and understand the Sieve language itself. For this reason, the GUI 
-will only work for Sieve scripts created by SmartSieve. It provides 
-a direct editor mode for scripts it does not understand.
+will only work for Sieve scripts created by SmartSieve. Other 
+non-SmartSieve scripts can be edited in SmartSieve's direct edit 
+mode.
 
 
 PROJECT STATUS
@@ -34,14 +35,11 @@ of the INSTALL file for software it is currently known to work with).
 I do not accept responsibility for any loss or damage which might 
 occur as a result of using this software.
 
-Please feel free to give SmartSieve a whirl. At this stage I would 
-appreciate any feedback you might provide. I am particularly keen to 
-know what platforms and versions SmartSieve works on, and those it 
-doesn't. If you try SmartSieve on a web and/or imap server not 
-mentioned in the requirements section of the INSTALL file, please let 
-me know the result. Do let me know of any bugs or suggestions you 
-might have, or if you would like to contribute. See the support 
-section for methods of providing feedback.
+Please feel free to give SmartSieve a whirl. The SmartSieve project 
+always appreciates feedback, so please let us know of any comments, 
+bugs or suggestions you may have. See the support section for methods 
+of providing feedback. Also, if you wish to contribute in some way, 
+or provide a new translation, see the section on contributing.
 
 You should check the SmartSieve project web site for the latest news 
 and release information. It is at:
@@ -85,6 +83,59 @@ http://sourceforge.net/tracker/?atid=501286&group_id=62641&func=browse
 You can submit bug reports or browse the bug tracker at:
 
 https://sourceforge.net/tracker/?group_id=62641&atid=501285
+
+
+CONTRIBUTING
+
+Contributions to the SmartSieve project are always welcome. If you want 
+to contribute in some way then the first thing you should do is subscribe 
+to the smartsieve-general mailing list. Send a message to the list 
+explaining what you plan to do to make sure you don't duplicate work being 
+done by someone else, or that has already been added. The TODO file in the 
+SmartSieve distribution contains a list of tasks to be done.
+
+If you're contributing code make sure you are working on the most recent 
+code base. Check out the latest version from the CVS. There are instructions 
+on doing this at:
+
+http://sourceforge.net/cvs/?group_id=62641
+
+Code should be contributed in the form of a patch, preferably generated 
+using GNU diff, and should be sent to the smartsieve-general mailing list.
+
+
+TRANSLATING
+
+SmartSieve includes support for internationalization (i18n). If you want 
+to translate SmartSieve into another language, first check a translation 
+in that language does not already exist. Translations live under 
+conf/locale/[locale name], where locale name is formed from the two digit 
+language code (see ISO 639) and the two digit country code (see ISO 3166), 
+eg en_GB.
+
+To create the translation, you should use the locales_update.pl script in 
+the scripts directory of the SmartSieve distribution. First, create the 
+directory for the locale you are creating a translation for, and then run 
+the locales_update script:
+
+$ cd smartsieve/
+$ mkdir conf/locale/en_GB
+$ cd scripts/
+$ ./locales_update.pl en_GB
+
+This will create a strings.php.new file containing all the strings to be 
+translated. If there is an existing strings.php translations file, it will 
+extract any existing translations. You will need to edit this file and 
+complete all the necessary translations, and then copy the strings.php.new 
+file to strings.php.
+
+Add appropriate entries for your new locale to the conf/locales.php file. 
+If your translation uses a character set other than iso-5589-1 you will 
+need to specify it in this file.
+
+Then send a copy of your translations file to the smartsieve-general list 
+to share it with the rest of us! Don't forget to indicate what charset the 
+translation uses.
 
 
 

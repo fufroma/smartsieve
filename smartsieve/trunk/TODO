@@ -1,15 +1,12 @@
 SmartSieve - TODO
 
 
-Move charset value for each locale to conf/locales.php.
-
 TODO for 0.6
 
 * allow user to switch script into direct edit mode
 * fix mcrypt.php: MCRYPT_DEV_RANDOM->MCRYPT_RAND, keep IV, and mcrypt_generic_deinit
 * add support for cram-md5 authentication
-* handle referrals
-* remove dependency on c-client by adding hardcoded imap functions in PHP
+* remove dependency on c-client by adding hardcoded pure-php imap functions
 * fix mailbox list for proxy authorization
 * do HAVESPACE before doing a PUTSCRIPT as the spec demands. HAVESPACE is broken up to 
   cyrus-2.0.16, so will need to handle this according to timsieved version
