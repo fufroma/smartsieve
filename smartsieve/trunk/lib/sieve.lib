@@ -380,24 +380,31 @@ class SieveSession {
 	    return false;
 	}
 
-        $script = '';
+        $resp = array('raw'=>'','size'=>0);
 
 	fputs($this->socket,"GETSCRIPT \"$scriptfile\"\r\n");
 
 	$said = $this->read();
+
+        // 1st line will be size of response eg: "{123}".
+        if (preg_match("/^\{(\d+)\}$/",$said,$bits)){
+            $resp['size'] = $bits[1];
+            $said = $this->read();
+        }
+
 	while ((!preg_match("/^OK/",$said)) && (!preg_match("/^NO/",$said))) {
 	    // replace newlines which read() removed
 	    if (!preg_match("/\n$/",$said)) $said .= "\n";
-	    $script .= $said;
+	    $resp['raw'] .= $said;
 	    $said = $this->read();
 	}
 
 	if (preg_match("/^OK/",$said)) {
-	    if ($script == '') {
+	    if ($resp['raw'] == '') {
 		$this->errstr = "getscript: zero length script";
 		return false;
 	    }
-	    return $script;
+	    return $resp;
 	}
 
 	$this->errstr = "getscript: could not get script $scriptfile: $said";

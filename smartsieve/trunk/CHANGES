@@ -1,6 +1,9 @@
 Smartsieve - Changes file
 -------------------------
 
+11 August 2003 S Grier
+* sieve.lib: getscript() now returns array $resp containing raw script and script size.
+
 17 July 2003 S Grier
 * set $rule['unconditional'] for custom rule if unconditional.
 
