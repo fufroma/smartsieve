@@ -1,0 +1,155 @@
+INSTALLING SMARTSIEVE
+~~~~~~~~~~~~~~~~~~~~~
+
+This file contains notes on installing the SmartSieve sieve 
+script manager.
+
+See the README file included in this distribution for more 
+general notes on the features and requirements of SmartSieve.
+
+
+DOWNLOADING SMARTSIEVE
+
+The SmartSieve project is hosted on sourceforge.net. Releases 
+can be found at:
+
+http://sourceforge.net/project/showfiles.php?group_id=62641
+
+In formation on anonymous access to the CVS can be found here:
+
+http://sourceforge.net/cvs/?group_id=62641
+
+
+REQUIREMENTS
+
+1. SmartSieve runs on a PHP enabled web server. Apache will be the 
+   most common choice for this, and is currently the only web server 
+   SmartSieve is known to run on. It is therefore recommended. You 
+   can find apache at:
+
+   httpd://www.apache.org
+
+   Apache should be configured to read and honour .htaccess files 
+   for the directory in which SmartSieve is installed. See the usage 
+   of the AllowOverride directive in the apache documentation.
+
+   As passwords will be passed between users and the web server, you 
+   should consider securing access to the web server with something 
+   like Secure Sockets Layer (SSL). To do this with Apache you will 
+   need to install mod_ssl (http://www.modssl.org).
+
+2. SmartSieve requires PHP version 4.x or greater. Note that 
+   versions 4.1.1 and earlier are vulnerable to a remote vulnerability 
+   in the way it handles multipart/form-data. Version 4.1.2 is 
+   currently known to work fine with SmartSieve, and versions 
+   4.2.2 and 4.2.3 should also work ok.
+
+   Note: php-4.2 and above install with register_globals set to 
+   off by default. While future releases of SmartSieve will work 
+   adequately with register_globals set to off, it currently 
+   requires it to be set to 'On' (ie. in php.ini).
+
+   The PHP magic_quotes_runtime variable must be set to 'Off'. This 
+   is usually the PHP default.
+
+   You should build PHP as an apache module (either the DSO or 
+   the static builds).
+
+   You will find PHP at:
+
+   http://www.php.net
+
+3. PHP must be built with IMAP support. This requires the UW c-client 
+   library. You will find the c-client at:
+
+   ftp://ftp.cac.washington.edu/imap/
+
+4. SmartSieve will only work in conjunction with a sieve enabled 
+   email server. It is currently only known to work with the 
+   Cyrus imap server (http://asg.web.cmu.edu/cyrus/imapd).
+
+   You will need to configure Cyrus to run the timsieved daemon to 
+   handle sieve requests. The master daemon's configuration file 
+   is usually /etc/cyrus.conf. You will need to refer to the 
+   cyrus-imapd documentation for this.
+
+   Some sieve actions involve sending mail; vacation messaging and 
+   mail redirection, for example. For these actions to work, Cyrus 
+   imapd must be running deliver in lmtpd mode, and able to send mail 
+   using sendmail or equivalent. See the cyrus-imapd documentation 
+   for more on this.
+
+5. SmartSieve requires the Crypt/HCEMD5.php PEAR library.  PEAR is 
+   the PHP Extension and Application Repository, and is included in 
+   all distributions of PHP since php-4.x, so will already be 
+   installed if you have successfully installed php-4.x. 
+   Crypt/HCEMD5.php needs to be in the PHP include_path for scripts 
+   to be able to find it.
+
+
+INSTALLING SMARTSIEVE
+
+SmartSieve is a set of PHP scripts which do not require any 
+compilation. You need only move the entire source tree as it comes 
+in the distribution directly under a web accessible directory. The 
+location of this depends on your web server's configuration. 
+
+$ cd /yourwebroot/
+$ tar -xzf somewhere/smartsieve-x.x.x.tar.gz
+$ mv smartsieve-x.x.x smartsieve
+
+You should make sure that your web server will handle requests 
+for PHP scripts correctly. For Apache, the httpd.conf file should 
+contain the following lines:
+
+AddType application/x-httpd-php .php
+DirectoryIndex index.php
+
+If possible, you should also make sure your web server will honour 
+.htaccess files containing Limit directives, at least for the 
+SmartSieve directory. See the Apache documentation on the 
+AllowOverride directive for details on doing this with Apache.
+
+Take a look at the PHP configuration on your server. You can either 
+look at your php.ini file, or create a php script under your web 
+server's webroot containing the following:
+
+<?php phpinfo(); ?>
+
+Check that the include_path contains the location of Crypt/HCEMD5.php. 
+Make sure that magic_quotes_runtime is set to 'Off', and that 
+register_globals is set to 'On'.
+
+SmartSieve uses PHP's native support for session handling. PHP will 
+usually save session data in files under /tmp. Although SmartSieve 
+will encrypt passwords during use, you should make sure session.save_path 
+is set to a directory which only the web server can read and write to.
+
+Edit the SmartSieve configuration files as necessary. They can be 
+found under conf/. You will certainly need to add entries for each of 
+the mail servers you wish to access in conf/servers.php.
+
+You should now be able to access SmartSieve by pointing a cookie 
+enabled web browser at http://yourserver/smartsieve/.
+
+
+PROBLEMS
+
+If you encounter any problems with SmartSieve, you may be able to 
+get assistance from one of the following sources:
+
+There is a support request tracker for the SmartSieve project. You 
+can browse the tracker at:
+
+http://sourceforge.net/tracker/?atid=501286&group_id=62641&func=browse
+
+There is a help forum for the SmartSieve project. You will find it at:
+
+http://sourceforge.net/forum/forum.php?forum_id=211286
+
+Finally, you can reach me at:
+
+stephengrier@users.sourceforge.net
+
+
+$Id$

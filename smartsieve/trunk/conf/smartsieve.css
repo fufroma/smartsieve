@@ -1,0 +1,192 @@
+/*
+ * Smartsieve Style Sheet
+ * S Grier
+ */
+
+body{ 
+	background-color: #e5e5e5;
+	font-family: helvetica,sans-serif;
+	font-size: 10pt;
+	color: black;
+}
+
+input{
+	font-family: helvetica,sans-serif;
+	font-size: 10pt;
+	color: black;
+}
+
+a:link{
+	color: blue;
+	font-family: helvetica,sans-serif;
+	font-size: 10pt;
+	text-decoration: none;
+}
+
+a:visited{
+	color: blue;
+	font-family: helvetica,sans-serif;
+	font-size: 10pt;
+	text-decoration: none;
+}
+
+a:active{
+	color: blue;
+	font-family: helvetica,sans-serif;
+	font-size: 10pt;
+	text-decoration: none;
+}
+
+a:hover{
+	color: white;
+	font-family: helvetica,sans-serif;
+	font-size: 10pt;
+	text-decoration: none;
+}
+
+a.rule:link{
+        color: blue;
+        font-family: sans-serif;
+        font-size: 8pt;
+        text-decoration: none;
+}
+
+a.rule:visited{
+        color: blue;
+        font-family: sans-serif;
+        font-size: 8pt;
+        text-decoration: none;
+}
+
+a.rule:active{
+        color: black;
+        font-family: sans-serif;
+        font-size: 8pt;
+        text-decoration: none;
+}
+
+a.rule:hover{
+        color: blue;
+        font-family: sans-serif;
+        font-size: 8pt;
+        text-decoration: none;
+}
+
+.enabled{
+	color: green;
+	font-family: helvetica,sans-serif;
+	font-size: 9pt;
+	background-color: white;
+}
+
+.disabled{
+	color: red;
+	font-family: helvetica,sans-serif;
+	font-size: 9pt;
+	background-color: white;
+}
+
+.ruleenabled{
+        color: green;
+        font-family: helvetica,sans-serif;
+        font-size: 9pt;
+	background-color: #e5e5e5;
+}
+
+.ruledisabled{
+	color: red;
+        font-family: helvetica,sans-serif;
+        font-size: 9pt;
+	background-color: #e5e5e5;
+}
+
+.menu{
+	background-color: grey;
+}
+
+.menuouter{
+	background-color: black;
+}
+
+.main{
+	background-color: grey;
+}
+
+.status{
+	background-color: grey;
+	color: black;
+	font-family: helvetica,sans-serif;
+	font-size: 10pt;
+	font-weight: bold;
+}
+
+.statusouter{
+        background-color: black;
+}
+
+.heading{
+	background-color: #e5e5e5;
+	color: black;
+	font-family: helvetica,sans-serif;
+	font-size: 9pt;
+	font-weight: bold;
+}
+
+.ruleinfo{
+	background-color: #e5e5e5;
+	color: black;
+	font-family: helvetica,sans-serif;
+	font-size: 10pt;
+	font-weight: bold;
+}
+
+.rules{
+	background-color: white;
+}
+
+.options{
+	background-color: grey;
+	color: blue;
+	font-family: helvetica,sans-serif;
+	font-size: 9pt;
+}
+
+.errors{
+	background-color: white;
+	color: red;
+	font-family: helvetica,sans-serif;
+	font-size: 9pt;
+}
+
+a.option:link{
+        color: blue;
+        font-family: helvetica,sans-serif;
+        font-size: 9pt;
+        text-decoration: none;
+}
+ 
+a.option:visited{
+        color: blue;
+        font-family: helvetica,sans-serif;
+        font-size: 9pt;
+        text-decoration: none;
+}
+ 
+a.option:active{
+        color: black;
+        font-family: helvetica,sans-serif;
+        font-size: 9pt;
+        text-decoration: none;
+}
+ 
+a.option:hover{
+        color: blue;
+        font-family: helvetica,sans-serif;
+        font-size: 9pt;
+        text-decoration: none;
+}
+
+
+
+
+

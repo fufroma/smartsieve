@@ -1,0 +1,81 @@
+Smartsieve - Changes file
+-------------------------
+
+26 Sept 2002 S Grier
+* moved TODO text to new TODO file.
+* wrote README text.
+
+22 Sept 2002 S Grier
+* function getFormPOSTValues() makes rule.php more robust.
+* added INSTALL.
+
+20 Sept 2002 S Grier
+* removed proxy values from conf/servers.php. will be unused until we get
+  proxy authentication working.
+* added .htaccess files to lib/ conf/ and include/, containing 'Deny from all'.
+* renamed lib/EasySieve.lib to lib/SmartSieve.lib
+
+15 Sept 2002 S Grier
+* vacation.php: improved checkRule(). now checks for values which 
+  exceed $default->max_field_chars and $default->max_textbox_chars.
+* rule.php: improved checkRule(). no longer rejects From: and To:
+  values which don't contain an '@' character. now checks for values 
+  which exceed $default->max_field_chars and $default->max_textbox_chars.
+* added $default->max_field_chars and $default->max_textbox_chars
+  to control the size of values we accept from input fields and 
+  text boxes on rule.php and vacation.php.
+* added help menu items to all pages controlled by conf/config.php.
+* added images/up.gif and images/down.gif for order links on main.php.
+* a few aesthetic changes to all pages.
+
+14 Sept 2002 S Grier
+* main.php: numerous changes.
+* rule.php: modified to retrieve form values using AppSession::getFormValue().
+* vacation.php: further modified to retrieve form values using AppSession::getFormValue().
+
+12 Sept 2002 S Grier
+* lib/EasySieve.php: added getFormValue function. this will retrieve a POST/GET 
+		     value and do the following:
+		      - pass it through stripslashes() if magic_quotes_gpc set to on in php.ini
+		      - pass it through strip_tags() to remove any HTML
+		      - remove trailing whitespace (rtrim())
+* main.php: modified to retrieve form values using AppSession::getFormValue().
+* vacation.php: modified to retrieve form values using AppSession::getFormValue().
+
+09 Sept 2002 S Grier
+* Added license info on all source files.
+* Added cvs Id tags to most files.
+
+01 Sept 2002 S Grier
+* main.php: - changed ruleID to rindex to fix bug with last commit of ChangeOrder code.
+	    - fixed incorrect class value of 'enable' option.
+* include/main.js: changed ruleID to rindex to fix bug with last commit of 
+	           ChangeOrder code.
+* rule.php: now sets a priority value based on new $script->pcount value.
+* lib/EasySieve.lib: - added code to updateScript to reset priority value of rules.
+		       Note we only set these values at all for compatibility 
+		       with Websieve.
+		     - new $script->pcount value for current highest priority value.
+		       Used for setting priority value of new rules.
+		     - retrieveRules now sets $script->pcount value.
+
+30 August 2002 S Grier
+* main.php: Added functionality to change the order the filter rules
+            are saved in. An up and down arrow on the right of each rule
+            moves the rule either up or down accordingly.
+* include/main.js: ChangeOrder function added.
+
+31 July 2002 S Grier
+* vacation.php: better display and logging of all error messages.
+
+30 July 2002 S Grier
+* rule.php: better display and logging of all error messages.
+
+28 July 2002 S Grier
+* main.php: better display and logging of all error messages.
+
+27 July 2002 S Grier
+* rule.php: will now not get enable/disable options following failed save.
+
+
+$Id$

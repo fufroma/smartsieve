@@ -1,0 +1,89 @@
+SMARTSIEVE SIEVE SCRIPT MANAGER
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+SmartSieve-0.1.0devel
+
+SmartSieve is a web based graphical user interface for creating and 
+managing sieve scripts on a Cyrus imap mail server. It provides a 
+way for non-technical Cyrus imap users to generate sieve rules for 
+mail filtering and vacation messaging without prior knowledge of the 
+sieve scripting language. SmartSieve is written in PHP and is 
+intended to be intuitive to use, and simple to configure.
+
+SmartSieve will be of interest to institutions running Cyrus imapd 
+to provide imap based mail access and who require a user-friendly 
+way for users to manage mail filtering and vacation messaging. It 
+will be of particular interest to those currently deploying Websieve 
+for this purpose. SmartSieve is compatible with Websieve in that 
+sieve scripts created using Websieve can be read and modified using 
+SmartSieve, and visa-versa.
+
+
+PROJECT STATUS
+
+At the time of this release SmartSieve is pre-alpha development 
+software. There may well be bugs in the code, and I cannot guarantee 
+that SmartSieve will work at all with your web and imap servers (see 
+the requirements section of the INSTALL file for software it is 
+currently known to work with). I do not accept responsibility for 
+any loss or damage which might occur as a result of using this 
+software.
+
+Please feel free to give SmartSieve a whirl. At this stage I would 
+appreciate any feedback you might provide. I am particularly keen to 
+know what platforms and versions SmartSieve works on, and those it 
+doesn't. If you try SmartSieve on a web and/or imap server not 
+mentioned in the requirements section of the INSTALL file, please let 
+me know the result. Do let me know of any bugs or suggestions you 
+might have, or if you would like to contribute. See the support 
+section for methods of providing feedback.
+
+You should check the SmartSieve project web site for the latest news 
+and release information. It is at:
+
+http://smartsieve.sourceforge.net
+
+
+INSTALLING SMARTSIEVE
+
+Instruction for installing SmartSieve can be found in the INSTALL 
+file included in this distribution.
+
+
+LICENSE AND COPYRIGHT
+
+SmartSieve is free open source software released under the GNU 
+General Public License. Please see the NOTICE file for conditions of 
+the use and distribution of SmartSieve, and also the COPYING file for 
+licensing and copyright information. Both of these files should be 
+included in the SmartSieve distribution.
+
+
+SUPPORT
+
+If you wish require assistance with SmartSieve, or you wish to report 
+a bug, make a suggestion, or if you wish to contribute, you should go 
+via the project web site:
+
+http://sourceforge.net/projects/smartsieve/
+
+There is a support request tracker for the SmartSieve project. You can 
+browse it at:
+
+http://sourceforge.net/tracker/?atid=501286&group_id=62641&func=browse
+
+You can submit bug reports or browse the bug tracker at:
+
+https://sourceforge.net/tracker/?group_id=62641&atid=501285
+
+There are also public forums for the project. You can access them here:
+
+https://sourceforge.net/forum/?group_id=62641
+
+You can also contact me directly by emailing:
+
+stephengrier@users.sourceforge.net
+
+
+
+$Id$
