@@ -401,7 +401,7 @@ class Managesieve {
         }
         // match listscripts and capability response "......"
         // Not told how much data to read, so return each line as F_DATA.
-        elseif (preg_match("/^\"[^\"]+?\"( ACTIVE| \".+\")?\r\n$/", $line)) {
+        elseif (preg_match("/^\".+\"( ACTIVE| \".+\")?\r\n$/", $line)) {
             $this->resp['data'] = substr($line, 0, -2);
             return $this->resp['state'] = F_DATA;
         }
@@ -747,19 +747,19 @@ class Managesieve {
         $scripts = array();
         fputs($this->_socket,"LISTSCRIPTS\r\n");
         while ($this->getResponse() == F_DATA) {
-            $tokens = explode(" ", $this->resp['data']);
-            $tokens[0] = substr($tokens[0],1,-1);
+            $last_quote = strrpos($this->resp['data'], '"');
+            $sname = substr($this->resp['data'], 1, ($last_quote - 1));
             $active = false;
             // Cyrus v2 active script: "script" ACTIVE
-            if (isset($tokens[1]) && $tokens[1] == 'ACTIVE'){
+            if (substr($this->resp['data'], -6) == 'ACTIVE') {
                 $active = true;
             }
             // Cyrus v1 active script: "script*"
-            if (substr($tokens[0], -1) == '*'){
-                $tokens[0] = substr($tokens[0], 0, -1);
+            if (substr($sname, -1) == '*') {
+                $sname = substr($sname, 0, -1);
                 $active = true;
             }
-            $scripts[$tokens[0]] = $active;
+            $scripts[$sname] = $active;
         }
         if ($this->resp['state'] == F_OK) {
             return $scripts;
@@ -785,7 +785,7 @@ class Managesieve {
             return false;
         }
         $script = array('raw'=>'','size'=>0);
-        fputs($this->_socket,"GETSCRIPT \"$name\"\r\n");
+        fputs($this->_socket, sprintf("GETSCRIPT \"%s\"\r\n", $this->prepareQuotedString($name)));
         if ($this->getResponse() == F_DATA) {
             $script['raw'] = $this->resp['data'];
             $script['size'] = strlen($this->resp['data']);
@@ -814,7 +814,7 @@ class Managesieve {
             $this->_errstr = "setActive: no server connection";
             return false;
         }
-        fputs($this->_socket,"SETACTIVE \"$name\"\r\n");
+        fputs($this->_socket, sprintf("SETACTIVE \"%s\"\r\n", $this->prepareQuotedString($name)));
         if ($this->getResponse() == F_OK) {
             return true;
         }
@@ -841,7 +841,7 @@ class Managesieve {
             $this->_errstr = 'haveSpace: no server connection';
             return false;
         }
-        fputs($this->_socket,"HAVESPACE \"$name\" $size\r\n");
+        fputs($this->_socket, sprintf("HAVESPACE \"%s\" %s\r\n", $this->prepareQuotedString($name), $size));
         if ($this->getResponse() == F_OK) {
             return true;
         }
@@ -868,7 +868,7 @@ class Managesieve {
             return false;
         }
         $len = strlen($text);
-        fputs($this->_socket,"PUTSCRIPT \"$name\" \{$len+}\r\n");
+        fputs($this->_socket, sprintf("PUTSCRIPT \"%s\" {%s+}\r\n", $this->prepareQuotedString($name), $len));
         fputs($this->_socket,"$text\r\n");
         if ($this->getResponse() == F_OK){
             return true;
@@ -900,7 +900,7 @@ class Managesieve {
             $this->_errstr = "deleteScript: no server connection";
             return false;
         }
-        fputs($this->_socket,"DELETESCRIPT \"$name\"\r\n");
+        fputs($this->_socket, sprintf("DELETESCRIPT \"%s\"\r\n", $this->prepareQuotedString($name)));
         if ($this->getResponse() == F_OK){
             return true;
         }
@@ -927,6 +927,37 @@ class Managesieve {
     function getLastResponse()
     {
         return (isset($this->resp)) ? $this->resp : false;
+    }
+
+
+   /**
+    * Prepare a quoted string. Escape backslash and double quote chars.
+    *
+    * @param string $str The string to prepare
+    * @return The prepared string
+    */
+    function prepareQuotedString($str)
+    {
+        $i = 0;
+        $qs = '';
+        while ($i < strlen($str)) {
+            if ($str[$i] == '\\') {
+                $i++;
+                if ($str[$i] == '\\') {
+                    $qs .= '\\\\';
+                } elseif ($str[$i] == '"') {
+                    $qs .= '\\"';
+                } else {
+                    $qs .= '\\\\' . $str[$i];
+                }
+            } elseif ($str[$i] == '"') {
+                $qs .= '\\"';
+            } else {
+                $qs .= $str[$i];
+            }
+            $i++;
+        }
+        return $qs;
     }
 
 

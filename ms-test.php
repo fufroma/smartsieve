@@ -574,7 +574,7 @@ if ($res !== true){
   </LI>
 
   <LI><B>Testing $managesieve->getScript() with <?php echo $len;?> byte script: </B>
-                                                                                          
+
 <?php
 $res = $managesieve->getScript('large');
 if ($res === false) {
@@ -608,12 +608,98 @@ if ($res === true){
     echo "<FONT COLOR=\"red\">Test Failed</FONT><BR>";
     $managesieve->deleteScript("large");
 } elseif ($managesieve->resp['state'] != F_NO || 
-          $managesieve->resp['errstr'][0] != 'Did not specify script data') {
+          ($managesieve->resp['errstr'][0] != 'Did not specify script data' &&
+           $managesieve->resp['errstr'][0] != 'Did not specify legal script data length')) {
     echo "<FONT COLOR=\"red\">Test Failed</FONT><BR>";
     echo 'Response: ' . $managesieve->getError() . '<BR>';
 } else {
     echo "<FONT COLOR=\"green\">Test Passed</FONT><BR>";
     echo 'Response: ' . $managesieve->getError() . '<BR>';
+}
+?>
+  </LI>
+
+  <LI><B>Testing $managesieve->putScript() with script name containing a space: </B>
+
+<?php
+$space = "if address :contains \"To\" \"Space\" {\ndiscard;\n}";
+if ($managesieve->putScript('My Script', $space)) {
+    echo "<FONT COLOR=\"green\">Test Passed</FONT><BR>";
+} else {
+    echo "<FONT COLOR=\"red\">Test failed</FONT><BR>";
+    echo "Response: " . $managesieve->getError() . '<BR>';
+}
+                                                                                         
+?>
+  </LI>
+
+  <LI><B>Testing $managesieve->getScript() with a script name containing a space: </B>
+
+<?php
+$res = $managesieve->getScript('My Script');
+if ($res === false) {
+    echo "<FONT COLOR=\"red\">Test failed</FONT><BR>";
+    echo "Response: " . $managesieve->getError() . '<BR>';
+} else {
+    if ($res['raw'] != $space) {
+        echo "<FONT COLOR=\"red\">Test failed</FONT><BR>";
+        echo "LEN: " . $res['size'] . '<BR>' . $res['raw'] . '<BR>';
+    } else {
+        echo "<FONT COLOR=\"green\">Test Passed</FONT><BR>";
+    }
+}
+?>
+  </LI>
+
+  <LI><B>Testing $managesieve->putScript() with script name containing quotes: </B>
+
+<?php
+$quotes = "if address :contains \"To\" \"Quotes\" {\ndiscard;\n}";
+if ($managesieve->putScript('My"Script', $quotes)) {
+    echo "<FONT COLOR=\"green\">Test Passed</FONT><BR>";
+} else {
+    echo "<FONT COLOR=\"red\">Test failed</FONT><BR>";
+    echo "Response: " . $managesieve->getError() . '<BR>';
+}
+
+?>
+  </LI>
+
+  <LI><B>Testing $managesieve->getScript() with a script name containing quotes: </B>
+
+<?php
+$res = $managesieve->getScript('My"Script');
+if ($res === false) {
+    echo "<FONT COLOR=\"red\">Test failed</FONT><BR>";
+    echo "Response: " . $managesieve->getError() . '<BR>';
+} else {
+    if ($res['raw'] != $quotes) {
+        echo "<FONT COLOR=\"red\">Test failed</FONT><BR>";
+        echo "LEN: " . $res['size'] . '<BR>' . $res['raw'] . '<BR>';
+    } else {
+        echo "<FONT COLOR=\"green\">Test Passed</FONT><BR>";
+    }
+}
+?>
+  </LI>
+
+  <LI><B>Testing $managesieve->listScripts(): </B>
+
+<?php
+$scripts = $managesieve->listScripts();
+if (!is_array($scripts)){
+    echo "<FONT COLOR=\"red\">Test failed</FONT><BR>";
+    echo "Response: " . $managesieve->getError() . '<BR>';
+} else {
+    if ($scripts['My Script'] !== false || $scripts['My"Script'] !== false) {
+        echo "<FONT COLOR=\"red\">Test failed</FONT><BR>";
+    } else {
+        echo "<FONT COLOR=\"green\">Test Passed</FONT><BR>";
+    }
+    foreach ($scripts as $s=>$active) {
+        echo "$s" . (($active) ? "ACTIVE" : "") . "<BR>";
+        $managesieve->deleteScript($s);
+    }
 }
 ?>
   </LI>

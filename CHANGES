@@ -1,6 +1,9 @@
 Smartsieve - Changes file
 -------------------------
 
+03 Dec 2004 S Grier
+* Handle script names containing space, backslash and double-quote chars (Bug #1075450).
+
 01 Dec 2004 S Grier
 * Escape "&" characters in the encoded script index.
 
