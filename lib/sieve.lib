@@ -405,6 +405,7 @@ class SieveSession {
 	    return false;
 	}
 
+        $lines = array();
         $resp = array('raw'=>'','size'=>0);
 
 	fputs($this->socket,"GETSCRIPT \"$scriptfile\"\r\n");
@@ -418,13 +419,13 @@ class SieveSession {
         }
 
 	while ((!preg_match("/^OK/",$said)) && (!preg_match("/^NO/",$said))) {
-	    // replace newlines which read() removed
-	    if (!preg_match("/\n$/",$said)) $said .= "\n";
-	    $resp['raw'] .= $said;
+            $lines[] = $said;
 	    $said = $this->read();
 	}
 
 	if (preg_match("/^OK/",$said)) {
+            // replace newlines which read() removed
+            $resp['raw'] = implode("\n", $lines);
 	    if ($resp['raw'] == '') {
 		$this->errstr = "getscript: zero length script";
 		return false;

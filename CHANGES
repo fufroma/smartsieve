@@ -1,6 +1,9 @@
 Smartsieve - Changes file
 -------------------------
 
+21 April 2004 S Grier
+* Don't add extra newline to end of script in SieveSession::getscript().
+
 16 April 2004 S Grier
 * Support proxy authorization. We now authenticate as $sieve->auth, and authorize 
   as $sieve->authz. Only users authenticating as a Cyrus admin or sieve_admin will 
