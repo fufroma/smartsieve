@@ -92,7 +92,6 @@ foreach my $locale (@locales) {
     next if ($locale eq '.' || $locale eq '..');
     print "Processing $locale\n";
     open(STRINGS, "< $ss_base/$locale_path/$locale/strings.php") or next;
-    my $charset = '"ISO-8859-1"';
     my %lstrings = %strings;
     while (<STRINGS>) {
         my $line = $_;
@@ -114,17 +113,13 @@ foreach my $locale (@locales) {
                 print "+ Dropping translation $1\n";
             }
         }
-        elsif ($line =~ /\s*\$charset\s*=\s*(['"].+?['"])/) {
-            $charset = $1;
-            print "+ Found existing charset $charset\n";
-        }
     }
     close STRINGS;
 
     # create the new translation file strings.php.new.
 
     open(NEWSTRINGS, "> $ss_base/$locale_path/$locale/strings.php.new") or die "Can't create $ss_base/$locale_path/$locale/strings.php.new\n";
-    print NEWSTRINGS "<?php\n\t\$charset = $charset;\n\t\$phrase = array (\n";
+    print NEWSTRINGS "<?php\n\t\$phrase = array (\n";
     foreach my $string (keys %lstrings) {
         print NEWSTRINGS "\t\t\t\t$string => ";
         print NEWSTRINGS ($lstrings{$string} ne '') ? $lstrings{$string} : "''";
