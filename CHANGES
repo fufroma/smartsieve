@@ -2,6 +2,7 @@ Smartsieve - Changes file
 -------------------------
 
 15 May 2003 S Grier
+* release_0_5_1devel.
 * lib/Crypt/mcrypt.php:
    fixed undefined index warnings in $args array.
 * can now set SmartSieveCrypt $args from config.
