@@ -1,6 +1,10 @@
 Smartsieve - Changes file
 -------------------------
 
+08 April 2004 S Grier
+* Widen vacation and reject message textareas to $default->wrap_width, or 80 
+  characters wide. We still wrap hard.
+
 07 April 2004 S Grier
 * Added SmartSieve::getConf function to avoid Undefined variable warnings.
 
