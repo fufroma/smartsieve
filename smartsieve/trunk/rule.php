@@ -11,6 +11,7 @@
 require './conf/config.php';
 require "$default->lib_dir/Managesieve.php";
 require "$default->lib_dir/SmartSieve.lib";
+require "$default->lib_dir/Script.php";
 
 ini_set('session.use_trans_sid', 0);
 session_set_cookie_params(0, $default->cookie_path, $default->cookie_domain);
