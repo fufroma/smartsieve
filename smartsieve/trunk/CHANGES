@@ -1,6 +1,9 @@
 Smartsieve - Changes file
 -------------------------
 
+25 June 2004 S Grier
+* Updated German translation file from Andreas Haase.
+
 09 June 2004 S Grier
 * Move setUrl to class SmartSieve.
 * Move getFormValue to class SmartSieve. This no longer does strip_tags or rtrim and 
