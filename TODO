@@ -12,6 +12,9 @@ required:
 	10. magic_quotes_runtime must be Off.
 
 TODO:
+	-  note about what SmartSieve is not: ie. does not parse sieve.
+	-  script head date + format config setting.
+	-  welcome message + config option.
 	-  cross site scripting: filter form data using htmlspecialchars and/or
 	   strip_tags().
 	-  inner table width formatting on main.php.

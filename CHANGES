@@ -1,6 +1,12 @@
 Smartsieve - Changes file
 -------------------------
 
+04 Oct 2002 S Grier
+* rewrite of vacation.php. now builds $vacation array from POST if submitted 
+  or $script->vacation if not. this means we can't bypass chechRule() by 
+  clicking enable or disable.
+  also added success messages.
+
 03 Oct 2002 S Grier
 * added $default->return_after_update config option.
 * added success messages to rule.php.
