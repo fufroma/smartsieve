@@ -212,7 +212,7 @@ if ($script->rules){ ?>
       <TD CLASS="rules"><INPUT TYPE="checkbox" NAME="ruleID[]" VALUE="<?php print $i; ?>"></TD>
       <TD CLASS="<?php if ($rule['status'] == 'ENABLED') print "enabled"; else print "disabled"; print "\">" . $rule['status']; ?></TD>
       <TD CLASS="rules" NOWRAP="nowrap"><A CLASS="rule" HREF="<?php print $default->baseurl . "rule.php?ruleID=$i"; ?>" onmouseover="status='Edit This Rule'; return true;" onmouseout="status='';"><?php print $complete; ?></A></TD>
-      <TD CLASS="rules" NOWRAP="nowrap"><A HREF="" onclick="ChangeOrder('increase',<?php print $i; ?>); return false;"><IMG SRC="<?php print $default->image_dir; ?>/up.gif" ALT="Move rule up" BORDER="0"></A> <A HREF="" onclick="ChangeOrder('decrease',<?php print $i; ?>); return false;"><IMG SRC="<?php print $default->image_dir; ?>/down.gif" ALT="Move rule down" BORDER="0"></A></TD>
+      <TD CLASS="rules" NOWRAP="nowrap"><A HREF="" onclick="ChangeOrder('increase',<?php print $i; ?>); return false;"><IMG SRC="<?php print $default->image_dir; ?>/up.gif" ALT="Move rule up" BORDER="0" onmouseover="status='Move rule up'; return true;" onmouseout="status='';"></A> <A HREF="" onclick="ChangeOrder('decrease',<?php print $i; ?>); return false;"><IMG SRC="<?php print $default->image_dir; ?>/down.gif" ALT="Move rule down" BORDER="0" onmouseover="status='Move rule down'; return true;" onmouseout="status='';"></A></TD>
     </TR>
 <?php
 	$i++;
