@@ -1,6 +1,10 @@
 Smartsieve - Changes file
 -------------------------
 
+07 Nov 2002 S Grier
+* rule.php: move call-time pass-by-reference checkRule(&$rule) to function 
+  definition. use of allow_call_time_pass_reference depreciated.
+
 06 Nov 2002 S Grier
 * lib/Encrypt.php: changed include_one calls to require_once.
 
