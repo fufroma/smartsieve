@@ -12,7 +12,7 @@ require './conf/config.php';
 require "$default->lib_dir/sieve.lib";
 require "$default->lib_dir/SmartSieve.lib";
 
-session_name('SIEVE_SESSION');
+session_name($default->session_name);
 @session_start();
 $errors = array();
 $msgs = array();
@@ -145,7 +145,7 @@ if ($GLOBALS['HTTP_POST_VARS']['action']) {
 
 <HTML>
 <HEAD><TITLE><?php print $default->page_title; ?></TITLE>
-<LINK HREF="<?php print $default->config_dir; ?>/smartsieve.css" REL="stylesheet" TYPE="text/css">
+<LINK HREF="<?php print AppSession::setUrl('css.php'); ?>" REL="stylesheet" TYPE="text/css">
 <?php
 
 require "$default->include_dir/main.js";
@@ -221,9 +221,24 @@ require "$default->include_dir/main.js";
   <TD CLASS="statusouter">
     <TABLE WIDTH="100%" CELLPADDING="2" BORDER="0" CELLSPACING="0">
       <TR>
-	<TD CLASS="status">&nbsp;User: <?php print $sieve->user; ?></TD>
-        <TD CLASS="status">&nbsp;Server: <?php print $sieve->server; ?></TD>
-        <TD CLASS="status">&nbsp;Script: <?php print $sieve->workingscript; ?></TD>
+	<TD CLASS="status">
+          &nbsp;User: <?php print $sieve->user; ?> 
+        </TD>
+        <TD CLASS="status">
+          &nbsp;Server: <?php print $sieve->server; ?> 
+        </TD>
+        <TD CLASS="status">
+          &nbsp;Script: <?php print $sieve->workingscript; ?> 
+        </TD>
+<?php if (AppSession::isActiveScript($sieve->workingscript)) { ?>
+        <TD CLASS="active">
+          ACTIVE
+        </TD>
+<?php } else { ?>
+        <TD CLASS="inactive">
+          NOT ACTIVE
+        </TD>
+<?php } ?>
       </TR>
     </TABLE>
   </TD>
