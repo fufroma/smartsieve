@@ -532,10 +532,12 @@ function getRulePOSTValues ($ruleID)
     if (AppSession::getFormValue('keep')) $rule['keep'] = 8;
     $rule['regexp'] = 0;
     if (AppSession::getFormValue('regexp')) $rule['regexp'] = 128;
+    $rule['unconditional'] = 0;
     if (!$rule['from'] && !$rule['to'] && !$rule['subject'] &&
        !$rule['field'] && !$rule['size'] && $rule['action'])
        $rule['unconditional'] = 1;
-    else $rule['unconditional'] = 0;
+    if ($rule['action'] == 'custom' && !preg_match("/^ *(els)?if/i", $rule['action_arg']))
+        $rule['unconditional'] = 1;
     $rule['flg'] = $rule['continue'] | $rule['gthan'] | $rule['anyof'] | $rule['keep'] | $rule['regexp'];
 
     return $rule;

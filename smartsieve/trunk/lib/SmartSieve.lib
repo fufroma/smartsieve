@@ -607,6 +607,9 @@ class Script {
                     if (!$rule['from'] && !$rule['to'] && !$rule['subject'] &&
                         !$rule['field'] && !$rule['size'] && $rule['action'])
                         $rule['unconditional'] = 1;
+                    if ($rule['action'] == 'custom' && 
+                        !preg_match("/^ *(els)?if/i", $rule['action_arg']))
+                        $rule['unconditional'] = 1;
  
                     array_push($rules,$rule);
 		    if ($rule['priority'] > $this->pcount)
