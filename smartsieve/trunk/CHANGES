@@ -1,6 +1,10 @@
 Smartsieve - Changes file
 -------------------------
 
+12 May 2004 S Grier
+* Added lib/Managesieve.php. Class Managesieve is an improved managesieve library 
+  intended to replace class SieveSession.
+
 21 April 2004 S Grier
 * Don't add extra newline to end of script in SieveSession::getscript().
 * Rewrite rename action on scripts.php.
