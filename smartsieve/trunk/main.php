@@ -218,7 +218,7 @@ function buildRule($rule) {
         $complete .= "discard;";
     if ($rule['continue']) $complete .= " [Continue]";
     if ($rule['keep']) $complete .= " [Keep a copy]";
-    return $complete;
+    return htmlspecialchars($complete);
 }
 
 function setMatchType (&$matchstr, $regex = false)
