@@ -4,6 +4,8 @@ Smartsieve - Changes file
 12 May 2003 S Grier
 * rule.php:
    strip colons from end of mail header field.
+* Crypt.php:
+   only use libmcrypt if function mcrypt_module_open exists (libmcrypt >= 2.4.x).
 
 30 April 2003 S Grier
 * login.php:
