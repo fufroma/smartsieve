@@ -1,6 +1,9 @@
 Smartsieve - Changes file
 -------------------------
 
+21 Oct 2002 S Grier
+* changed rule.php and vacation.php to use AppSession::setUrl().
+
 18 Oct 2002 S Grier
 * changed login.php and main.php to use AppSession::setUrl().
 * lib/Encrypt.php: check for specific session_name() cookie when setting 

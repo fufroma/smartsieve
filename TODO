@@ -12,8 +12,6 @@ required:
 	10. magic_quotes_runtime must be Off.
 
 TODO:
-	-  try to cope without session cookies. would need to append 
-	   ?session_name()=session_id() to all urls for this.
 	-  change to handle unixhierarchysep ('/' instead of '.' in fileinto).
 	-  handle userprefix and sharedprefix in altnamespace.
 	-  modify to check if script was written by SmartSieve. probably 

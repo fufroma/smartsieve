@@ -22,7 +22,7 @@ $script = &$GLOBALS['HTTP_SESSION_VARS']['script'];
 
 // if a session does not exist, go to login page
 if (!is_object($sieve) || !$sieve->authenticate()) {
-	header('Location: ' . $baseurl . 'login.php',true);
+	header('Location: ' . AppSession::setUrl('login.php'),true);
 	exit;
 }
 
@@ -72,7 +72,7 @@ if ($action == 'enable') {
         else {
             array_push($msgs, 'vacation settings successfully enabled.');
             if ($default->return_after_update){
-                header('Location: ' . $baseurl . 'main.php',true);
+                header('Location: ' . AppSession::setUrl('main.php'),true);
                 exit;
             }
             $vacation['status'] = 'on';
@@ -95,7 +95,7 @@ if ($action == 'disable') {
         else {
             array_push($msgs, 'vacation settings successfully disabled.');
             if ($default->return_after_update){
-                header('Location: ' . $baseurl . 'main.php',true);
+                header('Location: ' . AppSession::setUrl('main.php'),true);
                 exit;
             }
             $vacation['status'] = 'off';
@@ -119,7 +119,7 @@ if ($action == 'save')
         else {
             array_push($msgs, 'your changes have been successfully saved.');
             if ($default->return_after_update){
-	        header('Location: ' . $baseurl . 'main.php',true);
+	        header('Location: ' . AppSession::setUrl('main.php'),true);
 	        exit;
             }
         }
@@ -145,7 +145,7 @@ require "$default->include_dir/vacation.js";
 
 <BODY>
 
-<FORM ACTION="<?php print $default->baseurl ?>vacation.php" METHOD="post" NAME="thisVacation">
+<FORM ACTION="<?php print AppSession::setUrl('vacation.php');?>" METHOD="post" NAME="thisVacation">
 
 <TABLE WIDTH="100%" CELLPADDING="2" BORDER="0" CELLSPACING="0">
 <TR>
@@ -154,11 +154,11 @@ require "$default->include_dir/vacation.js";
       <TR>
         <TD CLASS="menu">
           &nbsp;
-          <a href="<?php print $default->baseurl; ?>login.php?reason=logout">Logout</a> |
-          <a href="<?php print $default->baseurl; ?>main.php">View All
+          <a href="<?php print AppSession::setUrl('login.php?reason=logout');?>">Logout</a> |
+          <a href="<?php print AppSession::setUrl('main.php');?>">View All
 Rules</a> |
-          <a href="<?php print $default->baseurl; ?>vacation.php">Vacation Settings</a> |
-          <a href="<?php print $default->baseurl; ?>rule.php">New Filter Rule</a> <?php if ($default->main_help_url){ ?>|
+          <a href="<?php print AppSession::setUrl('vacation.php');?>">Vacation Settings</a> |
+          <a href="<?php print AppSession::setUrl('rule.php');?>">New Filter Rule</a> <?php if ($default->main_help_url){ ?>|
           <a href="<?php print $default->main_help_url; ?>">Help</a> <?php } /* endif. */ ?>
 
         </TD>
