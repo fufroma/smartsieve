@@ -352,12 +352,12 @@ if (is_array($vacation['addresses'])) {
     <TR>
       <TD CLASS="options" COLSPAN="2">
         <BR>
-        <A CLASS="option" HREF="" onclick="Submit('save'); return false;" onmouseover="status='Save Changes'; return true;" onmouseout="status='';">Save Changes</a>
+        <A CLASS="option" HREF="" onclick="Submit('save'); return false;" onmouseover="window.status='Save Changes'; return true;" onmouseout="window.status='';">Save Changes</a>
 <?php if ($script->vacation) { ?>
          |
-        <A CLASS="option" HREF="" onclick="Submit('enable'); return false;" onmouseover="status='Enable'; return true;" onmouseout="status='';">Enable</a>
+        <A CLASS="option" HREF="" onclick="Submit('enable'); return false;" onmouseover="window.status='Enable'; return true;" onmouseout="window.status='';">Enable</a>
          | 
-        <A CLASS="option" HREF="" onclick="Submit('disable'); return false;" onmouseover="status='Disable'; return true;" onmouseout="status='';">Disable</a>
+        <A CLASS="option" HREF="" onclick="Submit('disable'); return false;" onmouseover="window.status='Disable'; return true;" onmouseout="window.status='';">Disable</a>
 <?php } ?>
       </TD>
     </TR>

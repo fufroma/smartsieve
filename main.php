@@ -287,8 +287,8 @@ if ($script->rules){ ?>
     <TR onmouseover="javascript:style.background='grey'" onmouseout="javascript:style.background='#e5e5e5'">
       <TD CLASS="rules"><INPUT TYPE="checkbox" NAME="ruleID[]" VALUE="<?php print $i; ?>"></TD>
       <TD CLASS="<?php if ($rule['status'] == 'ENABLED') print "enabled"; else print "disabled"; print "\">" . $rule['status']; ?></TD>
-      <TD CLASS="rules" NOWRAP="nowrap"><A CLASS="rule" HREF="<?php print AppSession::setUrl("rule.php?ruleID=$i"); ?>" onmouseover="status='Edit This Rule'; return true;" onmouseout="status='';"><?php print $complete; ?></A></TD>
-      <TD CLASS="rules" NOWRAP="nowrap"><A HREF="" onclick="ChangeOrder('increase',<?php print $i; ?>); return false;"><IMG SRC="<?php print $default->image_dir; ?>/up.gif" ALT="Move rule up" BORDER="0" onmouseover="status='Move rule up'; return true;" onmouseout="status='';"></A> <A HREF="" onclick="ChangeOrder('decrease',<?php print $i; ?>); return false;"><IMG SRC="<?php print $default->image_dir; ?>/down.gif" ALT="Move rule down" BORDER="0" onmouseover="status='Move rule down'; return true;" onmouseout="status='';"></A></TD>
+      <TD CLASS="rules" NOWRAP="nowrap"><A CLASS="rule" HREF="<?php print AppSession::setUrl("rule.php?ruleID=$i"); ?>" onmouseover="window.status='Edit This Rule'; return true;" onmouseout="window.status='';"><?php print $complete; ?></A></TD>
+      <TD CLASS="rules" NOWRAP="nowrap"><A HREF="" onclick="ChangeOrder('increase',<?php print $i; ?>); return false;"><IMG SRC="<?php print $default->image_dir; ?>/up.gif" ALT="Move rule up" BORDER="0" onmouseover="window.status='Move rule up'; return true;" onmouseout="window.status='';"></A> <A HREF="" onclick="ChangeOrder('decrease',<?php print $i; ?>); return false;"><IMG SRC="<?php print $default->image_dir; ?>/down.gif" ALT="Move rule down" BORDER="0" onmouseover="window.status='Move rule down'; return true;" onmouseout="window.status='';"></A></TD>
     </TR>
 <?php
 	$i++;
@@ -333,11 +333,11 @@ if ($script->vacation){
     <TABLE WIDTH="100%" BORDER="0" CELLPADDING="2" CELLSPACING="1">
     <BR>
       <TD CLASS="options">
-        <A CLASS="option" HREF="" onclick="Submit('enable'); return false;" onmouseover="status='Enable'; return true;" onmouseout="status='';">Enable</a>
+        <A CLASS="option" HREF="" onclick="Submit('enable'); return false;" onmouseover="window.status='Enable'; return true;" onmouseout="window.status='';">Enable</a>
          | 
-        <A CLASS="option" HREF="" onclick="Submit('disable'); return false;" onmouseover="status='Disable'; return true;" onmouseout="status='';">Disable</a>
+        <A CLASS="option" HREF="" onclick="Submit('disable'); return false;" onmouseover="window.status='Disable'; return true;" onmouseout="window.status='';">Disable</a>
          | 
-        <A CLASS="option" HREF="" onclick="Submit('delete'); return false;" onmouseover="status='Delete'; return true;" onmouseout="status='';">Delete</a>
+        <A CLASS="option" HREF="" onclick="Submit('delete'); return false;" onmouseover="window.status='Delete'; return true;" onmouseout="window.status='';">Delete</a>
       </TD>
     </BR>
     </TABLE>
