@@ -40,7 +40,8 @@ if (!$sieve->mboxlist){
 // open sieve connection
 if (!$sieve->openSieveSession()) {
     print "ERROR: " . $sieve->connection->errstr . "<BR>\n";
-    $sieve->writeToLog("ERROR: " . $sieve->connection->errstr, LOG_ERROR);
+    $sieve->writeToLog('ERROR: openSieveSession failed for ' . $sieve->user . 
+        ': ' . $sieve->connection->errstr, LOG_ERROR);
     exit;
 }
 
@@ -281,7 +282,7 @@ Rules</a> |
     <TR>
       <TD CLASS="heading">CONDITIONS:
       </TD>
-      <TD CLASS="heading"></TD>
+      <TD CLASS="heading">&nbsp;</TD>
     </TR>
     <TR>
       <TD NOWRAP="nowrap">
@@ -340,6 +341,7 @@ Match
     ACTIONS:
   </TD>
   <TD CLASS="heading">
+    &nbsp;
   </TD>
 </TR>
 <TR>
@@ -380,7 +382,7 @@ Match
   <TD>
     <INPUT TYPE="radio" NAME="action" VALUE="discard" <?php if ($rule['action'] == 'discard') print "CHECKED"; ?> > Discard the message.
   </TD>
-  <TD></TD>
+  <TD>&nbsp;</TD>
     </TR>
     </TABLE>
 
