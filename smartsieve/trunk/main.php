@@ -36,9 +36,23 @@ if (!$sieve->openSieveSession()) {
     exit;
 }
 
+// if user has just logged in select which script to open.
+if (!$sieve->workingscript){
+    if (!$sieve->initialWorkingScript()){
+        $sieve->writeToLog('ERROR: ' . $sieve->errstr);
+        array_push($errors, 'ERROR: ' . $sieve->errstr);
+    }
+}
+
 // change working script if requested.
 if (isset($GLOBALS['HTTP_POST_VARS']['script'])) {
-    $script->scriptfile = AppSession::getFormValue('script');
+    $sieve->workingscript = AppSession::getFormValue('script');
+}
+
+// create script object if doesn't already exist.
+if (!is_object($GLOBALS['HTTP_SESSION_VARS']['script'])){
+    $GLOBALS['HTTP_SESSION_VARS']['script'] = new Script($sieve->workingscript);
+    session_register('script');
 }
 
 if (!$script->retrieveRules($sieve->connection)) {
@@ -154,18 +168,20 @@ require "$default->include_dir/main.js";
 	  <a href="<?php print $default->main_help_url; ?>">Help</a> <?php } /* endif. */ ?>
 
 	</TD>
+<?php if ($default->allow_multi_scripts) { ?>
         <TD CLASS="menu" ALIGN="right">
           &nbsp;
           <SELECT NAME="script" onchange="document.rules.submit();">
-<?php foreach ($script->scriptlist as $s){
-          $str = "\t\t<OPTION VALUE=\"$s\"";
-          if ($s == $script->scriptfile)
-              $str .= " SELECTED=\"selected\"";
-          $str .= ">$s</OPTION>\n";
-          print $str;
-      } ?>
+<?php     foreach ($sieve->scriptlist as $s){
+              $str = "\t\t<OPTION VALUE=\"$s\"";
+              if ($s == $sieve->workingscript)
+                  $str .= " SELECTED=\"selected\"";
+              $str .= ">$s</OPTION>\n";
+              print $str;
+          } ?>
           </SELECT>
         </TD>
+<?php } //end if ?>
       </TR>
     </TABLE>
   </TD>
@@ -202,7 +218,7 @@ require "$default->include_dir/main.js";
       <TR>
 	<TD CLASS="status">&nbsp;User: <?php print $sieve->user; ?></TD>
         <TD CLASS="status">&nbsp;Server: <?php print $sieve->server; ?></TD>
-        <TD CLASS="status">&nbsp;Script: <?php print $sieve->scriptfile; ?></TD>
+        <TD CLASS="status">&nbsp;Script: <?php print $sieve->workingscript; ?></TD>
       </TR>
     </TABLE>
   </TD>

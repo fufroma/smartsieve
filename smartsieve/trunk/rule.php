@@ -251,7 +251,7 @@ Rules</a> |
 	 }
 	 else print "\"ruledisabled\"> DISABLED ";
        } 
-       else print "New Mail Filter Rule</TD><TD CLASS=\"ruleinfo\">"; 
+       else print "New Mail Filter Rule</TD><TD CLASS=\"ruleinfo\">&nbsp;"; 
     ?>
       </TD>
     </TR>

@@ -51,7 +51,7 @@ class AppSession {
   var $user;          /* authentication user. */
   var $proxy;         /* proxy authorization user. */
   var $passwd;        /* authentication user's password. */
-  var $scriptfile;    /* name of script file. */
+  var $lscript;       /* script name passed from login form. */
   var $server;        /* sieve server to connect to. */
   var $sieveport;     /* port on sieve server to connect to. */
   var $imapport;      /* port on imapd to connect to. */
@@ -59,6 +59,9 @@ class AppSession {
   var $namespace_user_prefix;   /* alt_namespace user prefix. */
   var $namespace_shared_prefix; /* alt_namespace shared prefix. */
   var $maildomain;    /* ie $user@$maildomain. */
+  var $scriptlist;    /* array: user's scripts on the server. */
+  var $activescript;  /* name of currently active script on server (if any). */
+  var $workingscript; /* name of script being edited. */
 
   // class constructor
   function AppSession () {
@@ -67,7 +70,7 @@ class AppSession {
     // defaults
     $this->user = '';
     $this->passwd = '';
-    $this->scriptfile = $default->scriptfile;
+    $this->lscript = '';
     $this->server = '127.0.0.1';
     $this->proxy = '';
     $this->sieveport = '2000';
@@ -76,6 +79,9 @@ class AppSession {
     $this->namespace_user_prefix = '';
     $this->namespace_shared_prefix = '';
     $this->maildomain = 'localhost';
+    $this->scriptlist = array();
+    $this->activescript = '';
+    $this->workingscript = '';
 
     return true;
   }
@@ -107,7 +113,7 @@ class AppSession {
 
 	// user supplied overrides
 	if (!empty($GLOBALS['HTTP_POST_VARS']['scriptfile']))
-	    $this->scriptfile = $this->getFormValue('scriptfile');
+	    $this->lscript = $this->getFormValue('scriptfile');
 	if (isset($GLOBALS['HTTP_POST_VARS']['server']))
 	{
 	    $server = $servers[$HTTP_POST_VARS['server']];
@@ -134,9 +140,6 @@ class AppSession {
 
 	$GLOBALS['HTTP_SESSION_VARS']['sieve'] = &$this;
 	session_register('sieve');
-
-	$GLOBALS['HTTP_SESSION_VARS']['script'] = new Script($this->scriptfile);
-	session_register('script');
 
 	return true;
   }
@@ -208,6 +211,23 @@ class AppSession {
   }
 
 
+  // get the list of sieve scripts for this user.
+  function listScripts () {
+
+    if (!is_object($this->connection)) {
+        $this->errstr = "listScripts: no sieve session open";
+        return false;
+    }
+
+    if (!$this->connection->listscripts()) {
+        $this->errstr = $this->connection->errstr;
+        return false;
+    }
+    $this->scriptlist = $this->connection->scriptlist;
+    $this->activescript = $this->connection->activescript;
+    return true;
+  }
+
 
   // get a list of imap mailboxes for this user
   function retrieveMailboxList () 
@@ -247,6 +267,63 @@ class AppSession {
 
     return true;
   }
+
+
+   /*
+    * decide what script to open first following login.
+    * Working script should be, in order of priority:
+    *  user supplied value from login if set
+    *  the active script on the server if there is one
+    *  the first of a list of user's scripts on server if there are any
+    *  else, $default->scriptfile.
+    *  if !$default->allow_multi_scripts, open $default->scriptfile.
+    */
+    function initialWorkingScript () {
+        global $default;
+        // set $this->scriptlist and $this->activescript.
+        if (!$this->listScripts())
+            return false;
+
+        if (!empty($this->lscript))
+            $this->workingscript = $this->lscript;
+        elseif ($this->activescript)
+            $this->workingscript = $this->activescript;
+        elseif (arraycount($this->scriptlist) > 0)
+            $this->workingscript = $this->scriptlist[0];
+        else
+            $this->workingscript = $default->scriptfile;
+
+        if (!$default->allow_multi_scripts) {
+            $this->workingscript = $default->scriptfile;
+        }
+
+        return true;
+    }
+
+
+   /*
+    * Does the script currently exist on the server?
+    */
+    function scriptExists ($script) {
+        $exists = false;
+
+        if (!$this->listScripts())
+            return false;
+
+        foreach ($this->scriptlist as $s){
+            if ($s == $script)
+                $exists = true;
+        }
+        return $exists;
+    }
+
+
+   /*
+    * Return most recent error message.
+    */
+    function getError() {
+        return $this->errstr;
+    }
 
 
   // log a message.
@@ -400,29 +477,12 @@ class Script {
 	$this->vacation = array();
 	$this->scriptlist = array();
 	$this->pcount = 0;
+
   }
   // end contructor
 
 
   // class functions
-
-
-  // get the list of sieve scripts for this user.
-  function listScripts ($connection) {
- 
-    if (!is_object($connection)) {
-        $this->errstr = "listScripts: no sieve session open";
-        return false;
-    }
- 
-    if (!$connection->listscripts()) {
-	$this->errstr = $connection->errstr;
-        return false;
-    }
-    $this->scriptlist = $connection->scriptlist;
-    $this->activescript = $connection->activescript;
-    return true;
-  }
 
 
   // get sieve script rules for this user
@@ -443,22 +503,9 @@ class Script {
 	return false;
     }
  
-    // fetch a list of current scripts
-    if (!$this->scriptlist) {
-        if (!$this->listScripts($connection)) {
-            return false;
-        }
-    }
- 
-    $scriptfile = $this->scriptfile;
-    foreach ($this->scriptlist as $scriptname) {
-        if (preg_match("/$scriptfile/", $scriptname))
-            $exists = true;
-    }
- 
     // if script doesn't yet exist, nothing to retrieve. 
     // safe to write to this script file.
-    if (!$exists) {
+    if (!$GLOBALS['HTTP_SESSION_VARS']['sieve']->scriptExists($this->scriptfile)) {
         $this->so = true;
         return true;
     }
@@ -777,8 +824,9 @@ class Script {
 	}
     }
 
-    /* get the updated script list and active script. */
-    if (!$this->listScripts($connection)) {
+    /* prompt AppSession object to update its script list and active script data. */
+    if (!$GLOBALS['HTTP_SESSION_VARS']['sieve']->listScripts()) {
+        $this->errstr = 'updateScript: AppSession::listScripts failed: ' . AppSession::getError();
         return false;
     }
  

@@ -1,6 +1,22 @@
 Smartsieve - Changes file
 -------------------------
 
+09 Jan 2003 S Grier
+* destroy $script object on logout.
+* separate sieve and script objects. initialize script object from main.php.
+* 1st bash at handling multiple scripts in same login session.
+* new initialWorkingScript function. SmartSieve now selects which script to 
+  open following a login. if script is passed from the login form, it will 
+  open that; or if not, if a script is set as the active script on the server, 
+  it open that; or if not, it will open the first of the list of user's scripts 
+  if there is one; or if all else fails, open $default->scriptfile.
+* new $default->allow_multi_scripts option controls whether to allow access 
+  to scripts other than $default->scriptfile.
+* don't display scriptfile box on login page if $default->allow_multi_scripts 
+  is false.
+* listScripts function moved to AppSession class.
+* cosmetic change to rule.php.
+
 04 Jan 2003 S Grier
 * main.php: don't do rule mods if HTTP_POST_VARS['action'] is set, only if 
   a positive value. This is necessary for drop-down script list box to work.
