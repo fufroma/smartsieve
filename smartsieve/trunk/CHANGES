@@ -1,6 +1,9 @@
 Smartsieve - Changes file
 -------------------------
 
+13 April 2004 S Grier
+* Added Russian koi8-r translation. Contributed by Alexander Borovsky aka Partizan.
+
 08 April 2004 S Grier
 * Widen vacation and reject message textareas to $default->wrap_width, or 80 
   characters wide. We still wrap hard.
