@@ -10,15 +10,15 @@
           &nbsp;
           <a href="<?php print AppSession::setUrl('login.php?reason=logout');?>">Logout</a>
         | <a href="<?php print AppSession::setUrl('main.php');?>">View All Rules</a>
-<?php if ($script->mode != 'advanced'){ ?>
+<?php if ($scripts[$sieve->workingscript]->mode != 'advanced'){ ?>
         | <a href="<?php print AppSession::setUrl('vacation.php');?>">Vacation Settings</a>
         | <a href="<?php print AppSession::setUrl('rule.php');?>">New Filter Rule</a>
-<?php } //end if $script->mode = 'advanced
+<?php } //end if $script->mode = 'advanced'
       if ($default->allow_multi_scripts) { ?>
         | <A HREF="<?php print AppSession::setUrl('scripts.php');?>">Manage Scripts</A>
 <?php } //end if $default->allow_multi_scripts
       if (!empty($help_url)){ ?>
-        | <a href="<?php print $default->main_help_url; ?>">Help</a>
+        | <a href="<?php echo $help_url; ?>">Help</a>
 <?php } //end if $help_url ?>
 
         </TD>
