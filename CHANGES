@@ -1,6 +1,9 @@
 Smartsieve - Changes file
 -------------------------
 
+21 Jan 2003 S Grier
+* call count() not non-existent arraycount() in initialWorkingScript().
+
 12 Jan 2003 S Grier
 * improved handling of multiple scripts. now sets array $scripts in 
   session, as array of script objects: ie. $scripts[$script1,$script2,...].

@@ -288,7 +288,7 @@ class AppSession {
             $this->workingscript = $this->lscript;
         elseif ($this->activescript)
             $this->workingscript = $this->activescript;
-        elseif (arraycount($this->scriptlist) > 0)
+        elseif (count($this->scriptlist) > 0)
             $this->workingscript = $this->scriptlist[0];
         else
             $this->workingscript = $default->scriptfile;
