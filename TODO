@@ -1,58 +1,54 @@
-
-required:
-1. php-4.x
-2. register_globals must be on (no longer true).
-3. track vars on. should always be with php-4.x.
-4. php must be compiled with imap support.
-5. php-4.3.0 + openssl for socket ssl/tls support.
-6. apache should be configured to check .htaccess files.
-7. set session.save_path in php.ini to secure location.
-8. PEAR with Crypt/HCEMD5.php or Crypt/Rc4.php.
-9. cyrus-imap must be using sasl libraries (ie. for proxy authorization).
-10. magic_quotes_runtime must be Off.
-
-TODO:
-- write a getConfValue() function to get config values cleanly.
-- vacation and reject text abbreviation in rule summaries.
-- view raw script option.
-- should 'keep' be an action rather than an option?
-- call getMailboxName from retrieveMailboxList.
-- write a getScriptLine function to do rtrim, stripslashes, etc.
-- move functions to SmartSieve class: rule.php:checkRule(), 
-  vacation.php:checkRule(), writeToLog(), getFormValue(), setUrl().
-- call checkRule(),checkVacation() from updateScript().
-- add file/line number to log messages.
-- change to handle unixhierarchysep ('/' instead of '.' in fileinto).
-- cross site scripting: filter form data using htmlspecialchars and/or
-  strip_tags().
-- config options for other sieve rule options (forward, reject etc).
-- improve sieve.lib:
-    - fix socket hangs and timeouts in read().
-    - do something with 'NO' responses, pehaps getError function.
-    - add support for other sasl mechanisms.
-    - add ssl socket support, either with the sieve starttls command, 
-      or fsockopen('ssl://server....
-    - undef $this->errstr.
-    - return codes.
-- vacation rule checkbox on main page.
-- generic error function, to use when openSieveSession() fails.
-- add $servers->imapflags value to conf/servers.php (?).
+SmartSieve - TODO
 
 
-- issue HAVESPACE call before doing PUTSCRIPT as the spec suggests. havespace is broken 
-  upto cyrus-imapd-2.0.16, so will have to handle this according to timsieved version.
-- modify to handle magic_quotes_runtime = On (?)
-- add support for sasl proxy authentication. will need to do something 
-  with imap_open() on rule.php, perhaps write function which will return 
-  list of mboxes which the proxy user has write access to.
-  note: this will allow admin access to users scripts.
-- help info.
-- sieve.lib: read() should put read chars into $this->read_buf or similar.
-  then read() can return true or false, and set $this->socket_err if socket 
+TODO for 0.5.2
+
+* finish work on i18n, merge i18n branch into CVS HEAD
+* finish forward.php
+* add direct edit mode
+* fix digest-md5 authentication for cyrus-2.0.x
+* add support for cram-md5 authentication
+
+
+TODO for 0.6
+
+* remove dependency on c-client by adding hardcoded imap functions in PHP
+* add support for proxy authorization
+* do HAVESPACE before doing a PUTSCRIPT as the spec demands. HAVESPACE is broken up to 
+  cyrus-2.0.16, so will need to handle this according to timsieved version
+* move functions to SmartSieve class: rule.php:checkRule(),vacation.php:checkRule(), 
+  writeToLog(), getFormValue(), setUrl()
+* make use of sieve redirect, reject, etc configurable
+* make it possible to supply other server options from login.php
+* decide what to do with vacation rule checkbox on main.php
+* add a function which sends an error page to the browser, for example when openSieveSession fails
+* call getMailboxName from retrieveMailboxList
+* write a getScriptLine function to do rtrim, stripslashes, etc. to read script safely
+* add checks to make sure no HTML/javascript is written to a sieve script (htmlspecialchars strip_tags())
+* make checkRule() checkVacation() more generic and call from updateScript()
+* include file/line number to log messages
+* make sure unixhierarchysep is handled properly
+* solve potential socket hangs in SieveSession::read()
+* put read buffer into $this->read_buf in SieveSession::read()
+  SieveSession::read() can then return true or false, and set $this->socket_err if socket 
   timed out or no bytes found at the socket.
-- internationalization ?
-- support other backends. eg. postgresql, BerkeleyDB, etc.
-- drop down list for rule position on create rule page.
+
+TODO for 0.7.0
+
+* major rewrite of backend indexing code
+* implement rule as an object
+* write a generic error class similar to pearError
+* parse server responses properly in sieve.lib
+
+Miscellaneous TODOs
+
+* add $servers->imapflags value to conf/servers.php (?).
+* add view raw script option to main.php
+* add drop down list for rule position on create rule page
+* handle magic_quotes_runtime = 'On'
+* write a getConfValue() function to get config values cleanly
+* abbreviate vacation and reject text in summary lines on main.php
+* investigate using STARTTLS or fsockopen('ssl://server...
 
 
 $Id$
