@@ -1,6 +1,20 @@
 Smartsieve - Changes file
 -------------------------
 
+27 Nov 2002 S Grier
+* numerous changes to lib/sieve.lib: 
+  - added class var declarations.
+  - renamed $capabilities as $extensions.
+  - change to use fread() rather than fgets(). fread() is binary safe, and 
+    is more appropriate for reading single bytes. this will make SmartSieve 
+    work on php-4.3.0pre2.
+  - added $socket_timeout and socket_set_timeout() call so read() will not 
+    wait forever on the socket.
+  - read() now calls socket_get_status() and returns if socket has timed out 
+    or has no bytes left to read. this should make read() less likely to hang 
+    if there's a problem.
+  - now retrieves the newline char from the socket when line ends in a CRLF.
+
 07 Nov 2002 S Grier
 * rule.php: move call-time pass-by-reference checkRule(&$rule) to function 
   definition. use of allow_call_time_pass_reference depreciated.
