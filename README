@@ -1,13 +1,13 @@
 SMARTSIEVE SIEVE SCRIPT MANAGER
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-SmartSieve-0.5.1devel
+SmartSieve-0.5.2
 
 SmartSieve is a web based graphical user interface for creating and 
-managing sieve scripts on a Cyrus imap mail server. It provides a 
-way for non-technical Cyrus imap users to generate sieve rules for 
+managing Sieve scripts on a Cyrus imap mail server. It provides a 
+way for non-technical Cyrus imap users to generate Sieve rules for 
 mail filtering and vacation messaging without prior knowledge of the 
-sieve scripting language. SmartSieve is written in PHP and is 
+Sieve scripting language. SmartSieve is written in PHP and is 
 intended to be intuitive to use, and simple to configure.
 
 SmartSieve will be of interest to institutions running Cyrus imapd 
@@ -15,24 +15,24 @@ to provide imap based mail access and who require a user-friendly
 way for users to manage mail filtering and vacation messaging. It 
 will be of particular interest to those currently deploying Websieve 
 for this purpose. SmartSieve is compatible with Websieve in that 
-sieve scripts created using Websieve can be read and modified using 
+Sieve scripts created using Websieve can be read and modified using 
 SmartSieve, and visa-versa.
 
-SmartSieve is not a sieve script 'parser'. It cannot directly read 
-and understand the sieve language itself. It should, therefore, not 
-be used to read sieve scripts which were not created using SmartSieve 
-(although it should handle scripts created by Websieve).
+SmartSieve is not a Sieve script 'parser'. It cannot directly read 
+and understand the Sieve language itself. For this reason, the GUI 
+will only work for Sieve scripts created by SmartSieve. It provides 
+a direct editor mode for scripts it does not understand.
 
 
 PROJECT STATUS
 
-At the time of this release SmartSieve is pre-alpha development 
-software. There may well be bugs in the code, and I cannot guarantee 
-that SmartSieve will work at all with your web and imap servers (see 
-the requirements section of the INSTALL file for software it is 
-currently known to work with). I do not accept responsibility for 
-any loss or damage which might occur as a result of using this 
-software.
+At the time of this release, SmartSieve is considered beta quality 
+software. It is undergoing constant development. There may well be 
+bugs in the code, and I cannot guarantee that SmartSieve will work 
+at all with your web and imap servers (see the requirements section 
+of the INSTALL file for software it is currently known to work with). 
+I do not accept responsibility for any loss or damage which might 
+occur as a result of using this software.
 
 Please feel free to give SmartSieve a whirl. At this stage I would 
 appreciate any feedback you might provide. I am particularly keen to 

@@ -2,6 +2,7 @@ Smartsieve - Changes file
 -------------------------
 
 04 Mar 2004 S Grier
+* release_0_5_2
 * Fix typo in config.php
 * Cleaned up text in config.php.
 

@@ -1,15 +1,12 @@
 SmartSieve - TODO
 
 
-TODO for 0.5.2
-
-* add direct edit mode
-* add iconv and mbstring note to INSTALL
-
 TODO for 0.6
 
+* allow user to switch script into direct edit mode
+* fix mcrypt.php: MCRYPT_DEV_RANDOM->MCRYPT_RAND, keep IV, and mcrypt_generic_deinit
 * add support for cram-md5 authentication
-* move SieveSession object from $_SESSION to $GLOBALS scope.
+* move SieveSession object from $_SESSION to $GLOBALS scope
 * handle referrals
 * remove dependency on c-client by adding hardcoded imap functions in PHP
 * add support for proxy authorization
