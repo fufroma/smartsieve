@@ -13,7 +13,10 @@
 function AnySelected()
 {
     for (i = 0; i < document.rules.elements.length; i++) {
-        if (document.rules.elements[i].checked) return true;
+        if (document.rules.elements[i].name == 'ruleID[]' &&
+            document.rules.elements[i].checked) {
+            return true;
+        }
     }
     return false;
 }
@@ -37,6 +40,15 @@ function ChangeOrder(a,b)
 {
     document.rules.action.value = a;
     document.rules.rindex.value = b;
+    document.rules.submit();
+}
+
+function ChangeMode()
+{
+    if (!confirm("<?php echo SmartSieve::text('If you choose to edit this script directly you will not be able to switch back to GUI mode.\nDo you still want to continue?');?>")) {
+        return true;
+    }
+    document.rules.action.value = 'direct';
     document.rules.submit();
 }
 

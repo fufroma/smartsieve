@@ -166,6 +166,18 @@ switch ($action) {
             }
         }
         break;
+
+    case ('direct'):
+        $script->mode = 'advanced';
+        if (!$script->updateScript()) {
+            SmartSieve::setError(SmartSieve::text('ERROR: ') . $script->errstr);
+            $logmsg = sprintf('failed writing script "%s" for %s: %s',
+              $script->name, $_SESSION['smartsieve']['authz'], $script->errstr);
+            SmartSieve::writeToLog($logmsg, LOG_ERR);
+        } else {
+            SmartSieve::setNotice(SmartSieve::text('You are now in direct edit mode.'));
+        }
+        break;
 }
 
 

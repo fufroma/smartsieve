@@ -117,6 +117,11 @@ if ($script->vacation){
          |
         <A CLASS="option" HREF="" onclick="Submit('delete'); return false;" onmouseover="window.status='<?php echo SmartSieve::text('Delete');?>'; return true;" onmouseout="window.status='';"><?php echo SmartSieve::text('Delete');?></a>
       </TD>
+<?php if (SmartSieve::getConf('allow_change_mode')): ?>
+      <TD ALIGN="right" CLASS="options">
+        <A CLASS="option" HREF="" onclick="ChangeMode(); return false;" onmouseover="window.status='<?php echo SmartSieve::text('Switch to direct edit mode');?>'; return true;" onmouseout="window.status='';"><?php echo SmartSieve::text('Direct edit mode');?></A>
+      </TD>
+<?php endif; ?>
     </BR>
     </TABLE>
 
