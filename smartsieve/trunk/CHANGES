@@ -1,6 +1,12 @@
 Smartsieve - Changes file
 -------------------------
 
+12 Jan 2003 S Grier
+* improved handling of multiple scripts. now sets array $scripts in 
+  session, as array of script objects: ie. $scripts[$script1,$script2,...].
+* drop-down script list on rule.php and vacation.php.
+* $default->allow_user_supply_scriptfile now defaults to false.
+
 09 Jan 2003 S Grier
 * destroy $script object on logout.
 * separate sieve and script objects. initialize script object from main.php.

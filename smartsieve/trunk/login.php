@@ -26,8 +26,8 @@ if (isset($HTTP_SESSION_VARS['sieve']) && is_object($HTTP_SESSION_VARS['sieve'])
 	    print "ERROR: " . $HTTP_SESSION_VARS['sieve']->errstr . "<BR>";
 	$HTTP_SESSION_VARS['sieve'] = null;
 	session_unregister('sieve');
-        $HTTP_SESSION_VARS['script'] = null;
-        session_unregister('script');
+        $HTTP_SESSION_VARS['scripts'] = null;
+        session_unregister('scripts');
     }
     elseif (isset($HTTP_GET_VARS['reason']) && $HTTP_GET_VARS['reason'] == 'failure') {
 	$HTTP_SESSION_VARS['sieve'] = null;
@@ -50,6 +50,15 @@ if (isset($HTTP_POST_VARS['sieveuid']) && isset($HTTP_POST_VARS['passwd'])) {
 		$GLOBALS['HTTP_SERVER_VARS']['REMOTE_ADDR'] . '] {' . 
 		$sieve->server . ':' . $sieve->sieveport . '}', LOG_INFO))
 	    print "ERROR: " . $sieve->errstr . "<BR>";
+
+        /* set scripts array in session. */
+        $GLOBALS['HTTP_SESSION_VARS']['scripts'] = array();
+        session_register('scripts');
+        if (!is_array($GLOBALS['HTTP_SESSION_VARS']['scripts'])) {
+            $sieve->writeToLog('login.php: failed to set scripts array in session');
+            print 'ERROR: failed to set scripts array in session<BR>';
+        }
+
 	header('Location: ' . AppSession::setUrl('main.php'),true);
 	exit;
     }
@@ -168,7 +177,7 @@ if ($default->user_supply_scriptfile && $default->allow_multi_scripts)
 <?php
     $tabindex++;
 }
-else print "<INPUT TYPE=\"hidden\" NAME=\"scriptfile\" VALUE=\"".$default->scriptfile."\">\n";
+else print "<INPUT TYPE=\"hidden\" NAME=\"scriptfile\" VALUE=\"\">\n";
 
 ?>
 

@@ -619,9 +619,6 @@ class Script {
  
     include "$default->lib_dir/version.php";
  
-    // we have the currently saved sieve script in $HTTP_SESSION_VARS['sieve']['script'].
-    // we want to regenerate this according to $HTTP_SESSION_VARS['sieve']['rules'].
- 
     if (!is_object($connection)) {
 	$this->errstr = "updateScript: no sieve session open";
         return false;

@@ -18,7 +18,7 @@ $errors = array();
 $msgs = array();
 
 $sieve = &$GLOBALS['HTTP_SESSION_VARS']['sieve'];
-$script = &$GLOBALS['HTTP_SESSION_VARS']['script'];
+$scripts = &$GLOBALS['HTTP_SESSION_VARS']['scripts'];
 
 // if a session does not exist, go to login page
 if (!is_object($sieve) || !$sieve->authenticate()) {
@@ -50,10 +50,15 @@ if (isset($GLOBALS['HTTP_POST_VARS']['script'])) {
 }
 
 // create script object if doesn't already exist.
-if (!is_object($GLOBALS['HTTP_SESSION_VARS']['script'])){
-    $GLOBALS['HTTP_SESSION_VARS']['script'] = new Script($sieve->workingscript);
-    session_register('script');
+if (!is_object($scripts[$sieve->workingscript])){
+    $scripts[$sieve->workingscript] = new Script($sieve->workingscript);
+    if (!is_object($scripts[$sieve->workingscript])){
+        writeToLog('main.php: failed to create script object ' . $sieve->workingscript);
+        array_push($errors, 'failed to create script object ' . $sieve->workingscript);
+    }
 }
+
+$script = &$scripts[$sieve->workingscript];
 
 if (!$script->retrieveRules($sieve->connection)) {
     array_push($errors, 'ERROR: ' . $script->errstr);
