@@ -263,7 +263,7 @@ function buildRule($rule) {
     }
     if (!$rule['unconditional']) $complete .= " ".SmartSieve::text('THEN')." ";
     if (preg_match("/folder/i",$rule['action']))
-	$complete .= SmartSieve::text("file into '%s';",array($rule['action_arg']));
+	$complete .= SmartSieve::text("file into '%s';",array(SmartSieve::mutf7Decode($rule['action_arg'])));
     if (preg_match("/reject/i",$rule['action']))
 	$complete .= SmartSieve::text("reject '%s';",array(SmartSieve::utf8Decode($rule['action_arg'])));
     if (preg_match("/address/i",$rule['action']))

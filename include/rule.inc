@@ -125,7 +125,7 @@
       <TD>
         <SELECT NAME="folder">
 <?php foreach ($_SESSION['smartsieve']['mailboxes'] as $mbox): ?>
-          <OPTION VALUE="<?php echo $mbox;?>"<?php echo (isset($rule['action_arg']) && $rule['action_arg'] == $mbox) ? ' SELECTED="selected"' : '';?>><?php echo $mbox;?></OPTION>
+          <OPTION VALUE="<?php echo $mbox;?>"<?php echo (isset($rule['action_arg']) && $rule['action_arg'] == $mbox) ? ' SELECTED="selected"' : '';?>><?php echo SmartSieve::mutf7Decode($mbox);?></OPTION>
 <?php endforeach; ?>
         </SELECT>
       </TD>
