@@ -2,6 +2,7 @@ Smartsieve - Changes file
 -------------------------
 
 11 Nov 2004 S Grier
+* Make custom rule interface more intuitive.
 * Fix unconditional custom rules (Bug #1000050).
 * Keep mailbox names encoded as mUTF-7. Only convert to local charset for display.
 
