@@ -2,6 +2,8 @@ Smartsieve - Changes file
 -------------------------
 
 21 Oct 2002 S Grier
+* moved script head date format to $default->script_date_format.
+* removed redundant $baseurl variables from index.php.
 * changed rule.php and vacation.php to use AppSession::setUrl().
 
 18 Oct 2002 S Grier
