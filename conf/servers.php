@@ -8,13 +8,17 @@
  * first entry below will be used as the default and no 
  * select box will appear on the login page.
  *
+ * display: the name to be displayed in the drop-down list of 
+ * servers on the login page (if $default->user_select_server 
+ * is set to true in conf/conf.php).
+ *
  * imapport: port to connect to imapd; usually 143. If you
  * want to do imap-ssl set this to '993/imap/ssl'. Note that 
  * if you are using a self-signed certificate on your imap 
- * server, you sould set this to '993/imap/novalidate-cert'
- * Also, if you have compiled the c-client libraries with ssl
- * support and you are using php-4.1.2 or later with imap-ssl
- * enabled, you will need to set this to '143/imap/notls'.
+ * server, you sould set this to '993/imap/novalidate-cert'.
+ * If you are using php-4.1.2 or later with imap-ssl enabled, 
+ * and you do not want to do imap-ssl you will need to set 
+ * this to '143/imap/notls'.
  *
  * maildomain: ie. username@maildomain. You should not include 
  * the @ character. if this is anything other than empty, this 
@@ -28,7 +32,7 @@ $servers['example'] = array(
     'display' => 'My Example Server',
     'server' => '127.0.0.1',
     'sieveport' => '2000',
-    'imapport' => '143',
+    'imapport' => '143/imap/notls',
     'alt_namespace' => 'false',
     'maildomain' => 'localhost'
 );
