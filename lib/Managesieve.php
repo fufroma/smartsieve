@@ -919,6 +919,16 @@ class Managesieve {
         return $this->_errstr;
     }
 
+   /**
+    * Return the most recent response structure.
+    *
+    * @return mixed array response, or false if not set
+    */
+    function getLastResponse()
+    {
+        return (isset($this->resp)) ? $this->resp : false;
+    }
+
 
 
 } // class Managesieve
