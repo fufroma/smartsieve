@@ -453,16 +453,18 @@ class Script {
         $newscript = $newscripthead . $this->removeEncoding()  . $newscriptfoot;
     $this->script = $newscript;
  
+    $slist = SmartSieve::getScriptList();
+
     $scriptfile = $this->name;
     if (!$managesieve->putScript($scriptfile, $newscript)) {
 	$this->errstr = 'updateScript: putscript failed: ' . $managesieve->getError();
         return false;
     }
 
-    if ($this->name === SmartSieve::getActiveScript() &&
+    if ($this->name !== SmartSieve::getActiveScript() &&
         (SmartSieve::getConf('update_activate_script') === true ||
          SmartSieve::getConf('allow_multi_scripts') === false ||
-         count(SmartSieve::getScriptList()) === 0)) {
+         count($slist) === 0)) {
 	if (!$managesieve->setActive($this->name)) {
 	    $this->errstr = 'updateScript: activatescript failed: ' . $managesieve->getError();
 	    return false;
