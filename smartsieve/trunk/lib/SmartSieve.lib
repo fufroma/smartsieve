@@ -844,7 +844,7 @@ class SmartSieve {
 
         /* Try iconv. */
         if (extension_loaded('iconv')) {
-            $recoded = @iconv('UTF-8', $charset, $string);
+            $recoded = @iconv('UTF-8', $charset . '//TRANSLIT', $string);
             if ($recoded) {
                 return $recoded;
             }
