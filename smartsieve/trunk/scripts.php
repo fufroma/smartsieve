@@ -142,36 +142,37 @@ if ($action == 'rename')
         else {
             if (!AppSession::scriptExists($oldscript)){
                 array_push($errors,SmartSieve::text("Script \"%s\" does not exist.", array($oldscript)));
-            }
-            else {
-                if (!isset($scripts[$oldscript]))
-                    $scripts[$oldscript] = new Script($oldscript);
-                if (!$scripts[$oldscript]->retrieveRules($sieve->connection)){
-                    array_push($errors, SmartSieve::text("retrieveRules failed for script \"%s\": ", array($oldscript)) . $scripts[$oldscript]->errstr);
-                }
-                else {
-                  if ($scripts[$oldscript]->so){
-                    // safe to work with this script.
-                    $scripts[$newscript] = $scripts[$oldscript];
-                    if (is_object($scripts[$newscript])){
-                        $scripts[$newscript]->name = $newscript;
-                        if (!$scripts[$newscript]->updateScript($sieve->connection)) {
-                            array_push($errors, 'updateScript '.SmartSieve::text('failed: ') . $scripts[$newscript]->errstr);
-                            $sieve->writeToLog('scripts.php: updateScript failed for ' . $sieve->authz
-                                . ': ' . $scripts[$newscript]->errstr, LOG_ERR);
-                            unset($scripts[$newscript]);
-                        }
-                        else {
+            } else {
+                $resp = $sieve->connection->getscript($oldscript);
+                if ($resp === false || !is_array($resp)) {
+                    array_push($errors,'getscript '.SmartSieve::text('failed: ') . $sieve->connection->errstr);
+                } else {
+                    $old = $resp['raw'];
+                    $sieve->connection->putscript($newscript, $old);
+                    if ($sieve->connection->errstr) {
+                        array_push($errors,'putscript '.SmartSieve::text('failed: ') . $sieve->connection->errstr);
+                    } else {
+                        // Check old and new are the same.
+                        $resp = $sieve->connection->getscript($newscript);
+                        if ($sieve->connection->errstr) {
+                            array_push($errors,'getscript '.SmartSieve::text('failed: ') . $sieve->connection->errstr);
+                        } elseif ($resp['raw'] != $old) {
+                            array_push($errors,SmartSieve::text("Failed to rename \"%s\" as \"%s\"",array($oldscript,$newscript)));
+                            $sieve->connection->deletescript($newscript);
+                        } else {
+                            // Successfully copied old to new. Delete old.
                             $sieve->connection->deletescript($oldscript);
-                            if ($sieve->connection->errstr)
+                            if ($sieve->connection->errstr) {
                                 array_push($errors,'deletescript '.SmartSieve::text('failed: ') . $sieve->connection->errstr);
-                            else {
+                            } else {
                                 array_push($msgs,SmartSieve::text("Successfully renamed \"%s\" as \"%s\".", array($oldscript,$newscript)));
-                                unset($scripts[$oldscript]);
+                                if (isset($scripts[$oldscript])) {
+                                    $scripts[$newscript] = $scripts[$oldscript];
+                                    unset($scripts[$oldscript]);
+                                }
                             }
                         }
                     }
-                  }
                 }
             }
         }
