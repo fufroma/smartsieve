@@ -1,6 +1,9 @@
 Smartsieve - Changes file
 -------------------------
 
+22 August 2003 S Grier
+* htmlspecialchar() rule and vacation sumarries to avoid garbled output.
+
 18 August 2003 S Grier
 * status and messages rows on all pages moved to new common_status.inc include file.
 * top menu on all pages now included from menu.inc include file.

@@ -97,10 +97,10 @@ if ($script->vacation){
         $first = 1;
         foreach ($script->vacation['addresses'] as $address) {
             if (!$first) print ", ";
-            print "\"$address\"";
+            print "\"" . htmlspecialchars($address) . "\"";
             $first = 0;
         }
-        print " text: " . $script->vacation['text']; ?></A>
+        print " text: " . htmlspecialchars($script->vacation['text']); ?></A>
       </TD>
     </TR>
 <?php
