@@ -2,6 +2,7 @@ Smartsieve - Changes file
 -------------------------
 
 18 August 2003 S Grier
+* top menu on all pages now included from menu.inc include file.
 * don't display vacation or new rule links on the top menu in advanced mode.
 
 15 August 2003 S Grier
