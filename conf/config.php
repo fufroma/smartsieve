@@ -89,7 +89,7 @@ $default->session_name = 'SmartSieve';
 // Cookie domain. This should be the name of the server SmartSieve is running 
 // on. If the URL you are using is different from your web-server's server name 
 // you will probably need to set this to an empty string.
-$default->cookie_domain = $GLOBALS['HTTP_SERVER_VARS']['SERVER_NAME'];
+$default->cookie_domain = $_SERVER['SERVER_NAME'];
 
 // Cookie path. This should be the location of SmartSieve under your web root.
 // If you leave this empty, all scripts on the server will have access to the 

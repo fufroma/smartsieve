@@ -1,6 +1,9 @@
 Smartsieve - Changes file
 -------------------------
 
+05 Nov 2004 S Grier
+* Replace remaining old style $HTTP_*_VARS arrays with superglobals.
+
 04 Aug 2004 S Grier
 * Display authz box on login page to proxy_authz_users only.
 
