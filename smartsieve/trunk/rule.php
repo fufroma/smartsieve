@@ -31,9 +31,10 @@ if (!is_object($sieve) || !$sieve->authenticate()) {
 // get the list of mailboxes for this user.
 // we will need it below for file into: select box.
 if (!$sieve->mboxlist){
-  if (!$sieve->retrieveMailboxList())
+  if (!$sieve->retrieveMailboxList()){
     array_push($errors, 'ERROR: ' . $sieve->errstr);
     $sieve->writeToLog("ERROR: " . $sieve->errstr, LOG_ERROR);
+  }
 }
 
 // open sieve connection
