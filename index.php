@@ -22,7 +22,7 @@ if (isset($HTTP_SESSION_VARS['sieve']) && is_object($HTTP_SESSION_VARS['sieve'])
     exit;
 }
 else {
-    header('Location: login.php');
+    header('Location: ' . AppSession::setUrl('login.php'));
     exit;
 }
 
