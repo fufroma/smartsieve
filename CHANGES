@@ -6,6 +6,7 @@ Smartsieve - Changes file
 * Move getFormValue to class SmartSieve. This no longer does strip_tags or rtrim and 
   may now return null. Also now takes a default value.
 * Remove class AppSession and move class Script to lib/Script.php.
+* Only remove 'sieve://' part of referral host where necessary. Cyrus v2.1 doesn't include it.
 
 04 June 2004 S Grier
 * Replace long predefined arrays (HTTP_*_VARS) with superglobals. Requires php > 4.1.

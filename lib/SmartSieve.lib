@@ -484,7 +484,11 @@ class SmartSieve {
         global $managesieve;
         $resp = $managesieve->getLastResponse();
         if ($resp['state'] === F_BYE && $resp['code'] === RC_REFERRAL) {
-            $rserver = substr($resp['code_args'], 8);
+            $rserver = $resp['code_args'];
+            // With Cyrus 2.2.x the host value will look like "sieve://host".
+            if (substr($rserver, 0, 8) == 'sieve://') {
+                $rserver = substr($rserver, 8);
+            }
             $managesieve->close();
             $ret = $managesieve->open($rserver, $_SESSION['smartsieve']['sieveport']);
             if ($ret === true) {
