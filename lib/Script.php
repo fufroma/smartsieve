@@ -162,6 +162,7 @@ class Script {
     $regexused = 0;
     $rejectused = 0;
     $vacationused = 0;
+    $notifyused = 0;
  
     include "$default->lib_dir/version.php";
  
@@ -305,6 +306,9 @@ class Script {
                 $rejectused = 1;
             if (preg_match("/vacation/i",$rule['action_arg']))
                 $vacationused = 1;
+            if (preg_match("/notify/i", $rule['action_arg'])) {
+                $notifyused = 1;
+            }
         }
  
         $continue = 0;
@@ -402,6 +406,7 @@ class Script {
         if ($rejectused) $newrequire .= ",\"reject\"";
         if ($this->vacation && $this->vacation['status'] == 'on' || $vacationused)
             $newrequire .= ",\"vacation\"";
+        if ($notifyused) $newrequire .= ',"notify"';
         $newrequire .= "];\n\n";
     }
     else {
