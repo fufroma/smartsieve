@@ -649,6 +649,13 @@ class Script {
 	$this->errstr = "updateScript: no sieve session open";
         return false;
     }
+
+    // don't overwrite a file if not created by SmartSieve,
+    // unless configured to do so.
+    if (!$this->so && !$default->allow_write_unrecognised_scripts) {
+        $this->errstr = 'updateScript: encoding not recognised: not safe to overwrite ' . $this->name;
+        return false;
+    }
  
     // lets generate the main body of the script from our rules
  
