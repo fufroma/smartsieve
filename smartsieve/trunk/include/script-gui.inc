@@ -1,4 +1,4 @@
-<FORM ACTION="<?php print AppSession::setUrl('main.php');?>" METHOD="post" NAME="rules">
+<FORM ACTION="<?php print SmartSieve::setUrl('main.php');?>" METHOD="post" NAME="rules">
 
 <TABLE WIDTH="100%" CELLPADDING="0" BORDER="0" CELLSPACING="0">
 <TR>
@@ -51,7 +51,7 @@ if ($script->rules){ ?>
         <?php echo $status; ?> 
       </TD>
       <TD>
-        <A CLASS="rule" HREF="<?php print AppSession::setUrl("rule.php?ruleID=$i"); ?>" onmouseover="window.status='<?php echo SmartSieve::text('Edit this rule');?>'; return true;" onmouseout="window.status='';"><?php print $complete; ?></A>
+        <A CLASS="rule" HREF="<?php print SmartSieve::setUrl("rule.php?ruleID=$i"); ?>" onmouseover="window.status='<?php echo SmartSieve::text('Edit this rule');?>'; return true;" onmouseout="window.status='';"><?php print $complete; ?></A>
       </TD>
       <TD NOWRAP="nowrap">
         <A HREF="" onclick="ChangeOrder('increase',<?php print $i; ?>); return false;"><IMG SRC="<?php print $default->image_dir; ?>/up.gif" ALT="Move rule up" BORDER="0" onmouseover="window.status='<?php echo SmartSieve::text('Move rule up');?>'; return true;" onmouseout="window.status='';"></A>
@@ -94,7 +94,7 @@ if ($script->vacation){
         <?php echo $status;?> 
       </TD>
       <TD COLSPAN="2">
-        <A CLASS="rule" HREF="<?php print AppSession::setUrl('vacation.php'); ?>" onmouseover="window.status='<?php echo SmartSieve::text('Edit vacation settings');?>'; return true;" onmouseout="window.status='';"><?php echo buildVacationString();?></A>
+        <A CLASS="rule" HREF="<?php print SmartSieve::setUrl('vacation.php'); ?>" onmouseover="window.status='<?php echo SmartSieve::text('Edit vacation settings');?>'; return true;" onmouseout="window.status='';"><?php echo buildVacationString();?></A>
       </TD>
     </TR>
 <?php

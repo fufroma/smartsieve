@@ -22,7 +22,7 @@ $scripts = &$_SESSION['scripts'];
 
 // If a session does not exist, redirect to login page.
 if (SmartSieve::authenticate() !== true) {
-    header('Location: ' . AppSession::setUrl('login.php'),true);
+    header('Location: ' . SmartSieve::setUrl('login.php'),true);
     exit;
 }
 
@@ -176,7 +176,7 @@ if ($action == 'viewscript')
     $s = AppSession::getFormValue('viewscript');
     if ($s){
         SmartSieve::setWorkingScript($s);
-        header('Location: ' . AppSession::setUrl('main.php'),true);
+        header('Location: ' . SmartSieve::setUrl('main.php'),true);
         exit;
     }
 }

@@ -43,7 +43,7 @@ if (isset($_SESSION['smartsieve']) && is_array($_SESSION['smartsieve'])) {
         // we have a session. if we can authenticate, redirect to main.php.
         // if not, we have a cookie problem.
         if (SmartSieve::authenticate()) {
-	    header('Location: ' . AppSession::setUrl('main.php'));
+	    header('Location: ' . SmartSieve::setUrl('main.php'));
 	    exit;
         }
         echo SmartSieve::text('ERROR: failed to authenticate. please check your SmartSieve cookie settings').'<BR>';
@@ -81,13 +81,13 @@ if (isset($_POST['auth']) && isset($_POST['passwd'])) {
 	    $_SESSION['smartsieve_lang'] = AppSession::getFormValue('lang');
         }
 
-        header('Location: ' . AppSession::setUrl('main.php'));
+        header('Location: ' . SmartSieve::setUrl('main.php'));
         exit;
     }
 
     SmartSieve::writeToLog('FAILED LOGIN: ' . $auth . ((!empty($authz)) ? " as $authz" : '') . ' [' . $_SERVER['REMOTE_ADDR'] . '] {' . $server . '}: ' . $ret, LOG_ERR);
 
-    header('Location: ' . AppSession::setUrl('login.php?reason=failure'),true);
+    header('Location: ' . SmartSieve::setUrl('login.php?reason=failure'),true);
     exit;
 }
 

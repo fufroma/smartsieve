@@ -1,6 +1,6 @@
 <CENTER>
 
-<FORM ACTION="<?php echo AppSession::setUrl('login.php'); ?>" METHOD="post" NAME="login">
+<FORM ACTION="<?php echo SmartSieve::setUrl('login.php'); ?>" METHOD="post" NAME="login">
 
 <TABLE WIDTH="300" CELLPADDING="5" BORDER="0" CELLSPACING="0">
   <TR>

@@ -501,7 +501,7 @@ class SmartSieve {
             }
             SmartSieve::writeToLog('handleReferral: ' . $managesieve->getError(), LOG_ERR);
             SmartSieve::close();
-            header('Location: ' . AppSession::setUrl('login.php?reason=failure'),true);
+            header('Location: ' . SmartSieve::setUrl('login.php?reason=failure'),true);
             exit;
         }
         return true;
@@ -588,6 +588,37 @@ class SmartSieve {
 
         imap_close($conn);
         return $mboxlist;
+    }
+
+   /**
+    * Return a formatted url. Prepend the webroot if requested.
+    * Set the session id as a parameter if the browser is not 
+    * accepting cookies.
+    *
+    * @param uri string resourse to format
+    * @param prependRoot boolean prepend the webroot
+    * @return string formatted url
+    */
+    function setUrl($uri, $prependRoot=true)
+    {
+        $url = '';
+        if ($prependRoot) {
+            $baseurl = SmartSieve::getConf('baseurl', '');
+            if (substr($baseurl, -1) != '/') {
+                $baseurl .= '/';
+            }
+            $url = $baseurl . $uri;
+        }
+        if (!isset($_COOKIE[session_name()])) {
+            // Add session_id as url parameter.
+            if (strstr($url, '?') === false) {
+                $url .= '?';
+            } else {
+                $url .= '&';
+            }
+            $url .= urlencode(session_name()) . '=' . session_id();
+        }
+        return $url;
     }
 
 

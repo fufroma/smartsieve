@@ -1,4 +1,4 @@
-<FORM ACTION="<?php print AppSession::setUrl('main.php');?>" METHOD="post" NAME="rules">
+<FORM ACTION="<?php print SmartSieve::setUrl('main.php');?>" METHOD="post" NAME="rules">
 
 <TABLE WIDTH="100%" CELLPADDING="0" BORDER="0" CELLSPACING="0">
 <TR>

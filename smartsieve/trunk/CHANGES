@@ -1,6 +1,9 @@
 Smartsieve - Changes file
 -------------------------
 
+09 June 2004 S Grier
+* Move setUrl to class SmartSieve.
+
 04 June 2004 S Grier
 * Replace long predefined arrays (HTTP_*_VARS) with superglobals. Requires php > 4.1.
 * Replace $errors and $msgs arrays with $_SESSION['errors'] and $_SESSION['notoces'].
