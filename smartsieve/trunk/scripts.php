@@ -71,27 +71,13 @@ if ($action == 'setactive')
     }
 }
 
-if ($action == 'enable') 
+if ($action == 'viewscript') 
 {
-    if ($script->rules[$ruleID]){
-        $script->rules[$ruleID]['status'] = 'ENABLED';
-	// write and save the new script.
-	if (!$script->updateScript($sieve->connection)) {
-	    array_push($errors, 'ERROR: ' . $script->errstr);
-	    $sieve->writeToLog('ERROR: ' . $script->errstr, LOG_ERROR);
-	}
-	else {
-	    array_push($msgs, 'rule successfully enabled.');
-            if ($default->return_after_update){
-                header('Location: ' . AppSession::setUrl('main.php'),true);
-                exit;
-            }
-            $rule['status'] = 'ENABLED';
-	}
-    }
-    else {
-        array_push($errors, 'ERROR: rule does not exist.');
-        $sieve->writeToLog('ERROR: rule does not exist.', LOG_ERROR);
+    if (isset($sieve->scriptlist[AppSession::getFormValue('scriptID')])){
+        $s = $sieve->scriptlist[AppSession::getFormValue('scriptID')];
+        $sieve->workingscript = $s;
+        header('Location: ' . AppSession::setUrl('main.php'),true);
+        exit;
     }
 }
 
@@ -124,8 +110,13 @@ require "$default->include_dir/scripts.js";
           <a href="<?php print AppSession::setUrl('main.php');?>">View All
 Rules</a> |
           <a href="<?php print AppSession::setUrl('vacation.php');?>">Vacation Settings</a> |
-          <a href="<?php print AppSession::setUrl('rule.php');?>">New Filter Rule</a> <?php if ($default->rule_help_url){ ?>|
-          <a href="<?php print $default->rule_help_url; ?>">Help</a> <?php } /* endif. */ ?>
+          <a href="<?php print AppSession::setUrl('rule.php');?>">New Filter Rule</a>
+<?php if ($default->allow_multi_scripts) { ?>|
+          <A HREF="<?php print AppSession::setUrl('scripts.php');?>">Manage Scripts</A>
+<?php } ?>
+<?php if ($default->scripts_help_url){ ?>|
+          <a href="<?php print $default->scripts_help_url; ?>">Help</a>
+<?php } ?>
 
         </TD>
 <?php if ($default->allow_multi_scripts) { ?>
@@ -239,7 +230,7 @@ if ($sieve->scriptlist){ ?>
 ?>
     <TR onmouseover="javascript:style.background='grey'" onmouseout="javascript:style.background='#e5e5e5'">
       <TD CLASS="rules"><INPUT TYPE="checkbox" NAME="scriptID[]" VALUE="<?php print $i; ?>"></TD>
-      <TD CLASS="rules"><A CLASS="rule" HREF="" onclick="Submit('<?php echo $script; ?>'); return false;" onmouseover="status='Edit This Script'; return true;" onmouseout="status='';"><?php echo $script; ?></A></TD>
+      <TD CLASS="rules"><A CLASS="rule" HREF="" onclick="viewScript(<?php echo $i; ?>); return false;" onmouseover="status='View This Script'; return true;" onmouseout="status='';"><?php echo $script; ?></A></TD>
       <TD CLASS="<?php if (AppSession::isActiveScript($script)) echo "enabled"; else echo "disabled"; ?>">Active</TD>
       <TD CLASS="rules">&nbsp;</TD>
       <TD CLASS="rules">
@@ -274,6 +265,8 @@ else { ?>
         <A CLASS="option" HREF="" onclick="Submit('create'); return false;" onmouseover="status='Create New Script'; return true;" onmouseout="status='';">Create</a>
          |
         <A CLASS="option" HREF="" onclick="Submit('delete'); return false;" onmouseover="status='Delete Script'; return true;" onmouseout="status='';">Delete</a>
+         |
+        <A CLASS="option" HREF="" onclick="Submit('rename'); return false;" onmouseover="status='Rename Script'; return true;" onmouseout="status='';">Rename</A>
       </TD>
     </BR>
     </TABLE>
