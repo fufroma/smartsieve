@@ -164,7 +164,7 @@ class Script {
     $vacationused = 0;
     $notifyused = 0;
  
-    include "$default->lib_dir/version.php";
+    include_once "$default->lib_dir/version.php";
  
     if (!is_object($managesieve)) {
 	$this->errstr = "updateScript: no sieve session open";
