@@ -68,9 +68,8 @@ class SmartSieve {
             $smartsieve['authz'] .= '@' . $auth_domain;
         }
 
-        require_once $default->lib_dir . "/Crypt.php";
-        $key = Encrypt::generateKey();
-        $smartsieve['passwd'] = Encrypt::encrypt($passwd, $key);
+        $key = SmartSieve::generateKey();
+        $smartsieve['passwd'] = SmartSieve::encrypt($passwd, $key);
 
         $_SESSION['smartsieve'] = $smartsieve;
 
@@ -90,10 +89,8 @@ class SmartSieve {
         }
         $smartsieve = $_SESSION['smartsieve'];
 
-        require_once $default->lib_dir . "/Crypt.php";
-
-        $key = Encrypt::retrieveKey();
-        $passwd = Encrypt::decrypt($smartsieve['passwd'], $key);
+        $key = SmartSieve::retrieveKey();
+        $passwd = SmartSieve::decrypt($smartsieve['passwd'], $key);
 
         $managesieve = new Managesieve();
         $ret = $managesieve->open($smartsieve['server'], $smartsieve['sieveport']);
@@ -491,9 +488,8 @@ class SmartSieve {
             $managesieve->close();
             $ret = $managesieve->open($rserver, $_SESSION['smartsieve']['sieveport']);
             if ($ret === true) {
-                require_once SmartSieve::getConf('lib_dir') . "/Crypt.php";
-                $key = Encrypt::retrieveKey();
-                $passwd = Encrypt::decrypt($_SESSION['smartsieve']['passwd'], $key);
+                $key = SmartSieve::retrieveKey();
+                $passwd = SmartSieve::decrypt($_SESSION['smartsieve']['passwd'], $key);
                 $ret = $managesieve->authenticate($_SESSION['smartsieve']['auth'], $passwd, 
                     $_SESSION['smartsieve']['authz'], SmartSieve::getConf('sasl_mech'));
                 if ($ret === true) {
@@ -575,8 +571,8 @@ class SmartSieve {
 
         $connstr = sprintf('{%s:%s}INBOX', $_SESSION['smartsieve']['server'], $_SESSION['smartsieve']['imapport']);
         // get encrypted passwd.
-        $key = Encrypt::retrieveKey();
-        $passwd = Encrypt::decrypt($_SESSION['smartsieve']['passwd'], $key);
+        $key = SmartSieve::retrieveKey();
+        $passwd = SmartSieve::decrypt($_SESSION['smartsieve']['passwd'], $key);
         $conn = imap_open($connstr, $_SESSION['smartsieve']['auth'], $passwd, OP_HALFOPEN);
         if (!$conn){
             return 'getMailboxList: imap_open failed: ' . imap_last_error();
@@ -668,6 +664,132 @@ class SmartSieve {
         return $val;
     }
 
+
+   /**
+    * Generate a secret key.
+    *
+    * Generate a secret key to use in encryption/decryption. If browser is 
+    * accepting cookies, generate a 32 bit key using a Mersenne Twister 
+    * style random number generator and store this in a cookie. If not, 
+    * return a less random key based on session_id.
+    *
+    * @return string  A 32 bit secret key
+    */
+    function generateKey()
+    {
+        static $srand;
+        if (isset($_COOKIE) && isset($_COOKIE[session_name()])) {
+            // Seed the generator. Should only happen once.
+            if (!isset($srand)) {
+                mt_srand((double)microtime() * 1000000);
+                $srand = true;
+            }
+            $key = md5(uniqid(mt_rand(),1));
+
+            $_COOKIE['smartsieve_key'] = $key;
+            setcookie('smartsieve_key', $key, 0, SmartSieve::getConf('cookie_path', ''), 
+                SmartSieve::getConf('cookie_domain', ''), 0);
+        } else {
+            // Can't store random key in cookie, so we have to use a standard one.
+            $key = md5(session_id());
+        }
+        return $key;
+    }
+
+
+   /**
+    * Retrieve the key from the cookie if it exists, or the less random one 
+    * based on session_id if not.
+    *
+    * @return  string  The 32 bit secret key
+    */
+    function retrieveKey()
+    {
+        if (isset($_COOKIE['smartsieve_key'])) {
+            return $_COOKIE['smartsieve_key'];
+        }
+        return md5(session_id());
+    }
+
+
+   /**
+    * Encrypt a string with a secret key.
+    *
+    * @param  string  $string  The text to encrypt
+    * @param  string  $key  The secret key
+    * @return string  An encrypted string
+    */
+    function encrypt($string, $key)
+    {
+        static $crypt;
+        if (!isset($crypt) || !is_object($crypt)) {
+            $lib = SmartSieve::getCryptLib();
+            $args = SmartSieve::getConf('crypt_args', array());
+            $args['key'] = $key;
+            require_once SmartSieve::getConf('lib_dir') . '/Crypt.php';
+            $crypt = SmartSieveCrypt::factory($lib, $args);
+        }
+        return $crypt->encrypt($string);
+    }
+                                                                                               
+                                                                                               
+   /**
+    * Decrypt a string encrypted with SmartSieve::encrypt().
+    *
+    * @param  string  $data  The string to decrypt
+    * @param  string  $key  The secret key used to encrypt
+    * @return string  The unencrypted string
+    */
+    function decrypt($data,$key)
+    {
+        static $crypt;
+        if (!isset($crypt) || !is_object($crypt)) {
+            $lib = SmartSieve::getCryptLib();
+            $args = SmartSieve::getConf('crypt_args', array());
+            $args['key'] = $key;
+            require_once SmartSieve::getConf('lib_dir') . '/Crypt.php';
+            $crypt = SmartSieveCrypt::factory($lib, $args);
+        }
+        return $crypt->decrypt($data);
+    }
+
+
+   /**
+    * Select which encryption library to use. Use the lib specified in the 
+    * config file if set. If not, check for mcrypt, PEAR's Rc4, and PEAR's 
+    * HCEMD5, in that order. Function mcrypt_module_open is only found in 
+    * libmcrypt 2.4.x and above.
+    *
+    * @return string The encryption library to use
+    */
+    function getCryptLib()
+    {
+        $libs = array();
+        if (extension_loaded('mcrypt') && function_exists('mcrypt_module_open')) {
+            $libs[] = 'mcrypt';
+        }
+        if (@include_once('Crypt/Rc4.php')) {
+            $libs[] = 'rc4';
+        }
+        if (@include_once('Crypt/HCEMD5.php')) {
+            $libs[] = 'hcemd5';
+        }
+
+        // Bail if we can't find a cryptography library.
+        if (empty($libs)) {
+            SmartSieve::writeToLog('cannot find a usable cryptography library.', LOG_ERR);
+            echo 'ERROR: Cannot find a usable cryptography library. ' .
+                        'Please read the INSTALL file for info on this.';
+            exit;
+        }
+        $lib = $libs[0];
+        if (SmartSieve::getConf('crypt_lib') &&
+            in_array(SmartSieve::getConf('crypt_lib'), $libs)) {
+            $lib = SmartSieve::getConf('crypt_lib');
+        }
+        SmartSieve::writeToLog('getCryptLib: using ' . $lib, LOG_DEBUG);
+        return $lib;
+    }
 
 }
 

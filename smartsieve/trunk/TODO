@@ -1,6 +1,8 @@
 SmartSieve - TODO
 
 
+Re-do custom rule to make it clearer, and don't set other conditions.
+
 TODO for 0.6
 
 * allow user to switch script into direct edit mode
@@ -19,6 +21,7 @@ TODO for 0.6
 * make checkRule() checkVacation() more generic and call from updateScript()
 * include file/line number to log messages
 * make sure unixhierarchysep is handled properly
+* Convert script data from UTF-8 into charset of current locale and visa-versa
 
 TODO for 0.7.0
 
