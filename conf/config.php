@@ -51,6 +51,9 @@ $default->cookie_path = '/';
 // title of each page
 $default->page_title = 'SmartSieve';
 
+/* welcome message on the login page. */
+$default->login_page_heading = '&nbsp; Welcome to SmartSieve';
+
 // if this is anything other than empty, this will be taken as the default 
 // number of vacation days, rather than demanding the user supply a value.
 $default->vacation_days = '4';

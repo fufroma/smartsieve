@@ -77,26 +77,35 @@ include "$default->include_dir/login.js";
 
 </HEAD>
 
-<CENTER>
-<?php
-if (isset($HTTP_GET_VARS['reason']) && $HTTP_GET_VARS['reason'] == 'failure') {
-    print "Login failed! Please try again.<BR>\n";
-}
-elseif (isset($HTTP_GET_VARS['reason']) && $HTTP_GET_VARS['reason'] == 'logout'){
-    print "You have been logged out.";
-}
-
-$tabindex = 1;
-?>
-</CENTER>
-
-
 <BODY onload="setFocus()">
+
+
+<CENTER>
 
 <FORM ACTION="<?php echo AppSession::setUrl('login.php'); ?>" METHOD="post" NAME="login">
 
-<CENTER>
 <TABLE WIDTH="300" CELLPADDING="5" BORDER="0" CELLSPACING="0">
+  <TR>
+    <TD CLASS="welcome" ALIGN="center" COLSPAN="2">
+      <?php echo $default->login_page_heading; ?>
+    </TD>
+  </TR>
+
+  <TR>
+    <TD ALIGN="center" COLSPAN="2">&nbsp;
+<?php
+if (isset($HTTP_GET_VARS['reason']) && $HTTP_GET_VARS['reason'] == 'failure') { ?>
+      Login failed! Please try again.
+<?php }
+elseif (isset($HTTP_GET_VARS['reason']) && $HTTP_GET_VARS['reason'] == 'logout'){ ?>
+      You have been logged out.
+<?php }
+
+$tabindex = 1;
+?>
+    </TD>
+  </TR>
+
 <TR CLASS="menu">
     <TD ALIGN="right"> Sieve Username: 
     </TD>
