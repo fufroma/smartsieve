@@ -806,31 +806,65 @@ class Script {
  
     if ($this->vacation) {
         $vacation = $this->vacation;
-	if (!$vacation['days']) $vacation['days'] = $default->vacation_days;
-	if (!$vacation['text']) $vacation['text'] = $default->vacation_text;
 	if (!$vacation['status']) $vacation['status'] = 'on';
+	if (!$vacation['text']){
+            if (empty($default->vacation_text)){
+                $this->errstr = 'updateScript: no vacation message specified';
+                return false;
+            }
+            $vacation['text'] = $default->vacation_text;
+        }
+        if (!$vacation['days']){
+            if ($default->require_vacation_days){
+                if (empty($default->vacation_days)){
+                    $this->errstr = 'updateScript: no vacation days value specified';
+                    return false;
+                }
+                $vacation['days'] = $default->vacation_days;
+            }
+        }
 
 	// filter out invalid addresses.
-	$ok_vaddrs = array();
-	foreach($vacation['addresses'] as $addr){
-	    if ($addr != '' && preg_match("/\@/",$addr)) 
-		array_push($ok_vaddrs,$addr);
-	}
-	$vacation['addresses'] = $ok_vaddrs;
-
-	if (!$vacation['addresses'][0]){
-            $defaultaddr = $sieve->user . '@' . $sieve->maildomain;
-	    array_push($vacation['addresses'],$defaultaddr);
-	}
-        if ($vacation['status'] == 'on') {
-            $newscriptbody .= "vacation :days " . $vacation['days'] . " :addresses [";
-            $first = 1;
-            foreach ($vacation['addresses'] as $vaddress) {
-                if (!$first) $newscriptbody .= ", ";
-                $newscriptbody .= "\"" . $vaddress . "\"";
-                $first = 0;
+        if (is_array($vacation['addresses'])){
+            $ok_vaddrs = array();
+            foreach($vacation['addresses'] as $addr){
+                $tokens = explode('@',$addr);
+                if (count($tokens) == 2 
+                    && $tokens[0] != '' 
+                    && strpos($tokens[1],'.') !== false){
+                    array_push($ok_vaddrs,$addr);
+                }
             }
-            $newscriptbody .= "] text:\n" . $vacation['text'] . "\n.\n;\n\n";
+            $vacation['addresses'] = $ok_vaddrs;
+        }
+
+	if (!is_array($vacation['addresses']) || empty($vacation['addresses'][0])){
+            if ($default->require_vacation_addresses){
+                if (!$sieve->maildomain){
+                    $this->errstr = 'updateScript: no valid vacation addresses supplied';
+                    return false;
+                }
+                $defaultaddr = $sieve->user . '@' . $sieve->maildomain;
+                array_push($vacation['addresses'],$defaultaddr);
+            }
+	}
+
+        if ($vacation['status'] == 'on') {
+            $newscriptbody .= "vacation";
+            if ($vacation['days']){
+                $newscriptbody .= " :days " . $vacation['days'];
+            }
+            if (!empty($vacation['addresses'])){
+                $newscriptbody .= " :addresses [";
+                $first = 1;
+                foreach ($vacation['addresses'] as $vaddress) {
+                    if (!$first) $newscriptbody .= ", ";
+                    $newscriptbody .= "\"" . $vaddress . "\"";
+                    $first = 0;
+                }
+                $newscriptbody .= "]";
+            }
+            $newscriptbody .= " text:\n" . $vacation['text'] . "\n.\n;\n\n";
         }
 	// update with any changes.
 	$this->vacation = $vacation;

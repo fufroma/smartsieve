@@ -221,6 +221,30 @@ function buildRule($rule) {
     return htmlspecialchars($complete);
 }
 
+function buildVacationString()
+{
+    global $script;
+    $vacation = $script->vacation;
+    $vacation_str = '';
+    if (!is_array($vacation)){ return htmlspecialchars($vacation_str); }
+
+    $vacation_str .= 'Respond';
+    if (is_array($vacation['addresses']) && $vacation['addresses'][0]){
+        $vacation_str .= ' to mail sent to ';
+        $first = true;
+        foreach ($vacation['addresses'] as $addr){
+            if (!$first) $vacation_str .= ', ';
+            $vacation_str .= $addr;
+            $first = false;
+        }
+    }
+    if (!empty($vacation['days'])){
+        $vacation_str .= ' every ' . $vacation['days'] . ' days';
+    }
+    $vacation_str .= ' with message "' . $vacation['text'] . '"';
+    return htmlspecialchars($vacation_str);
+}
+
 function setMatchType (&$matchstr, $regex = false)
 {
     $match = 'contains';

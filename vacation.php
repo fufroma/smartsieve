@@ -57,7 +57,11 @@ elseif ($script->vacation) {
     $vacation = $script->vacation;
 }
 else {
-    $vacation = array('status'=>'on','text'=>'','days'=>0,'addresses'=>array());
+    $vacation = array();
+    $vacation['status'] = 'on';
+    $vacation['text'] = !empty($default->vacation_text) ? $default->vacation_text : '';
+    $vacation['days'] = !empty($default->vacation_days) ? $default->vacation_days : 0;
+    $vacation['addresses'] = array();
 }
 
 /* save vacation settings if requested. */
@@ -153,19 +157,26 @@ $sieve->closeSieveSession();
  * any value returned will be an error msg.
  * note: we will only demand a value from user if no default is set in config.
  */
-function checkRule($vacation) {
+function checkRule($vacation)
+{
     global $default,$sieve;
 
-    if (!$default->vacation_text && !$vacation['text'])
+    if (!$vacation['text'] && !$default->vacation_text){
 	return "please supply the message to send with auto-responses";
-    if (!$default->vacation_days && !$vacation['days'])
-	return "please select the number of vacation days";
-    if (!$sieve->maildomain){
-	foreach ($vacation['addresses'] as $addr){
-	    if (preg_match("/.+\@.+/",$addr)) return 0;
-	}
-	// must have no addresses set.
-	return "please supply at least one vacation address";
+    }
+    if (!$vacation['days'] && $default->require_vacation_days && !$default->vacation_days){
+	return "please select the number of days to wait between responses";
+    }
+    // does $vacation['addresses'] contain any valid addresses?
+    $a = false;
+    foreach ($vacation['addresses'] as $addr){
+        $tokens = explode('@',$addr);
+        if (count($tokens) == 2 && $tokens[0] != '' && strpos($tokens[1],'.') !== false){
+            $a = true;
+        }
+    }
+    if ($a == false && $default->require_vacation_addresses && !$sieve->maildomain){
+        return "please supply at least one valid vacation address";
     }
 
     /* check values don't exceed acceptible sizes. */

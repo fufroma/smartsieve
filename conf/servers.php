@@ -28,9 +28,12 @@
  * respectively.
  *
  * maildomain: ie. username@maildomain. You should not include 
- * the @ character. if this is anything other than empty, this 
- * will be used in vacation auto-responses when no addresses 
- * are supplied, rather than demanding the user supply one.
+ * the @ character. if require_vacation_addresses is true in 
+ * conf/config.php, this will be used in the :addresses vacation 
+ * rule argument when the user does not supply any addresses. 
+ * if empty, SmartSieve will demand the user supply at least one. 
+ * if require_vacation_addresses is false in conf/config.php 
+ * this value has no effect.
  *
  * $Id$
  */
