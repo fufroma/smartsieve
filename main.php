@@ -11,6 +11,7 @@
 require './conf/config.php';
 require "$default->lib_dir/Managesieve.php";
 require "$default->lib_dir/SmartSieve.lib";
+require "$default->lib_dir/Script.php";
 require "$default->config_dir/style.php";
 
 ini_set('session.use_trans_sid', 0);
