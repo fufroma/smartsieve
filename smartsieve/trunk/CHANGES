@@ -1,6 +1,9 @@
 Smartsieve - Changes file
 -------------------------
 
+03 Jan 2003 S Grier
+* main.php: first stab at drop-down script list for changing scripts.
+
 29 Dec 2002 S Grier
 * lib/SmartSieve.lib:
   - take note of script size.
