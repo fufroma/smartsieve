@@ -1,6 +1,9 @@
 Smartsieve - Changes file
 -------------------------
 
+04 Feb 2004 S Grier
+* Added Italian translation. Contributed by Andrea Tassinari.
+
 27 Jan 2004 S Grier
 * Fix getForwardRule() return 0 bug in forward.php.
 
