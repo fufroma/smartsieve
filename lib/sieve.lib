@@ -296,6 +296,37 @@ class SieveSession {
     }
 
 
+   /*
+    * check that the user will not exceed their storage quota
+    * by uploading script $scriptname of size $size bytes.
+    */
+    function havespace ($scriptname, $size) {
+        if (!$this->socket) {
+            $this->errstr = 'havespace: no connection open to ' . $this->server;
+            return false;
+        }
+        if (!$scriptfile){
+            $this->errstr = 'havespace: no script name specified';
+            return false;
+        }
+        if (!$size){
+            $this->errstr = 'havespace: script size not specified';
+            return false;
+        }
+
+        fputs($this->socket,"HAVESPACE \"$scriptname\" $size\r\n");
+
+        $said = $this->read();
+
+        if (preg_match("/^OK/",$said)) {
+            return true;
+        }
+
+        $this->errstr = "havespace: $said";
+        return false;
+    }
+
+
     /*
      * upload the script $script to the server. save it as $scriptfile.
      * the script will not be active. call activatescript() to do this.
@@ -331,6 +362,31 @@ class SieveSession {
         return false;
     }
 
+
+   /*
+    * delete the script $scriptname.
+    */
+    function deletescript ($scriptname) {
+        if (!$this->socket) {
+            $this->errstr = "deletescript: no connection open to $this->server";
+            return false;
+        }
+        if (!$scriptname){
+            $this->errstr = 'deletescript: no script name specified';
+            return false;
+        }
+
+        fputs($this->socket,"DELETESCRIPT \"$scriptname\"\r\n");
+
+        $said = $this->read();
+
+        if (preg_match("/^OK/",$said)) {
+            return true;
+        }
+
+        $this->errstr = "deletescript: could not delete script '$scriptname': $said";
+        return false;
+    }
 
 
 }
