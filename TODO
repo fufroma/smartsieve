@@ -12,6 +12,7 @@ required:
 10. magic_quotes_runtime must be Off.
 
 TODO:
+- should 'keep' be an action rather than an option?
 - fix stylesheet forbidden problem.
 - call getMailboxName from retrieveMailboxList.
 - write a getScriptLine function to do rtrim, stripslashes, etc.
@@ -28,6 +29,8 @@ TODO:
 - inner table width formatting on main.php.
 - config options for other sieve rule options (forward, reject etc).
 - improve sieve.lib:
+    - do something with 'NO' responses, pehaps getError function.
+    - implement havespace and deletescript functions.
     - add support for other sasl mechanisms.
     - add ssl socket support, either with the sieve starttls command, 
       or fsockopen('ssl://server....
@@ -38,6 +41,7 @@ TODO:
 - add $servers->imapflags value to conf/servers.php (?).
 
 
+- support 'is' and 'matches' match types. will then support wildcard chars.
 - issue HAVESPACE call before doing PUTSCRIPT as the spec suggests.
 - modify to handle magic_quotes_runtime = On (?)
 - add support for sasl proxy authentication. will need to do something 
