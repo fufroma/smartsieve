@@ -40,7 +40,7 @@ if (isset($GLOBALS['HTTP_POST_VARS']['script'])) {
 if (!$sieve->mboxlist){
   if (!$sieve->retrieveMailboxList()){
     array_push($errors, 'ERROR: ' . $sieve->errstr);
-    $sieve->writeToLog("ERROR: " . $sieve->errstr, LOG_ERROR);
+    $sieve->writeToLog("ERROR: " . $sieve->errstr, LOG_ERR);
   }
 }
 
@@ -48,7 +48,7 @@ if (!$sieve->mboxlist){
 if (!$sieve->openSieveSession()) {
     print "ERROR: " . $sieve->errstr . "<BR>\n";
     $sieve->writeToLog('ERROR: openSieveSession failed for ' . $sieve->user . 
-        ': ' . $sieve->errstr, LOG_ERROR);
+        ': ' . $sieve->errstr, LOG_ERR);
     exit;
 }
 
@@ -89,7 +89,7 @@ if ($action == 'createscript')
                 if (!$scripts[$newscript]->updateScript($sieve->connection)) {
                     array_push($errors, 'updateScript failed: ' . $scripts[$newscript]->errstr);
                     $sieve->writeToLog('scripts.php: updateScript failed for ' . $sieve->user
-                        . ': ' . $scripts[$newscript]->errstr, LOG_ERROR);
+                        . ': ' . $scripts[$newscript]->errstr, LOG_ERR);
                 }
             }
         }

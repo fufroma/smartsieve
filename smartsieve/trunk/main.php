@@ -32,7 +32,7 @@ if (!is_object($sieve) || !$sieve->authenticate()) {
 if (!$sieve->openSieveSession()) {
     print "ERROR: " . $sieve->errstr . "<BR>\n";
     $sieve->writeToLog("ERROR: openSieveSession failed for " . $sieve->user .
-	': ' . $sieve->errstr, LOG_ERROR);
+	': ' . $sieve->errstr, LOG_ERR);
     exit;
 }
 
@@ -50,7 +50,8 @@ if (isset($GLOBALS['HTTP_POST_VARS']['script'])) {
 }
 
 // create script object if doesn't already exist.
-if (!is_object($scripts[$sieve->workingscript])){
+if (!isset($scripts[$sieve->workingscript]) || 
+    !is_object($scripts[$sieve->workingscript])){
     $scripts[$sieve->workingscript] = new Script($sieve->workingscript);
     if (!is_object($scripts[$sieve->workingscript])){
         writeToLog('main.php: failed to create script object ' . $sieve->workingscript);
@@ -63,7 +64,7 @@ $script = &$scripts[$sieve->workingscript];
 if (!$script->retrieveRules($sieve->connection)) {
     array_push($errors, 'ERROR: ' . $script->errstr);
     $sieve->writeToLog("ERROR: retrieveRules failed for " . $sieve->user .
-	": " . $script->errstr, LOG_ERROR);
+	": " . $script->errstr, LOG_ERR);
 }
 
 // warn if script encoding was not recognised.
@@ -76,9 +77,9 @@ if ($script->mode == 'advanced'){
 
 /* do rule status change if requested. */
 
-if ($GLOBALS['HTTP_POST_VARS']['action']) {
+$action = AppSession::getFormValue('action');
 
-    $action = AppSession::getFormValue('action');
+if ($action) {
 
     if ($action == 'enable') {
         $rules = AppSession::getFormValue('ruleID');
@@ -127,14 +128,14 @@ if ($GLOBALS['HTTP_POST_VARS']['action']) {
     if (!$script->updateScript($sieve->connection)) {
 	array_push($errors, 'ERROR: ' . $script->errstr);
 	$sieve->writeToLog('ERROR: updateScript failed for ' . $sieve->user
-	    . ': ' . $script->errstr, LOG_ERROR);
+	    . ': ' . $script->errstr, LOG_ERR);
     }
     /* get the rules from the saved script again. */
     else {
 	if (!$script->retrieveRules($sieve->connection)) {
 	    array_push($errors, 'ERROR: ' . $script->errstr);
 	    $sieve->writeToLog('ERROR: retrieveRules failed for ' . $sieve->user
-	    	. ': ' . $script->errstr, LOG_ERROR);
+	    	. ': ' . $script->errstr, LOG_ERR);
 	}
     }
 }
@@ -357,6 +358,7 @@ $sieve->closeSieveSession();
 
 function buildRule($rule) {
     $andor = " AND ";
+    $started = 0;
     if ($rule['anyof']) $andor = " OR ";
     $match = "contains";
     if ($rule['regexp']) $match = "matches regexp";

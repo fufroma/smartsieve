@@ -40,7 +40,7 @@ if (isset($GLOBALS['HTTP_POST_VARS']['script'])) {
 if (!$sieve->openSieveSession()) {
     print "ERROR: " . $sieve->errstr . "<BR>\n";
     $sieve->writeToLog("ERROR: openSieveSession failed for " . $sieve->user .
-        ': ' . $sieve->errstr, LOG_ERROR);
+        ': ' . $sieve->errstr, LOG_ERR);
     exit;
 }
 
@@ -75,7 +75,7 @@ if ($action == 'enable') {
         if (!$script->updateScript($sieve->connection)) {
             array_push($errors, 'ERROR: ' . $script->errstr);
             $sieve->writeToLog("ERROR: vacation.php: can't update script: "
-                . $script->errstr, LOG_ERROR);
+                . $script->errstr, LOG_ERR);
         }
         else {
             array_push($msgs, 'vacation settings successfully enabled.');
@@ -88,7 +88,7 @@ if ($action == 'enable') {
     }
     else {
         array_push($errors, 'ERROR: vacation setting not yet saved.');
-        $sieve->writeToLog('ERROR: vacation setting not yet saved.', LOG_ERROR);
+        $sieve->writeToLog('ERROR: vacation setting not yet saved.', LOG_ERR);
     }
 }
 if ($action == 'disable') {
@@ -98,7 +98,7 @@ if ($action == 'disable') {
         if (!$script->updateScript($sieve->connection)) {
             array_push($errors, 'ERROR: ' . $script->errstr);
             $sieve->writeToLog("ERROR: vacation.php: can't update script: " 
-                    . $script->errstr, LOG_ERROR);
+                    . $script->errstr, LOG_ERR);
         }
         else {
             array_push($msgs, 'vacation settings successfully disabled.');
@@ -111,7 +111,7 @@ if ($action == 'disable') {
     }
     else {
         array_push($errors, 'ERROR: vacation setting not yet saved.');
-	$sieve->writeToLog('ERROR: vacation setting not yet saved.', LOG_ERROR);
+	$sieve->writeToLog('ERROR: vacation setting not yet saved.', LOG_ERR);
     }
 }
 if ($action == 'save') 
@@ -122,7 +122,7 @@ if ($action == 'save')
         if (!$script->updateScript($sieve->connection)) {
             array_push($errors, 'ERROR: ' . $script->errstr);
 	    $sieve->writeToLog("ERROR: vacation.php: can't update script: "
-		. $script->errstr, LOG_ERROR);
+		. $script->errstr, LOG_ERR);
         }
         else {
             array_push($msgs, 'your changes have been successfully saved.');
