@@ -136,6 +136,11 @@ PROBLEMS
 If you encounter any problems with SmartSieve, you may be able to 
 get assistance from one of the following sources:
 
+There is a mailing list for the SmartSieve project. You can view the 
+list archives, subscribe or get further information at:
+
+http://lists.sourceforge.net/lists/listinfo/smartsieve-general
+
 There is a support request tracker for the SmartSieve project. You 
 can browse the tracker at:
 
@@ -145,9 +150,6 @@ There is a help forum for the SmartSieve project. You will find it at:
 
 http://sourceforge.net/forum/forum.php?forum_id=211286
 
-Finally, you can reach me at:
-
-stephengrier@users.sourceforge.net
 
 
 $Id$
