@@ -167,7 +167,7 @@ function checkRule($vacation)
     if (!$vacation['text'] && !$default->vacation_text){
 	return SmartSieve::text("please supply the message to send with auto-responses");
     }
-    if (!$vacation['days'] && $default->require_vacation_days && !$default->vacation_days){
+    if (!$vacation['days'] && !empty($default->require_vacation_days) && !$default->vacation_days){
         return SmartSieve::text("please select the number of days to wait between responses");
     }
     // does $vacation['addresses'] contain any valid addresses?
@@ -178,7 +178,7 @@ function checkRule($vacation)
             $a = true;
         }
     }
-    if ($a == false && $default->require_vacation_addresses && !$sieve->maildomain){
+    if ($a == false && !empty($default->require_vacation_addresses) && !$sieve->maildomain){
         return SmartSieve::text("please supply at least one valid vacation address");
     }
 

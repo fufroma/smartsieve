@@ -1,21 +1,16 @@
 SmartSieve - TODO
 
-More htmlspecialchars()
-Handle referrals.
-call $sieve->initialWorkingScript() from delete and rename actions of scripts.php.
-maybe copy raw script text when renaming script in rename action of scripts.php.
-
 
 TODO for 0.5.2
 
 * add direct edit mode
-* fix digest-md5 authentication for cyrus-2.0.x
-* add support for cram-md5 authentication
-* move SieveSession object from $_SESSION to $GLOBALS scope.
-
+* add iconv and mbstring note to INSTALL
 
 TODO for 0.6
 
+* add support for cram-md5 authentication
+* move SieveSession object from $_SESSION to $GLOBALS scope.
+* handle referrals
 * remove dependency on c-client by adding hardcoded imap functions in PHP
 * add support for proxy authorization
 * do HAVESPACE before doing a PUTSCRIPT as the spec demands. HAVESPACE is broken up to 
@@ -32,20 +27,18 @@ TODO for 0.6
 * make checkRule() checkVacation() more generic and call from updateScript()
 * include file/line number to log messages
 * make sure unixhierarchysep is handled properly
-* solve potential socket hangs in SieveSession::read()
-* put read buffer into $this->read_buf in SieveSession::read()
-  SieveSession::read() can then return true or false, and set $this->socket_err if socket 
-  timed out or no bytes found at the socket.
 
 TODO for 0.7.0
 
-* major rewrite of backend indexing code
+* major rewrite of meta-indexing code
 * implement rule as an object
 * write a generic error class similar to pearError
-* parse server responses properly in sieve.lib
 
 Miscellaneous TODOs
 
+* more htmlspecialchars()
+* call $sieve->initialWorkingScript() from delete and rename actions of scripts.php
+* copy raw script text when renaming script in rename action of scripts.php
 * add $servers->imapflags value to conf/servers.php (?).
 * add view raw script option to main.php
 * add drop down list for rule position on create rule page

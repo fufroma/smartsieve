@@ -1,6 +1,9 @@
 Smartsieve - Changes file
 -------------------------
 
+01 Mar 2004 S Grier
+* Protect code from non-existent config options using !empty().
+
 09 Feb 2004 S Grier
 * Updated German translation file from Andreas Haase.
 

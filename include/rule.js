@@ -17,7 +17,7 @@ function Submit(a)
                 return true;
         }
     }
-<?php if ($default->websieve_auto_matches){ ?>
+<?php if (!empty($default->websieve_auto_matches)){ ?>
     for (i = 0; i < document.thisRule.elements.length; i++) {
         if (window.document.thisRule.elements[i].value.indexOf('*') != -1 ||
             window.document.thisRule.elements[i].value.indexOf('?') != -1){

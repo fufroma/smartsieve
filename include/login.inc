@@ -37,7 +37,7 @@
     </TD>
   </TR>
 
-<?php if ($default->user_select_lang) { ?>
+<?php if (!empty($default->user_select_lang)) { ?>
   <TR CLASS="menu">
     <TD ALIGN="right"> <?php echo SmartSieve::text("Language");?>:
     </TD>
