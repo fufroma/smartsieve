@@ -1,6 +1,9 @@
 Smartsieve - Changes file
 -------------------------
 
+11 March 2003 S Grier
+* fixed problem with havespace function.
+
 10 March 2003 S Grier
 * scripts.php: fixed delete action.
 * fixed undefined warnings caused by SieveSession object.
