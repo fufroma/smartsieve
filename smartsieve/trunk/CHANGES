@@ -1,6 +1,17 @@
 Smartsieve - Changes file
 -------------------------
 
+29 Dec 2002 S Grier
+* lib/SmartSieve.lib:
+  - take note of script size.
+  - read and note encoded mode value. only used by Websieve.
+  - check script has recognised encoding of rules. if script was not 
+    previously written by SmartSieve/Websieve, $script->so will indicate 
+    that is it not safe to overwrite the script.
+* main.php: 
+  - warn if script encoding was not recognised.
+  - warn if script was written in Websieve's advanced mode.
+
 11 Dec 2002 S Grier
 * alt_namespace should be boolean not a string in servers.php.
 
