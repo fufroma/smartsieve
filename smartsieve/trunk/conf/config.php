@@ -69,6 +69,9 @@ $default->update_activate_script = true;
 // should we allow regular expression matching in sieve rules?
 $default->allow_regex = true;
 
+/* should we return to view all rules page following updates? */
+$default->return_after_update = false;
+
 // logging
 
 // should we log messages?
