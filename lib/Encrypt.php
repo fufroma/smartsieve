@@ -8,14 +8,12 @@
  */
 
 
-//require 'Crypt/HCEMD5.php';
 class Encrypt {
 
 
     function encrypt ($string,$key) {
 
-//	require 'Crypt/HCEMD5.php';
-include_once 'Crypt/HCEMD5.php';
+	require_once 'Crypt/HCEMD5.php';
 
 	$hcemd5 = new Crypt_HCEMD5($key);
 	$encrypted = $hcemd5->encodeMimeSelfRand($string);
@@ -25,8 +23,7 @@ include_once 'Crypt/HCEMD5.php';
 
     function decrypt ($string,$key) {
 
-//	require 'Crypt/HCEMD5.php';
-include_once 'Crypt/HCEMD5.php';
+	require_once 'Crypt/HCEMD5.php';
 
 	$hcemd5 = new Crypt_HCEMD5($key);
 	$decrypted = $hcemd5->decodeMimeSelfRand($string);
