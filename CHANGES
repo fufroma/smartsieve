@@ -1,6 +1,9 @@
 Smartsieve - Changes file
 -------------------------
 
+17 July 2003 S Grier
+* set $rule['unconditional'] for custom rule if unconditional.
+
 16 July 2003 S Grier
 * add "vacation" to require line if custom rule contains vacation command.
 
