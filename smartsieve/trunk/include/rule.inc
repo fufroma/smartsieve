@@ -62,7 +62,7 @@
         </SELECT>
       </TD>
       <TD NOWRAP="nowrap">
-        <?php echo SmartSieve::text("If message 'From:' contains");?>: <INPUT TYPE="text" NAME="from" VALUE="<?php echo (isset($rule['from'])) ? $rule['from'] : '';?>" SIZE="50">
+        <?php echo SmartSieve::text("If message 'From:' contains");?>: <INPUT TYPE="text" NAME="from" VALUE="<?php echo (isset($rule['from'])) ? SmartSieve::utf8Decode($rule['from']) : '';?>" SIZE="50">
       </TD>
     </TR>
     <TR>
@@ -70,7 +70,7 @@
         &nbsp;
       </TD>
       <TD>
-        <?php echo SmartSieve::text("If message 'To:' contains");?>: <INPUT TYPE="text" NAME="to" VALUE="<?php echo (isset($rule['to'])) ? $rule['to'] : '';?>" SIZE="50">
+        <?php echo SmartSieve::text("If message 'To:' contains");?>: <INPUT TYPE="text" NAME="to" VALUE="<?php echo (isset($rule['to'])) ? SmartSieve::utf8Decode($rule['to']) : '';?>" SIZE="50">
       </TD>
     </TR>
     <TR>
@@ -78,7 +78,7 @@
         &nbsp;
       </TD>
       <TD>
-        <?php echo SmartSieve::text("If message 'Subject:' contains");?>: <INPUT TYPE="text" NAME="subject" VALUE="<?php echo (isset($rule['subject'])) ? $rule['subject'] : '';?>" SIZE="50">
+        <?php echo SmartSieve::text("If message 'Subject:' contains");?>: <INPUT TYPE="text" NAME="subject" VALUE="<?php echo (isset($rule['subject'])) ? SmartSieve::utf8Decode($rule['subject']) : '';?>" SIZE="50">
       </TD>
     </TR>
     <TR>
@@ -99,7 +99,7 @@
         &nbsp;
       </TD>
       <TD>
-        <?php echo SmartSieve::text("If mail header");?>: <INPUT TYPE="text" NAME="field" VALUE="<?php echo (isset($rule['field'])) ? $rule['field'] : '';?>" SIZE="20"> <?php echo SmartSieve::text("contains");?>: <INPUT TYPE="text" NAME="field_val" VALUE="<?php echo (isset($rule['field_val'])) ? $rule['field_val'] : '';?>" SIZE="30">
+        <?php echo SmartSieve::text("If mail header");?>: <INPUT TYPE="text" NAME="field" VALUE="<?php echo (isset($rule['field'])) ? SmartSieve::utf8Decode($rule['field']) : '';?>" SIZE="20"> <?php echo SmartSieve::text("contains");?>: <INPUT TYPE="text" NAME="field_val" VALUE="<?php echo (isset($rule['field_val'])) ? SmartSieve::utf8Decode($rule['field_val']) : '';?>" SIZE="30">
       </TD>
     </TR>
     </TABLE>
@@ -135,7 +135,7 @@
         <INPUT TYPE="radio" NAME="action" VALUE="address"<?php echo (isset($rule['action']) && $rule['action'] == 'address') ? ' CHECKED="checked"' : '';?>> <?php echo SmartSieve::text("Forward to address");?>:
       </TD>
       <TD>
-        <INPUT TYPE="text" NAME="address" VALUE="<?php echo (isset($rule['action_arg']) && $rule['action'] == 'address') ? $rule['action_arg'] : '';?>" SIZE="40">
+        <INPUT TYPE="text" NAME="address" VALUE="<?php echo (isset($rule['action_arg']) && $rule['action'] == 'address') ? SmartSieve::utf8Decode($rule['action_arg']) : '';?>" SIZE="40">
       </TD>
     </TR>
     <TR>
@@ -143,7 +143,7 @@
         <INPUT TYPE="radio" NAME="action" VALUE="reject"<?php echo (isset($rule['action']) && $rule['action'] == 'reject') ? ' CHECKED="checked"' : '';?>> <?php echo SmartSieve::text("Send a reject message");?>:
       </TD>
       <TD>
-        <TEXTAREA NAME="reject" ROWS="3" COLS="<?php echo $wrap_width;?>" WRAP="hard"><?php if (isset($rule['action_arg']) && $rule['action'] == 'reject') echo $rule['action_arg'];?></TEXTAREA>
+        <TEXTAREA NAME="reject" ROWS="3" COLS="<?php echo $wrap_width;?>" WRAP="hard"><?php if (isset($rule['action_arg']) && $rule['action'] == 'reject') echo SmartSieve::utf8Decode($rule['action_arg']);?></TEXTAREA>
       </TD>
     </TR>
     <TR>
@@ -160,7 +160,7 @@
         <INPUT TYPE="radio" NAME="action" VALUE="custom"<?php echo (isset($rule['action']) && $rule['action'] == 'custom') ? ' CHECKED="checked"' : '';?>> <?php echo SmartSieve::text('Custom Rule');?>:
       </TD>
       <TD>
-        <TEXTAREA NAME="custom" ROWS="3" COLS="40" WRAP="off"><?php if (isset($rule['action_arg']) && $rule['action'] == 'custom') echo $rule['action_arg'];?></TEXTAREA>
+        <TEXTAREA NAME="custom" ROWS="3" COLS="40" WRAP="off"><?php if (isset($rule['action_arg']) && $rule['action'] == 'custom') echo SmartSieve::utf8Decode($rule['action_arg']);?></TEXTAREA>
       </TD>
     </TR>
 <?php endif; ?>

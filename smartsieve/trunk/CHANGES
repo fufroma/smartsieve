@@ -1,6 +1,10 @@
 Smartsieve - Changes file
 -------------------------
 
+10 Nov 2004 S Grier
+* Convert charset of user supplied strings to correctly handle non-ascii content.
+  Sieve scripts should always be UTF-8 on the server.
+
 05 Nov 2004 S Grier
 * Move class Encrypt:: functions to SmartSieve:: (Bug #1058951).
 * Replace remaining old style $HTTP_*_VARS arrays with superglobals.

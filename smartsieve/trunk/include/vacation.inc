@@ -52,7 +52,7 @@
       </TD>
       <TD NOWRAP="nowrap">
         <TEXTAREA NAME="text" ROWS="3" COLS="<?php echo $wrap_width;?>" WRAP="hard" TABINDEX="1">
-<?php if ($vacation['text']) print $vacation['text']; ?>
+<?php if ($vacation['text']) print SmartSieve::utf8Decode($vacation['text']); ?>
 </TEXTAREA>
       </TD>
     </TR>
@@ -83,7 +83,7 @@ if (is_array($vacation['addresses'])) {
     $first = 1;
     foreach ($vacation['addresses'] as $address) {
       if (!$first) print ", ";
-      print $address;
+      print SmartSieve::utf8Decode($address);
       $first = 0;
     }
     print "\"";
