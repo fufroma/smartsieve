@@ -2,6 +2,8 @@ Smartsieve - Changes file
 -------------------------
 
 26 Sept 2003 S Grier
+* added a javascript confirmation popup when a match string contains wildcard chars with 
+  $default->websieve_auto_matches = true to warn them that :matches will be used.
 * add $default->websieve_auto_matches config option to control the automatic use of the :matches 
   comparator where match string contains wildcard characters. This defaults to off because of 
   the unexpected results this can produce.
