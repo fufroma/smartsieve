@@ -2,6 +2,8 @@ Smartsieve - Changes file
 -------------------------
 
 03 Oct 2002 S Grier
+* added $default->return_after_update config option.
+* added success messages to rule.php.
 * improved top menus.
 
 02 Oct 2002 S Grier
