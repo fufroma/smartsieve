@@ -255,14 +255,14 @@ Rules</a> |
 <TR>
   <TD CLASS="statusouter">
     <TABLE WIDTH="100%" CELLPADDING="2" BORDER="0" CELLSPACING="0">
-      <TR>
-        <TD CLASS="status">
+      <TR CLASS="status">
+        <TD>
           &nbsp;User: <?php print $sieve->user; ?>
         </TD>
-        <TD CLASS="status">
+        <TD>
           &nbsp;Server: <?php print $sieve->server; ?>
         </TD>
-        <TD CLASS="status">
+        <TD>
           &nbsp;Script: <?php print $sieve->workingscript; ?>
         </TD>
 <?php if (AppSession::isActiveScript($sieve->workingscript)) { ?>
@@ -289,16 +289,16 @@ Rules</a> |
   <TD CLASS="main">
 
     <TABLE WIDTH="100%" CELLPADDING="5" BORDER="0" CELLSPACING="0">
-    <TR>
-      <TD CLASS="ruleinfo">
+    <TR CLASS="heading">
+      <TD>
     <?php if ($rule) {
 	 print "Edit Mail Filter Rule</TD><TD CLASS=";
 	 if ($rule['status'] == 'ENABLED'){
-	    print "\"ruleenabled\"> ENABLED ";
+	    print "\"enabled\"> ENABLED ";
 	 }
-	 else print "\"ruledisabled\"> DISABLED ";
+	 else print "\"disabled\"> DISABLED ";
        } 
-       else print "New Mail Filter Rule</TD><TD CLASS=\"ruleinfo\">&nbsp;"; 
+       else print "New Mail Filter Rule</TD><TD>&nbsp;"; 
     ?>
       </TD>
     </TR>

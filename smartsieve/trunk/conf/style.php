@@ -55,37 +55,31 @@ $css['a.rule:hover']['font-family'] = 'sans-serif';
 $css['a.rule:hover']['font-size'] = '8pt';
 $css['a.rule:hover']['text-decoration'] = 'none';
 
-$css['.active']['background-color'] = '#b5b5b5';
-$css['.active']['color'] = '#008000';
-$css['.active']['font-family'] = 'helvetica,sans-serif';
-$css['.active']['font-size'] = '10pt';
-$css['.active']['font-weight'] = 'bold';
+$css['.enabledrule']['color'] = '#000000';
+$css['.enabledrule']['font-family'] = 'helvetica,sans-serif';
+$css['.enabledrule']['font-size'] = '9pt';
+$css['.enabledrule']['background-color'] = '#FFFFFF';
 
-$css['.inactive']['background-color'] = '#b5b5b5';
-$css['.inactive']['color'] = '#FF0000';
-$css['.inactive']['font-family'] = 'helvetica,sans-serif';
-$css['.inactive']['font-size'] = '10pt';
-$css['.inactive']['font-weight'] = 'bold';
+$css['.enabledrule-over']['color'] = '#000000';
+$css['.enabledrule-over']['font-family'] = 'helvetica,sans-serif';
+$css['.enabledrule-over']['font-size'] = '9pt';
+$css['.enabledrule-over']['background-color'] = '#e5e5e5';
+
+$css['.disabledrule']['color'] = '#000000';
+$css['.disabledrule']['font-family'] = 'helvetica,sans-serif';
+$css['.disabledrule']['font-size'] = '9pt';
+$css['.disabledrule']['background-color'] = '#f1f1f1';
+
+$css['.disabledrule-over']['color'] = '#000000';
+$css['.disabledrule-over']['font-family'] = 'helvetica,sans-serif';
+$css['.disabledrule-over']['font-size'] = '9pt';
+$css['.disabledrule-over']['background-color'] = '#c5c5c5';
 
 $css['.enabled']['color'] = '#008000';
-$css['.enabled']['font-family'] = 'helvetica,sans-serif';
-$css['.enabled']['font-size'] = '9pt';
-$css['.enabled']['background-color'] = '#FFFFFF';
+$css['.enabled']['font-weight'] = 'normal';
 
 $css['.disabled']['color'] = '#FF0000';
-$css['.disabled']['font-family'] = 'helvetica,sans-serif';
-$css['.disabled']['font-size'] = '9pt';
-$css['.disabled']['background-color'] = '#FFFFFF';
-
-$css['.ruleenabled']['color'] = '#008000';
-$css['.ruleenabled']['font-family'] = 'helvetica,sans-serif';
-$css['.ruleenabled']['font-size'] = '9pt';
-$css['.ruleenabled']['background-color'] = '#e5e5e5';
-
-$css['.ruledisabled']['color'] = '#FF0000';
-$css['.ruledisabled']['font-family'] = 'helvetica,sans-serif';
-$css['.ruledisabled']['font-size'] = '9pt';
-$css['.ruledisabled']['background-color'] = '#e5e5e5';
+$css['.disabled']['font-weight'] = 'normal';
 
 $css['.menu']['background-color'] = '#b5b5b5';
 
@@ -102,23 +96,16 @@ $css['.status']['font-weight'] = 'bold';
 $css['.statusouter']['background-color'] = '#000000';
 
 $css['.heading']['background-color'] = '#e5e5e5';
-$css['.heading']['color'] = '#000000';
-$css['.heading']['font-family'] = 'helvetica,sans-serif';
-$css['.heading']['font-size'] = '9pt';
+$css['.heading']['color'] = '#444466';
+$css['.heading']['font-family'] = 'verdana,helvetica,sans-serif';
+$css['.heading']['font-size'] = '12pt';
 $css['.heading']['font-weight'] = 'bold';
 
-$css['.ruleinfo']['background-color'] = '#e5e5e5';
-$css['.ruleinfo']['color'] = '#000000';
-$css['.ruleinfo']['font-family'] = 'helvetica,sans-serif';
-$css['.ruleinfo']['font-size'] = '10pt';
-$css['.ruleinfo']['font-weight'] = 'bold';
-
-$css['.rules']['background-color'] = '#FFFFFF';
-
-$css['.options']['background-color'] = '#b5b5b5';
-$css['.options']['color'] = '#0000FF';
-$css['.options']['font-family'] = 'helvetica,sans-serif';
-$css['.options']['font-size'] = '9pt';
+$css['th']['background-color'] = '#e5e5e5';
+$css['th']['color'] = '#444466';
+$css['th']['font-family'] = 'verdana,helvetica,sans-serif';
+$css['th']['font-size'] = '9pt';
+$css['th']['font-weight'] = 'bold';
 
 $css['.errors']['background-color'] = '#FFFFFF';
 $css['.errors']['color'] = '#FF0000';
@@ -156,7 +143,16 @@ $css['a.option:hover']['font-family'] = 'helvetica,sans-serif';
 $css['a.option:hover']['font-size'] = '9pt';
 $css['a.option:hover']['text-decoration'] = 'none';
 
+$css['.options']['color'] = '#0000FF';
+$css['.options']['font-family'] = 'helvetica,sans-serif';
+$css['.options']['font-size'] = '9pt';
+
+$css['.active']['color'] = '#008000';
+$css['.inactive']['color'] = '#FF0000';
+
 $css['.inactivescript']['background-color'] = '#f1f1f1';
+$css['.inactivescript']['font-size'] = '9pt';
 $css['.activescript']['background-color'] = '#FFFFFF';
+$css['.activescript']['font-size'] = '9pt';
 
 ?>
