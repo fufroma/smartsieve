@@ -21,7 +21,7 @@ $script = &$GLOBALS['HTTP_SESSION_VARS']['script'];
 
 // if a session does not exist, go to login page
 if (!is_object($sieve) || !$sieve->authenticate()) {
-	header('Location: ' . $baseurl . 'login.php',true);
+	header('Location: ' . AppSession::setUrl('login.php'),true);
 	exit;
 }
 
@@ -123,7 +123,7 @@ require "$default->include_dir/main.js";
 <BODY>
 
 
-<FORM ACTION="<?php print $default->baseurl ?>main.php" METHOD="post" NAME="rules">
+<FORM ACTION="<?php print AppSession::setUrl('main.php');?>" METHOD="post" NAME="rules">
 
 <TABLE WIDTH="100%" CELLPADDING="2" BORDER="0" CELLSPACING="0">
 <TR>
@@ -132,10 +132,10 @@ require "$default->include_dir/main.js";
       <TR>
 	<TD CLASS="menu">
 	  &nbsp;
-	  <a href="<?php print $default->baseurl; ?>login.php?reason=logout">Logout</a> |
-	  <a href="<?php print $default->baseurl; ?>main.php">View All Rules</a> |
-	  <a href="<?php print $default->baseurl; ?>vacation.php">Vacation Settings</a> |
-	  <a href="<?php print $default->baseurl; ?>rule.php">New Filter Rule</a> <?php if ($default->main_help_url){ ?>| 
+	  <a href="<?php print AppSession::setUrl('login.php?reason=logout');?>">Logout</a> |
+	  <a href="<?php print AppSession::setUrl('main.php');?>">View All Rules</a> |
+	  <a href="<?php print AppSession::setUrl('vacation.php');?>">Vacation Settings</a> |
+	  <a href="<?php print AppSession::setUrl('rule.php');?>">New Filter Rule</a> <?php if ($default->main_help_url){ ?>| 
 	  <a href="<?php print $default->main_help_url; ?>">Help</a> <?php } /* endif. */ ?>
 
 	</TD>
@@ -211,7 +211,7 @@ if ($script->rules){ ?>
     <TR onmouseover="javascript:style.background='grey'" onmouseout="javascript:style.background='#e5e5e5'">
       <TD CLASS="rules"><INPUT TYPE="checkbox" NAME="ruleID[]" VALUE="<?php print $i; ?>"></TD>
       <TD CLASS="<?php if ($rule['status'] == 'ENABLED') print "enabled"; else print "disabled"; print "\">" . $rule['status']; ?></TD>
-      <TD CLASS="rules" NOWRAP="nowrap"><A CLASS="rule" HREF="<?php print $default->baseurl . "rule.php?ruleID=$i"; ?>" onmouseover="status='Edit This Rule'; return true;" onmouseout="status='';"><?php print $complete; ?></A></TD>
+      <TD CLASS="rules" NOWRAP="nowrap"><A CLASS="rule" HREF="<?php print AppSession::setUrl("rule.php?ruleID=$i"); ?>" onmouseover="status='Edit This Rule'; return true;" onmouseout="status='';"><?php print $complete; ?></A></TD>
       <TD CLASS="rules" NOWRAP="nowrap"><A HREF="" onclick="ChangeOrder('increase',<?php print $i; ?>); return false;"><IMG SRC="<?php print $default->image_dir; ?>/up.gif" ALT="Move rule up" BORDER="0" onmouseover="status='Move rule up'; return true;" onmouseout="status='';"></A> <A HREF="" onclick="ChangeOrder('decrease',<?php print $i; ?>); return false;"><IMG SRC="<?php print $default->image_dir; ?>/down.gif" ALT="Move rule down" BORDER="0" onmouseover="status='Move rule down'; return true;" onmouseout="status='';"></A></TD>
     </TR>
 <?php
@@ -233,7 +233,7 @@ if ($script->vacation){
     <TR onmouseover="javascript:style.background='grey'" onmouseout="javascript:style.background='#e5e5e5'">
       <TD CLASS="rules"></TD>
       <TD CLASS="<?php if ($script->vacation['status'] == 'on'){print "enabled\">ENABLED";} else print "disabled\">DISABLED"; ?></TD>
-      <TD CLASS="rules" NOWRAP="nowrap" COLSPAN="2"><A CLASS="rule" HREF="<?php print $default->baseurl . "vacation.php"; ?>">days: <?php print $script->vacation['days']; ?> addresses: <?php
+      <TD CLASS="rules" NOWRAP="nowrap" COLSPAN="2"><A CLASS="rule" HREF="<?php print AppSession::setUrl('vacation.php'); ?>">days: <?php print $script->vacation['days']; ?> addresses: <?php
 
         $first = 1;
         foreach ($script->vacation['addresses'] as $address) {
