@@ -139,10 +139,17 @@ if ($action) {
 }
 
 
-$jsfile = 'main.js';
-if ($script->mode == 'advanced')
+if ($script->mode == 'advanced'){
     $jsfile = 'script-direct.js';
+} else {
+    $jsfile = 'main.js';
+}
 $jsonload = '';
+if (!empty($default->main_help_url)){
+    $help_url = $default->main_help_url;
+} else {
+    $help_url = '';
+}
 
 include $default->include_dir . '/common-head.inc';
 include $default->include_dir . '/menu.inc';
