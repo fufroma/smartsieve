@@ -181,6 +181,7 @@ class AppSession {
                                           $this->user,
                                           $passwd,
                                           $this->proxy,
+                                          $default->sasl_mech ? $default->sasl_mech : '',
                                           $default->socket_timeout ? $default->socket_timeout : 5 );
     if (!$this->connection){
         $this->errstr = 'openSieveSession: failed to initialize SieveSession';

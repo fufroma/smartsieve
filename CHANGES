@@ -1,6 +1,14 @@
 Smartsieve - Changes file
 -------------------------
 
+20 June 2003 S Grier
+* sieve.lib:
+  - abstracted SASL authenticate command into new _authenticate() function. 
+    This is necessary for adding support for other SASL mechanisms.
+  - new _selectsaslmech() function selects which of the supported SASL mechanisms 
+    to use. Returns false if none of the supported mechanisms are available on 
+    the server.
+
 15 May 2003 S Grier
 * release_0_5_1devel.
 * lib/Crypt/mcrypt.php:
