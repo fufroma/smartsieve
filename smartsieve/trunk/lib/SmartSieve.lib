@@ -264,6 +264,36 @@ class AppSession {
   }
 
 
+  /*
+   * Return a url for this application. Prepend the webroot if requested. 
+   * If the client's browser is not accepting cookies we will need to 
+   * set the session id as a url parameter.
+   */
+  function setUrl ($uri, $prepend_root = true) 
+  {
+      $url = '';
+      if ($prepend_root){
+        $baseurl = $GLOBALS['default']->baseurl;
+        if (!preg_match('/\/$/', $baseurl))
+            $baseurl .= '/';
+        $url .= $baseurl;
+      }
+      $url .= $uri;
+
+      if (!isset($GLOBALS['HTTP_COOKIE_VARS'][session_name()])){
+          /* we should add session_id as url parameter. */
+          /* if already have params add '&param', or '?param' if not. */
+          if (strstr($uri, '?') == false)
+              $url .= '?';
+          else
+              $url .= '&';
+          $url .= urlencode(session_name()) . '=' . session_id();
+      }
+
+      return $url;
+  }
+
+
 
 }
 // end Session class
