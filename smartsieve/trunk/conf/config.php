@@ -133,5 +133,10 @@ $default->rule_help_url = '';
 // $default->vacation_help_url = 'http://example.co.uk/help.html';
 $default->vacation_help_url = '';
 
+/* if this is anything other than empty, a help menu link will be
+ * displayed on the manage scripts page linked to this URL. */
+// $default->scripts_help_url = 'http://example.co.uk/help.html';
+$default->scripts_help_url = '';
+
 
 ?>
