@@ -1,6 +1,10 @@
 Smartsieve - Changes file
 -------------------------
 
+10 April 2003 S Grier
+* vacation.php:
+ - make $script a reference, to fix bug similar to bug #717615 in rule.php.
+
 09 April 2003 S Grier
 * rule.php:
  - fixed undefined index warnings when rule doesn't exist.

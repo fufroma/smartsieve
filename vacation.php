@@ -19,7 +19,7 @@ $msgs = array();
 
 $sieve = &$GLOBALS['HTTP_SESSION_VARS']['sieve'];
 $scripts = &$GLOBALS['HTTP_SESSION_VARS']['scripts'];
-$script = $scripts[$sieve->workingscript];
+$script = &$scripts[$sieve->workingscript];
 
 // if a session does not exist, go to login page
 if (!is_object($sieve) || !$sieve->authenticate()) {
