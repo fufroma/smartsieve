@@ -41,9 +41,6 @@ if (!isset($_SESSION['smartsieve']['mailboxes'])) {
     }
 }
 
-$ruleID = null;   /* rule number. */
-$rule = null;     /* sieve rule $script->rules[$ruleID]. */
-
 /* if one of the save, enable etc options was selected from rule.php, 
  * then get the rule values from POST data. if rule selected from main.php 
  * $ruleID will be set in GET data. if $ruleID not set in POST or GET, or 
@@ -58,6 +55,9 @@ elseif (isset($_GET['ruleID'])) {
     if (isset($script->rules[$ruleID])) {
         $rule = $script->rules[$ruleID];
     }
+} else {
+    $ruleID = null;
+    $rule = array();
 }
 
 /* save rule changes if requested. */

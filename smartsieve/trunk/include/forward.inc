@@ -1,4 +1,4 @@
-<FORM ACTION="<?php print SmartSieve::setUrl('forward.php');?>" METHOD="post" NAME="thisForward">
+<FORM ACTION="<?php echo SmartSieve::setUrl('forward.php');?>" METHOD="post" NAME="thisForward">
 
 <TABLE WIDTH="100%" CELLPADDING="0" BORDER="0" CELLSPACING="1">
 <TR>
@@ -7,15 +7,17 @@
     <TABLE WIDTH="100%" CELLPADDING="5" BORDER="0" CELLSPACING="0">
     <TR CLASS="heading">
       <TD>
-    <?php if ($rule) {
-         echo SmartSieve::text("Edit Forward Rule") . "</TD><TD CLASS=";
-         if ($rule['status'] == 'ENABLED'){
-            print "\"enabled\"> " . SmartSieve::text('ENABLED');
-         }
-         else print "\"disabled\"> " . SmartSieve::text('DISABLED');
-       }
-       else echo SmartSieve::text('Create Forward Rule') . "</TD><TD>&nbsp;";
-    ?>
+<?php if ($ruleID && $ruleID != 'new'): ?>
+        <?php echo SmartSieve::text("Edit Forward Rule");?> 
+      </TD>
+      <TD CLASS="<?php echo (isset($rule['status']) && $rule['status'] == 'ENABLED') ? 'enabled' : 'disabled';?>">
+        <?php echo (isset($rule['status']) && $rule['status'] == 'ENABLED') ? SmartSieve::text('ENABLED') : SmartSieve::text('DISABLED');?> 
+<?php else: ?>
+        <?php echo SmartSieve::text('Create Forward Rule');?> 
+      </TD>
+      <TD>
+        &nbsp;
+<?php endif; ?>
       </TD>
     </TR>
     </TABLE>
@@ -31,7 +33,7 @@
         <?php echo SmartSieve::text('Forwarding Address:');?> 
       </TD>
       <TD>
-        <INPUT TYPE="text" NAME="address" <?php if ($rule['action'] == 'address') print "VALUE=\"" . $rule['action_arg'] . "\" "; ?>SIZE="40">
+        <INPUT TYPE="text" NAME="address" VALUE="<?php echo (isset($rule['action_arg']) && $rule['action'] == 'address') ? $rule['action_arg'] : '';?>" SIZE="40">
       </TD>
     </TR>
     <TR>
@@ -39,7 +41,7 @@
         <?php echo SmartSieve::text('Keep a copy in Inbox:');?> 
       </TD>
       <TD>
-        <INPUT TYPE="checkbox" NAME="keep" VALUE="keep" <?php if ($rule['keep']) print "CHECKED"; ?>>
+        <INPUT TYPE="checkbox" NAME="keep" VALUE="keep"<?php echo (!empty($rule['keep'])) ? ' CHECKED="checked"' : '';?>>
       </TD>
     </TR>
     </TABLE>
@@ -54,15 +56,14 @@
       <TD CLASS="options" COLSPAN="2">
         <BR>
         <A CLASS="option" HREF="" onclick="Submit('save'); return false;" onmouseover="window.status='<?php echo SmartSieve::text('Save Changes');?>'; return true;" onmouseout="window.status='';"><?php echo SmartSieve::text('Save Changes');?></a>
-<?php //if ($script->rules[$ruleID]) { ?>
-<?php if (isset($ruleID)){ ?>
+<?php if ($ruleID && $ruleID != 'new'): ?>
           |
         <A CLASS="option" HREF="" onclick="Submit('enable'); return false;" onmouseover="window.status='<?php echo SmartSieve::text('Enable');?>'; return true;" onmouseout="window.status='';"><?php echo SmartSieve::text('Enable');?></a>
           |
         <A CLASS="option" HREF="" onclick="Submit('disable'); return false;" onmouseover="window.status='<?php echo SmartSieve::text('Disable');?>'; return true;" onmouseout="window.status='';"><?php echo SmartSieve::text('Disable');?></a>
           |
         <A CLASS="option" HREF="" onclick="Submit('delete'); return false;" onmouseover="window.status='<?php echo SmartSieve::text('Delete');?>'; return true;" onmouseout="window.status='';"><?php echo SmartSieve::text('Delete');?></a>
-<?php } ?>
+<?php endif; ?>
       </TD>
     </TR>
     </TABLE>
@@ -72,30 +73,11 @@
 </TABLE>
 
 
-<INPUT TYPE="hidden" NAME="priority" VALUE="<?php
-    if ($rule) {
-        print $rule['priority'];
-    }
-    else print $script->pcount+1;
-?>">
-<INPUT TYPE="hidden" NAME="status" VALUE="<?php
-    if ($rule) {
-        print $rule['status'];
-    }
-    else print "ENABLED";
-?>">
-<INPUT TYPE="hidden" NAME="flg" VALUE="<?php
-    if ($rule) {
-        print $rule['flg'];
-    }
-?>">
+<INPUT TYPE="hidden" NAME="priority" VALUE="<?php echo (isset($rule['priority'])) ? $rule['priority'] : $script->pcount+1;?>">
+<INPUT TYPE="hidden" NAME="status" VALUE="<?php echo (isset($rule['status'])) ? $rule['status'] : 'ENABLED';?>">
+<INPUT TYPE="hidden" NAME="flg" VALUE="<?php echo (isset($rule['flg'])) ? $rule['flg'] : '';?>">
 <INPUT TYPE="hidden" NAME="thisAction" VALUE="">
-<INPUT TYPE="hidden" NAME="ruleID" VALUE="<?php
-   if ($rule && isset($ruleID)) {
-        print $ruleID;
-   }
-   else print "new";
-?>">
+<INPUT TYPE="hidden" NAME="ruleID" VALUE="<?php echo ($ruleID) ? $ruleID : 'new';?>">
 <INPUT TYPE="hidden" NAME="anyof" VALUE="">
 <INPUT TYPE="hidden" NAME="from" VALUE="">
 <INPUT TYPE="hidden" NAME="to" VALUE="">

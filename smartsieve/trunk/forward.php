@@ -34,9 +34,6 @@ if (isset($_POST['script'])) {
     exit;
 }
 
-$ruleID = null;   /* rule number. */
-$rule = null;     /* sieve rule $script->rules[$ruleID]. */
-
 /* if one of the save, enable etc options was selected, get the rule values 
  * from POST data. if not we need to look for an unconditional forward 
  * rule from $script->rules. If one doesn't exist this will be a create 
@@ -51,6 +48,9 @@ elseif (getForwardRule($script) !== false) {
     if (isset($script->rules[$ruleID])) {
         $rule = $script->rules[$ruleID];
     }
+} else {
+    $ruleID = null;
+    $rule = array();
 }
 
 /* save rule changes if requested. */
