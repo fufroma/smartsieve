@@ -26,21 +26,22 @@ class SieveSession {
     var $starttls_avail;  /* boolean: will server do starttls? */
     var $socket_timeout;  /* socket timeout in seconds. */
 
-    /* class constructor. */
-    function SieveSession () {
+    /* 
+     * class constructor. 
+     */
+    function SieveSession ($server='127.0.0.1', $port='2000', $uid, $passwd, $proxy='', $socket_timeout=2) {
 
-	// some defaults to be overridden
-	$this->server = 'localhost';
-	$this->port = '2000';
-	$this->proxy = '';
-	$this->uid = '';
-	$this->passwd = '';
+	$this->server = $server;
+	$this->port = $port;
+	$this->uid = $uid;
+	$this->passwd = $passwd;
+	$this->proxy = $proxy;
+        $this->socket_timeout = $socket_timeout;
 
 	$this->implementation = array('unknown');
 	$this->saslmethods = array('unknown');
 	$this->extensions = array('unknown');
 	$this->starttls_avail = false;
-        $this->socket_timeout = 2;
 
     }
     // end constructor

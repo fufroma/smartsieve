@@ -156,19 +156,17 @@ class AppSession {
     if (!isset($HTTP_SESSION_VARS['sieve'])){
         return false;
     }
- 
-    $this->connection = new SieveSession;
-    if (!$this->connection) return false;
- 
-    // we need to set the connection info
-    // in the SieveSession object
-    $this->connection->uid = $this->user;
+
     $key = Encrypt::retrieveKey();
     $passwd = Encrypt::decrypt($this->passwd,$key);
-    $this->connection->passwd = $passwd;
-    $this->connection->server = $this->server;
-    $this->connection->port = $this->sieveport;
-    $this->connection->proxy = $this->proxy;
+
+    $this->connection = new SieveSession ($this->server,
+                                          $this->sieveport,
+                                          $this->user,
+                                          $passwd,
+                                          $this->proxy );
+    if (!$this->connection) 
+        return false;
  
     if (!$this->connection->start())
         return false;
