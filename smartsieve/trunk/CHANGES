@@ -1,6 +1,13 @@
 Smartsieve - Changes file
 -------------------------
 
+05 Feb 2003 S Grier
+* scripts.php: 
+  - added createscript action.
+  - modified activate action. warns if no script selected.
+* stylesheet changes to scripts.php.
+* $default->update_activate_script now defaults to false.
+
 04 Feb 2003 S Grier
 * set workingscript active if $default->allow_multi_scripts = false.
 * add $default->scripts_help_url config option for new scripts page.
