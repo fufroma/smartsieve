@@ -1,6 +1,11 @@
 Smartsieve - Changes file
 -------------------------
 
+26 Sept 2003 S Grier
+* add $default->websieve_auto_matches config option to control the automatic use of the :matches 
+  comparator where match string contains wildcard characters. This defaults to off because of 
+  the unexpected results this can produce.
+
 23 Sept 2003 S Grier
 * small change to imapport comment.
 

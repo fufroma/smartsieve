@@ -696,7 +696,10 @@ class Script {
                     $rule['from'] = preg_replace("/^\s*!/","",$rule['from']);
                 }
                 $match = ':contains';
-                if (preg_match("/\*|\?/", $rule['from'])) $match = ':matches';
+                if (preg_match("/\*|\?/", $rule['from']) && 
+                    $default->websieve_auto_matches){
+                    $match = ':matches';
+                }
                 if ($rule['regexp']) $match = ':regex';
                 $newruletext .= "address " . $match . " [\"From\"]";
                 $newruletext .= " \"" . $rule['from'] . "\"";
@@ -709,7 +712,10 @@ class Script {
                     $rule['to'] = preg_replace("/^\s*!/","",$rule['to']);
                 }
                 $match = ':contains';
-                if (preg_match("/\*|\?/", $rule['to'])) $match = ':matches';
+                if (preg_match("/\*|\?/", $rule['to']) && 
+                    $default->websieve_auto_matches){
+                    $match = ':matches';
+                }
                 if ($rule['regexp']) $match = ':regex';
                 $newruletext .= "address " . $match . " [\"To\",\"TO\",\"Cc\",\"CC\"]";
                 $newruletext .= " \"" . $rule['to'] . "\"";
@@ -722,7 +728,10 @@ class Script {
                     $rule['subject'] = preg_replace("/^\s*!/","",$rule['subject']);
                 }
                 $match = ':contains';
-                if (preg_match("/\*|\?/", $rule['subject'])) $match = ':matches';
+                if (preg_match("/\*|\?/", $rule['subject']) && 
+                    $default->websieve_auto_matches){
+                    $match = ':matches';
+                }
                 if ($rule['regexp']) $match = ':regex';
                 $newruletext .= "header " . $match . " \"subject\"";
                 $newruletext .= " \"" . $rule['subject'] . "\"";
@@ -735,7 +744,10 @@ class Script {
                     $rule['field_val'] = preg_replace("/^\s*!/","",$rule['field_val']);
                 }
                 $match = ':contains';
-                if (preg_match("/\*|\?/", $rule['field_val'])) $match = ':matches';
+                if (preg_match("/\*|\?/", $rule['field_val']) && 
+                    $default->websieve_auto_matches){
+                    $match = ':matches';
+                }
                 if ($rule['regexp']) $match = ':regex';
                 $newruletext .= "header " . $match . " \"" . $rule['field'] . "\"";
                 $newruletext .= " \"" . $rule['field_val'] . "\"";
