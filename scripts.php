@@ -384,7 +384,7 @@ else { ?>
     <TABLE WIDTH="100%" BORDER="0" CELLPADDING="2" CELLSPACING="1">
     <BR>
       <TD CLASS="options">
-        <A CLASS="option" HREF="" onclick="setActive(); return false;" onmouseover="window.status='Activate Script'; return true;" onmouseout="window.status='';">Activate</a>
+        <A CLASS="option" HREF="" onclick="setScriptActive(); return false;" onmouseover="window.status='Activate Script'; return true;" onmouseout="window.status='';">Activate</a>
          |
         <A CLASS="option" HREF="" onclick="deactivate(); return false;" onmouseover="window.status='Deactivate All'; return true;" onmouseout="window.status='';">Deactivate</a>
          |

@@ -1,6 +1,10 @@
 Smartsieve - Changes file
 -------------------------
 
+13 May 2003 S Grier
+* scripts.php:
+   fixed Activate link broken in IE-6.0 (bug #732546).
+
 12 May 2003 S Grier
 * rule.php:
    strip colons from end of mail header field.
