@@ -139,25 +139,14 @@ if ($action) {
 }
 
 
+$jsfile = 'main.js';
+if ($script->mode == 'advanced')
+    $jsfile = 'script-direct.js';
+$jsonload = '';
+
+include $default->include_dir . '/common-head.inc';
 
 ?>
-
-<HTML>
-<HEAD><TITLE><?php print $default->page_title; ?></TITLE>
-<LINK HREF="<?php print AppSession::setUrl('css.php'); ?>" REL="stylesheet" TYPE="text/css">
-<?php
-
-if ($script->mode == 'advanced' || $script->so == false)
-    require $default->include_dir . '/script-direct.js';
-else
-    require $default->include_dir . '/main.js';
-
-?>
-
-</HEAD>
-
-<BODY>
-
 
 <FORM ACTION="<?php print AppSession::setUrl('main.php');?>" METHOD="post" NAME="rules">
 

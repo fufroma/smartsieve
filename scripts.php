@@ -193,21 +193,13 @@ if ($action == 'viewscript')
     }
 }
 
-?>
 
-<HTML>
-<HEAD><TITLE><?php print $default->page_title; ?></TITLE>
-<LINK HREF="<?php print AppSession::setUrl('css.php'); ?>" REL="stylesheet" TYPE="text/css">
-<?php
+$jsfile = 'scripts.js';
+$jsonload = '';
 
-require "$default->include_dir/scripts.js";
+include $default->include_dir . '/common-head.inc';
 
 ?>
-
-</HEAD>
-
-
-<BODY>
 
 <FORM ACTION="<?php print AppSession::setUrl('scripts.php');?>" METHOD="post" NAME="changescript">
 
