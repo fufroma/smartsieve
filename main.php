@@ -182,8 +182,6 @@ require "$default->include_dir/main.js";
     <TABLE WIDTH="100%" BORDER="0" CELLPADDING="2" CELLSPACING="0">
     <TR>
       <TD CLASS="heading">Mail Filter Rules:</TD>
-      <TD CLASS="heading"></TD>
-      <TD CLASS="heading"></TD>
     </TR>
     </TABLE>
 
@@ -197,7 +195,7 @@ require "$default->include_dir/main.js";
 
 if ($script->rules){ ?>
       <TR>
-        <TH CLASS="heading"></TH>
+        <TH CLASS="heading">&nbsp;</TH>
         <TH CLASS="heading">Status</TH>
         <TH CLASS="heading">Rule</TH>
         <TH CLASS="heading">Order</TH>
@@ -231,7 +229,7 @@ if ($script->vacation){
       <TD CLASS="heading" COLSPAN="4">Vacation Message Settings:</TD>
     </TR>
     <TR onmouseover="javascript:style.background='grey'" onmouseout="javascript:style.background='#e5e5e5'">
-      <TD CLASS="rules"></TD>
+      <TD CLASS="rules">&nbsp;</TD>
       <TD CLASS="<?php if ($script->vacation['status'] == 'on'){print "enabled\">ENABLED";} else print "disabled\">DISABLED"; ?></TD>
       <TD CLASS="rules" NOWRAP="nowrap" COLSPAN="2"><A CLASS="rule" HREF="<?php print AppSession::setUrl('vacation.php'); ?>">days: <?php print $script->vacation['days']; ?> addresses: <?php
 

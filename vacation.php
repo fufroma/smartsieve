@@ -246,7 +246,7 @@ Rules</a> |
       <TD CLASS="ruleinfo">
 Vacation:
       </TD>
-      <TD CLASS="heading"></TD>
+      <TD CLASS="heading">&nbsp;</TD>
     </TR>
     <TR>
       <TD NOWRAP="nowrap">
