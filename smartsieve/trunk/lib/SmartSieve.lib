@@ -652,6 +652,7 @@ class Script {
     $activerules = 0;
     $regexused = 0;
     $rejectused = 0;
+    $vacationused = 0;
  
     include "$default->lib_dir/version.php";
  
@@ -781,6 +782,8 @@ class Script {
                 $regexused = 1;
             if (preg_match("/reject/i",$rule['action_arg']))
                 $rejectused = 1;
+            if (preg_match("/vacation/i",$rule['action_arg']))
+                $vacationused = 1;
         }
  
         $continue = 0;
@@ -837,7 +840,7 @@ class Script {
         $newscripthead .= "require [\"fileinto\"";
         if ($regexused) $newscripthead .= ",\"regex\"";
         if ($rejectused) $newscripthead .= ",\"reject\"";
-        if ($this->vacation && $this->vacation['status'] == 'on')
+        if ($this->vacation && $this->vacation['status'] == 'on' || $vacationused)
             $newscripthead .= ",\"vacation\"";
         $newscripthead .= "];\n\n";
     }
