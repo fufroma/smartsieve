@@ -12,11 +12,11 @@ required:
 10. magic_quotes_runtime must be Off.
 
 TODO:
+- apply patch to Log.php.
 - call getMailboxName from retrieveMailboxList.
 - write a getScriptLine function to do rtrim, stripslashes, etc.
 - move functions to SmartSieve class: rule.php:checkRule(), 
   vacation.php:checkRule(), writeToLog(), getFormValue(), setUrl().
-- move Script::listScripts() to AppSession class (?).
 - call checkRule(),checkVacation() from updateScript().
 - add file/line number to log messages.
 - change to handle unixhierarchysep ('/' instead of '.' in fileinto).

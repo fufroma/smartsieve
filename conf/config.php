@@ -15,12 +15,19 @@
 // if this is false, the first entry in servers.php will be used.
 $default->user_select_server = true;
 
+/* will we allow the user to access multiple scripts?
+ * If true, the user will be able to create and modify multiple scripts 
+ * on the server. If false, the user will only be able to access the 
+ * script $default->scriptfile.
+ */
+$default->allow_multi_scripts = true;
+
 /* default script filename. note that timsieved will add a .script 
  * extension when saving on the server. */
 $default->scriptfile = 'smartsieve';
 
-// should we allow the user to choose a script filename other than
-// the one above?
+/* should we provide a box on the login page for users to specify which 
+ * script to edit? This does not apply if allow_multi_scripts = false. */
 $default->user_supply_scriptfile = true;
 
 // base url for app. must have trailing slash '/'.

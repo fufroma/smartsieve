@@ -26,6 +26,8 @@ if (isset($HTTP_SESSION_VARS['sieve']) && is_object($HTTP_SESSION_VARS['sieve'])
 	    print "ERROR: " . $HTTP_SESSION_VARS['sieve']->errstr . "<BR>";
 	$HTTP_SESSION_VARS['sieve'] = null;
 	session_unregister('sieve');
+        $HTTP_SESSION_VARS['script'] = null;
+        session_unregister('script');
     }
     elseif (isset($HTTP_GET_VARS['reason']) && $HTTP_GET_VARS['reason'] == 'failure') {
 	$HTTP_SESSION_VARS['sieve'] = null;
@@ -154,7 +156,7 @@ else {
     print "<INPUT TYPE=\"hidden\" NAME=\"server\" VALUE=\"$server_val\">\n";
 }
 
-if ($default->user_supply_scriptfile)
+if ($default->user_supply_scriptfile && $default->allow_multi_scripts)
 {
 ?>
 <TR CLASS="menu">
