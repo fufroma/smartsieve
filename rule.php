@@ -41,7 +41,7 @@ if (isset($GLOBALS['HTTP_POST_VARS']['script'])) {
 if (!$sieve->mboxlist){
   if (!$sieve->retrieveMailboxList()){
     array_push($errors, 'ERROR: ' . $sieve->errstr);
-    $sieve->writeToLog("ERROR: " . $sieve->errstr, LOG_ERROR);
+    $sieve->writeToLog("ERROR: " . $sieve->errstr, LOG_ERR);
   }
 }
 
@@ -49,7 +49,7 @@ if (!$sieve->mboxlist){
 if (!$sieve->openSieveSession()) {
     print "ERROR: " . $sieve->errstr . "<BR>\n";
     $sieve->writeToLog('ERROR: openSieveSession failed for ' . $sieve->user . 
-        ': ' . $sieve->errstr, LOG_ERROR);
+        ': ' . $sieve->errstr, LOG_ERR);
     exit;
 }
 
@@ -83,7 +83,7 @@ if ($action == 'enable')
 	// write and save the new script.
 	if (!$script->updateScript($sieve->connection)) {
 	    array_push($errors, 'ERROR: ' . $script->errstr);
-	    $sieve->writeToLog('ERROR: ' . $script->errstr, LOG_ERROR);
+	    $sieve->writeToLog('ERROR: ' . $script->errstr, LOG_ERR);
 	}
 	else {
 	    array_push($msgs, 'rule successfully enabled.');
@@ -96,7 +96,7 @@ if ($action == 'enable')
     }
     else {
         array_push($errors, 'ERROR: rule does not exist.');
-        $sieve->writeToLog('ERROR: rule does not exist.', LOG_ERROR);
+        $sieve->writeToLog('ERROR: rule does not exist.', LOG_ERR);
     }
 }
 if ($action == 'disable') 
@@ -106,7 +106,7 @@ if ($action == 'disable')
 	// write and save the new script.
 	if (!$script->updateScript($sieve->connection)) {
 	    array_push($errors, 'ERROR: ' . $script->errstr);
-	    $sieve->writeToLog('ERROR: ' . $script->errstr, LOG_ERROR);
+	    $sieve->writeToLog('ERROR: ' . $script->errstr, LOG_ERR);
 	}
 	else {
 	    array_push($msgs, 'rule successfully disabled.');
@@ -119,7 +119,7 @@ if ($action == 'disable')
     }
     else {
         array_push($errors, 'ERROR: rule does not exist.');
-        $sieve->writeToLog('ERROR: rule does not exist.', LOG_ERROR);
+        $sieve->writeToLog('ERROR: rule does not exist.', LOG_ERR);
     }
 }
 if ($action == 'delete') 
@@ -129,7 +129,7 @@ if ($action == 'delete')
 	// write and save the new script.
 	if (!$script->updateScript($sieve->connection)) {
 	    array_push($errors, 'ERROR: ' . $script->errstr);
-	    $sieve->writeToLog('ERROR: ' . $script->errstr, LOG_ERROR);
+	    $sieve->writeToLog('ERROR: ' . $script->errstr, LOG_ERR);
 	}
 	else {
 	    header('Location: ' . AppSession::setUrl('main.php'),true);
@@ -137,7 +137,7 @@ if ($action == 'delete')
 	}
     }
     array_push($errors, 'ERROR: rule does not exist');
-    $sieve->writeToLog('ERROR: rule does not exist.', LOG_ERROR);
+    $sieve->writeToLog('ERROR: rule does not exist.', LOG_ERR);
 }
 if ($action == 'save') 
 {
@@ -153,7 +153,7 @@ if ($action == 'save')
 	// write and save the new script.
 	if (!$script->updateScript($sieve->connection)) {
 	    array_push($errors, 'ERROR: ' . $script->errstr);
-	    $sieve->writeToLog('ERROR: ' . $script->errstr, LOG_ERROR);
+	    $sieve->writeToLog('ERROR: ' . $script->errstr, LOG_ERR);
 	}
 	else {
             array_push($msgs, 'your changes have been successfully saved.');
@@ -444,8 +444,8 @@ Match
       <TD CLASS="options" COLSPAN="2">
         <BR>
         <A CLASS="option" HREF="" onclick="Submit('save'); return false;" onmouseover="status='Save Changes'; return true;" onmouseout="status='';">Save Changes</a>
-<?php // if ($rule) { ?>
-<?php if ($script->rules[$ruleID]) { ?>
+<?php //if ($script->rules[$ruleID]) { ?>
+<?php if (isset($ruleID)){ ?>
           |
         <A CLASS="option" HREF="" onclick="Submit('enable'); return false;" onmouseover="status='Enable'; return true;" onmouseout="status='';">Enable</a>
           |

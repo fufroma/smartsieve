@@ -60,6 +60,7 @@ class AppSession {
   var $namespace_shared_prefix; /* alt_namespace shared prefix. */
   var $maildomain;    /* ie $user@$maildomain. */
   var $scriptlist;    /* array: user's scripts on the server. */
+  var $mboxlist;      /* array: user's IMAP mailboxes. */
   var $activescript;  /* name of currently active script on server (if any). */
   var $workingscript; /* name of script being edited. */
   var $errstr;        /* error text. */
@@ -81,6 +82,7 @@ class AppSession {
     $this->namespace_shared_prefix = '';
     $this->maildomain = 'localhost';
     $this->scriptlist = array();
+    $this->mboxlist = array();
     $this->activescript = '';
     $this->workingscript = '';
     $this->errstr = '';
@@ -591,6 +593,7 @@ class Script {
                     $rule['anyof'] = ($bits[8] & $anyofbit);
                     $rule['keep'] = ($bits[8] & $keepbit);
                     $rule['regexp'] = ($bits[8] & $regexbit);
+                    $rule['unconditional'] = 0;
                     if (!$rule['from'] && !$rule['to'] && !$rule['subject'] &&
                         !$rule['field'] && !$rule['size'] && $rule['action'])
                         $rule['unconditional'] = 1;

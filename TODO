@@ -12,6 +12,7 @@ required:
 10. magic_quotes_runtime must be Off.
 
 TODO:
+- line wrapping on rule summaries.
 - view raw script option.
 - should 'keep' be an action rather than an option?
 - fix stylesheet forbidden problem.

@@ -1,6 +1,10 @@
 Smartsieve - Changes file
 -------------------------
 
+03 March 2003 S Grier
+* LOG_ERROR should be LOG_ERR.
+* cleaned code to work when error_reporting = E_ALL.
+
 05 Feb 2003 S Grier
 * scripts.php: 
   - added createscript action.

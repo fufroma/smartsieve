@@ -126,7 +126,7 @@ class SieveSession {
 	    return false;
 	}
 	elseif (!preg_match("/OK/",$said)) {
-	    $this->close;
+	    $this->close();
 	    $this->errstr = "start: bad authentication response from $this->server: $said";
 	    return false;
 	}
@@ -213,7 +213,7 @@ class SieveSession {
 		    $bits[1] = preg_replace("/\*$/","",$bits[1]);
 		    $this->activescript = $bits[1];
 		}
-		if ($bits[2] == 'ACTIVE')
+		if (isset($bits[2]) && $bits[2] == 'ACTIVE')
 		    $this->activescript = $bits[1];
 		array_push($scripts,$bits[1]);
 	    }
@@ -244,6 +244,8 @@ class SieveSession {
 	    return false;
 	}
 
+        $script = '';
+
 	fputs($this->socket,"GETSCRIPT \"$scriptfile\"\r\n");
 
 	$said = $this->read();
@@ -255,7 +257,7 @@ class SieveSession {
 	}
 
 	if (preg_match("/^OK/",$said)) {
-	    if (!isset($script)) {
+	    if ($script == '') {
 		$this->errstr = "getscript: zero length script";
 		return false;
 	    }
