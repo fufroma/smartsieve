@@ -97,7 +97,7 @@ class AppSession {
   function initialize () {
 	global $sieve, $HTTP_POST_VARS, $servers;
 
-	require_once $GLOBALS['default']->lib_dir . "/Encrypt.php";
+	require_once $GLOBALS['default']->lib_dir . "/Crypt.php";
 
 	// can't to much if user didn't supply these
 	// from the login form
@@ -166,7 +166,7 @@ class AppSession {
   function openSieveSession () {
     global $default, $HTTP_SESSION_VARS;
 
-    require_once $GLOBALS['default']->lib_dir . "/Encrypt.php";
+    require_once $GLOBALS['default']->lib_dir . "/Crypt.php";
 
     if (!is_object($HTTP_SESSION_VARS['sieve'])){
         $this->errstr = 'openSieveSession: session not yet initialized';
@@ -237,7 +237,7 @@ class AppSession {
   function retrieveMailboxList () 
   {
     global $default;
-    require_once $GLOBALS['default']->lib_dir . "/Encrypt.php";
+    require_once $GLOBALS['default']->lib_dir . "/Crypt.php";
 
     $connstr = '{' . $this->server . ':' . $this->imapport . '}INBOX';
     // get encrypted passwd.
