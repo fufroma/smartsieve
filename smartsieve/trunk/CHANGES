@@ -1,6 +1,9 @@
 Smartsieve - Changes file
 -------------------------
 
+23 Mar 2004 S Grier
+* Added Spanish and Catalan translations. Contributed by Andreu Sánchez Costa.
+
 12 Mar 2004 S Grier
 * Match Cyrus version v2.x correctly in SieveSession::_authenticate()
 
