@@ -45,6 +45,7 @@
       <SELECT TABINDEX="<?php echo $tabindex++;?>" NAME="lang" onchange="changeLang();">
         <OPTION VALUE="en_GB"<?php if (SmartSieve::getLang() == "en_GB") echo " SELECTED";?>><?php echo SmartSieve::text("English");?></OPTION>
         <OPTION VALUE="de_DE"<?php if (SmartSieve::getLang() == "de_DE") echo " SELECTED";?>><?php echo SmartSieve::text("German");?></OPTION>
+        <OPTION VALUE="it_IT"<?php if (SmartSieve::getLang() == "it_IT") echo " SELECTED";?>><?php echo SmartSieve::text('Italiano');?></OPTION>
       </SELECT>
     </TD>
   </TR>
