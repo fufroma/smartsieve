@@ -168,21 +168,13 @@ if ($action == 'save')
         array_push($errors, 'ERROR: ' . $ret);
 }
 
-?>
 
-<HTML>
-<HEAD><TITLE><?php print $default->page_title; ?></TITLE>
-<LINK HREF="<?php print AppSession::setUrl('css.php'); ?>" REL="stylesheet" TYPE="text/css">
-<?php
+$jsfile = 'rule.js';
+$jsonload = '';
 
-require "$default->include_dir/rule.js";
+include $default->include_dir . '/common-head.inc';
 
 ?>
-
-</HEAD>
-
-
-<BODY>
 
 <FORM ACTION="<?php print AppSession::setUrl('rule.php');?>" METHOD="post" NAME="changescript">
 

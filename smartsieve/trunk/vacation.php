@@ -140,21 +140,12 @@ if ($action == 'save')
 }
 
 
-?>
+$jsfile = 'vacation.js';
+$jsonload = '';
 
-<HTML>
-<HEAD><TITLE><?php print $default->page_title; ?></TITLE>
-<LINK HREF="<?php print AppSession::setUrl('css.php'); ?>" REL="stylesheet" TYPE="text/css">
-<?php
-
-require "$default->include_dir/vacation.js";
+include $default->include_dir . '/common-head.inc';
 
 ?>
-
-</HEAD>
-
-
-<BODY>
 
 <FORM ACTION="<?php print AppSession::setUrl('vacation.php');?>" METHOD="post" NAME="changescript">
 

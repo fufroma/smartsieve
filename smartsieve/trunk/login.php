@@ -87,21 +87,13 @@ if (isset($HTTP_POST_VARS['sieveuid']) && isset($HTTP_POST_VARS['passwd'])) {
 // the main login page should go down here
 // we assume no login has yet been submitted (or perhaps not filled in right).
 
-?>
 
-<HTML>
-<HEAD><TITLE><?php print $default->page_title; ?></TITLE>
-<LINK HREF="<?php print AppSession::setUrl('css.php'); ?>" REL="stylesheet" TYPE="text/css">
-<?php
+$jsfile = 'login.js';
+$jsonload = 'setFocus()';
 
-include "$default->include_dir/login.js";
+include $default->include_dir . '/common-head.inc';
 
 ?>
-
-</HEAD>
-
-<BODY onload="setFocus()">
-
 
 <CENTER>
 
