@@ -109,7 +109,8 @@ $default->logging_level = LOG_INFO;
 $default->logging_method = 'file';
 
 // this should either be a filename if logging_method = 'file', or 
-// a syslog facility (eg. LOCAL4) if logging_method = 'syslog'
+// a syslog facility (eg. LOG_LOCAL4) if logging_method = 'syslog'
+//$default->logging_facility = LOG_LOCAL4;
 $default->logging_facility = "/var/log/smartsieve.log";
 
 // what identifier should we use to identify log messages in the log?
