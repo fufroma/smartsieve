@@ -41,10 +41,10 @@ class SmartSieveCryptMCRYPT extends SmartSieveCrypt {
         $this->key = $args['key'];
         // FIXME: we currently only support the ECB mode, because the same IV
         // is needed for encrypt/decrypt, but we don't yet store it.
-        @$this->mode = $args['mode'] ? $args['mode'] : MCRYPT_MODE_ECB;
-        @$this->cipher = $args['cipher'] ? $args['cipher'] : MCRYPT_BLOWFISH;
-        @$this->cipher_dir = $args['cipher_dir'] ? $args['cipher_dir'] : '';
-        @$this->mode_dir = $args['mode_dir'] ? $args['mode_dir'] : '';
+        $this->mode = isset($args['mode']) ? $args['mode'] : MCRYPT_MODE_ECB;
+        $this->cipher = isset($args['cipher']) ? $args['cipher'] : MCRYPT_BLOWFISH;
+        $this->cipher_dir = isset($args['cipher_dir']) ? $args['cipher_dir'] : '';
+        $this->mode_dir = isset($args['mode_dir']) ? $args['mode_dir'] : '';
         $this->td = mcrypt_module_open($this->cipher,$this->cipher_dir,$this->mode,$this->mode_dir);
     }
 
