@@ -10,15 +10,11 @@
 <script language="JavaScript" type="text/javascript">
 <!--
 
-function Submit(a)
+function viewScript(scriptID)
 {
-    if (a == 'delete'){
-	if (!confirm("Are you sure you want to delete this rule?")){
-                return true;
-        }
-    }
-    document.thisRule.thisAction.value = a;
-    document.thisRule.submit();
+    document.scripts.action.value = 'viewscript';
+    document.scripts.scriptID.value = scriptID;
+    document.scripts.submit();
 }
 
 function setActive(scriptID)
