@@ -110,7 +110,7 @@ class Script {
                     $rule['regexp'] = ($bits[8] & $regexbit);
                     $rule['unconditional'] = 0;
                     if (!$rule['from'] && !$rule['to'] && !$rule['subject'] &&
-                        !$rule['field'] && !$rule['size'] && $rule['action'] &&
+                        !$rule['field'] && $rule['size'] === '' && $rule['action'] &&
                         !($rule['action'] == 'custom' && preg_match("/^ *(els)?if/i", $rule['action_arg']))) {
                         $rule['unconditional'] = 1;
                     }
@@ -268,7 +268,7 @@ class Script {
                 $newruletext .= " \"" . $rule['field_val'] . "\"";
                 $started = 1;
             }
-            if ($rule['size']) {
+            if (isset($rule['size']) && $rule['size'] !== '') {
                 $xthan = " :under ";
                 if ($rule['gthan']) $xthan = " :over ";
                 if ($started) $newruletext .= ", ";
