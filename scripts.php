@@ -83,23 +83,25 @@ if ($action == 'deactivate')
 if ($action == 'createscript')
 {
     $newscript = AppSession::getFormValue('newscript');
-    if (AppSession::scriptExists($newscript)){
-        array_push($errors,'script ' . $newscript . ' already exists');
-    }
-    else {
-        if (!isset($scripts[$newscript]))
-            $scripts[$newscript] = new Script($newscript);
-        if (is_object($scripts[$newscript])){
-            if (!$scripts[$newscript]->updateScript($sieve->connection)) {
-                array_push($errors, 'updateScript failed: ' . $scripts[$newscript]->errstr);
-                $sieve->writeToLog('scripts.php: updateScript failed for ' . $sieve->user
-                    . ': ' . $scripts[$newscript]->errstr, LOG_ERR);
-            }
+    if ($newscript){
+        if (AppSession::scriptExists($newscript)){
+            array_push($errors,'script ' . $newscript . ' already exists');
         }
-        if (AppSession::scriptExists($newscript))
-            array_push($msgs,"successfully created script '$newscript'");
-        else
-            array_push($errors,"could not create script '$newscript'");
+        else {
+            if (!isset($scripts[$newscript]))
+                $scripts[$newscript] = new Script($newscript);
+            if (is_object($scripts[$newscript])){
+                if (!$scripts[$newscript]->updateScript($sieve->connection)) {
+                    array_push($errors, 'updateScript failed: ' . $scripts[$newscript]->errstr);
+                    $sieve->writeToLog('scripts.php: updateScript failed for ' . $sieve->user
+                        . ': ' . $scripts[$newscript]->errstr, LOG_ERR);
+                }
+            }
+            if (AppSession::scriptExists($newscript))
+                array_push($msgs,"successfully created script '$newscript'");
+            else
+                array_push($errors,"could not create script '$newscript'");
+        }
     }
 }
 
@@ -115,12 +117,68 @@ if ($action == 'delete')
                 $sieve->connection->deletescript($sname);
                 if ($sieve->connection->errstr)
                     array_push($errors,'deletescript failed: ' . $sieve->connection->errstr);
-                else
+                else {
                     array_push($msgs,"script '$sname' successfully deleted");
+                    if (isset($scripts[$sname]))
+                        unset($scripts[$sname]);
+                }
             }
         }
         if (!AppSession::doListScripts())
             array_push($errors,'AppSession::doListScripts failed: ' . AppSession::getError());
+    }
+}
+
+if ($action == 'rename')
+{
+    $oldscript = '';
+    $newscript = AppSession::getFormValue('newscript');
+    $sids = AppSession::getFormValue('scriptID');
+    if (is_array($sids)){
+        // might have been more than one checkbox selected.
+        // rename the first one only.
+        $oldscript = $sieve->scriptlist[$sids[0]];
+    }
+    if ($newscript && $oldscript){
+        if (AppSession::scriptExists($newscript)){
+            array_push($errors,'script ' . $newscript . ' already exists');
+        }
+        else {
+            if (!AppSession::scriptExists($oldscript)){
+                array_push($errors,'script ' . $oldscript . ' does not exist');
+            }
+            else {
+                if (!isset($scripts[$oldscript]))
+                    $scripts[$oldscript] = new Script($oldscript);
+                if (!$scripts[$oldscript]->retrieveRules($sieve->connection)){
+                    array_push($errors, "retrieveRules failed for script $oldscript: " . $scripts[$oldscript]->errstr);
+                }
+                else {
+                  if ($scripts[$oldscript]->so){
+                    // safe to work with this script.
+                    $scripts[$newscript] = $scripts[$oldscript];
+                    if (is_object($scripts[$newscript])){
+                        $scripts[$newscript]->name = $newscript;
+                        if (!$scripts[$newscript]->updateScript($sieve->connection)) {
+                            array_push($errors, 'updateScript failed: ' . $scripts[$newscript]->errstr);
+                            $sieve->writeToLog('scripts.php: updateScript failed for ' . $sieve->user
+                                . ': ' . $scripts[$newscript]->errstr, LOG_ERR);
+                        }
+                        else {
+                            $sieve->connection->deletescript($oldscript);
+                            if ($sieve->connection->errstr)
+                                array_push($errors,'deletescript failed: ' . $sieve->connection->errstr);
+                            else {
+                                array_push($msgs,"successfully renamed '$oldscript' as '$newscript'");
+                                unset($scripts[$oldscript]);
+                            }
+                        }
+                    }
+                  }
+                }
+            }
+        }
+        AppSession::doListScripts();
     }
 }
 
@@ -337,7 +395,7 @@ else { ?>
          |
         <A CLASS="option" HREF="" onclick="deleteScript(); return false;" onmouseover="window.status='Delete Script'; return true;" onmouseout="window.status='';">Delete</a>
          |
-        <A CLASS="option" HREF="" onclick="Submit('rename'); return false;" onmouseover="window.status='Rename Script'; return true;" onmouseout="window.status='';">Rename</A>
+        <A CLASS="option" HREF="" onclick="renameScript(); return false;" onmouseover="window.status='Rename Script'; return true;" onmouseout="window.status='';">Rename</A>
       </TD>
     </BR>
     </TABLE>

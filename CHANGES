@@ -1,6 +1,9 @@
 Smartsieve - Changes file
 -------------------------
 
+12 March 2003 S Grier
+* scripts.php: added rename action.
+
 11 March 2003 S Grier
 * fixed problem with havespace function.
 
