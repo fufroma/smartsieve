@@ -2,6 +2,7 @@ Smartsieve - Changes file
 -------------------------
 
 01 June 2004 S Grier
+* Move writeToLog to SmartSieve class.
 * Added setSession, authenticate and close functions to SmartSieve class to replace 
   old AppSession functions.
 
