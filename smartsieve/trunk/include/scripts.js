@@ -17,6 +17,12 @@ function viewScript(script)
     document.scripts.submit();
 }
 
+function deactivate()
+{
+    document.scripts.action.value = 'deactivate';
+    document.scripts.submit();
+}
+
 function setActive()
 {
     if (numSelected() == 0){
@@ -30,11 +36,24 @@ function setActive()
 function createScript()
 {
     var newscript = prompt('Please supply a name for your new script','');
-    if (newscript != ''){
+    if (newscript){
         document.scripts.action.value = 'createscript';
         document.scripts.newscript.value = newscript;
         document.scripts.submit();
     }
+}
+
+function deleteScript()
+{
+    if (numSelected() == 0){
+        alert('Please select a script to delete');
+        return false;
+    }
+    if (!confirm("You are about to permanently remove the selected scripts.\nAre you sure you want to do this?")){
+        return true;
+    }
+    document.scripts.action.value = 'delete';
+    document.scripts.submit();
 }
 
 function numSelected()

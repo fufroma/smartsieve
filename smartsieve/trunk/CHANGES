@@ -1,6 +1,11 @@
 Smartsieve - Changes file
 -------------------------
 
+09 March 2003 S Grier
+* scripts.php: added delete action. not quite right yet though.
+* sieve.lib: added havespace and deletescript functions.
+* scripts.php: added deactivate action.
+
 07 March 2003 S Grier
 * vacation.php: fixed 'undefined' warnings.
 * new allow_write_unrecognised_scripts config option. this controls whether 

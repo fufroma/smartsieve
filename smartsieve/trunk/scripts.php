@@ -67,6 +67,19 @@ if ($action == 'setactive')
     }
 }
 
+if ($action == 'deactivate')
+{
+    // this deactivates whichever script, if any, is currently set
+    // as the active script, so we don't care about the scriptID array.
+    $sieve->connection->activatescript("");
+    if ($sieve->connection->errstr)
+        array_push($errors,'activatescript failed: ' . $sieve->connection->errstr);
+    else
+        array_push($msgs,"successfully deactivated all scripts");
+    if (!AppSession::doListScripts())
+        array_push($errors,'AppSession::doListScripts failed: ' . AppSession::getError());
+}
+
 if ($action == 'createscript')
 {
     $newscript = AppSession::getFormValue('newscript');
@@ -74,20 +87,40 @@ if ($action == 'createscript')
         array_push($errors,'script ' . $newscript . ' already exists');
     }
     else {
-        if (!is_object($scripts[$newscript])){
+        if (!is_object($scripts[$newscript]))
             $scripts[$newscript] = new Script($newscript);
-            if (is_object($scripts[$newscript])){
-                if (!$scripts[$newscript]->updateScript($sieve->connection)) {
-                    array_push($errors, 'updateScript failed: ' . $scripts[$newscript]->errstr);
-                    $sieve->writeToLog('scripts.php: updateScript failed for ' . $sieve->user
-                        . ': ' . $scripts[$newscript]->errstr, LOG_ERR);
-                }
+        if (is_object($scripts[$newscript])){
+            if (!$scripts[$newscript]->updateScript($sieve->connection)) {
+                array_push($errors, 'updateScript failed: ' . $scripts[$newscript]->errstr);
+                $sieve->writeToLog('scripts.php: updateScript failed for ' . $sieve->user
+                    . ': ' . $scripts[$newscript]->errstr, LOG_ERR);
             }
         }
         if (AppSession::scriptExists($newscript))
             array_push($msgs,"successfully created script '$newscript'");
         else
             array_push($errors,"could not create script '$newscript'");
+    }
+}
+
+if ($action == 'delete')
+{
+    $sids = AppSession::getFormValue('scriptID');
+    if (is_array($sids)){
+        // might have been more than one checkbox selected.
+        // try to delete each one in turn.
+        foreach ($sids as $sid){
+            $sname = $sieve->scriptlist[$sid];
+            if ($sname){
+                $sieve->connection->deletescript($sname);
+                if ($sieve->connection->errstr)
+                    array_push($errors,'deletescript failed: ' . $sieve->connection->errstr);
+                else
+                    array_push($msgs,"script '$sname' successfully deleted");
+        } // end foreach
+        if (!AppSession::doListScripts())
+            array_push($errors,'AppSession::doListScripts failed: ' . AppSession::getError());
+        }
     }
 }
 
@@ -298,11 +331,11 @@ else { ?>
       <TD CLASS="options">
         <A CLASS="option" HREF="" onclick="setActive(); return false;" onmouseover="window.status='Activate Script'; return true;" onmouseout="window.status='';">Activate</a>
          |
-        <A CLASS="option" HREF="" onclick="Submit('deactivate'); return false;" onmouseover="window.status='Deactivate All'; return true;" onmouseout="window.status='';">Deactivate</a>
+        <A CLASS="option" HREF="" onclick="deactivate(); return false;" onmouseover="window.status='Deactivate All'; return true;" onmouseout="window.status='';">Deactivate</a>
          |
         <A CLASS="option" HREF="" onclick="createScript(); return false;" onmouseover="window.status='Create New Script'; return true;" onmouseout="window.status='';">Create</a>
          |
-        <A CLASS="option" HREF="" onclick="Submit('delete'); return false;" onmouseover="window.status='Delete Script'; return true;" onmouseout="window.status='';">Delete</a>
+        <A CLASS="option" HREF="" onclick="deleteScript(); return false;" onmouseover="window.status='Delete Script'; return true;" onmouseout="window.status='';">Delete</a>
          |
         <A CLASS="option" HREF="" onclick="Submit('rename'); return false;" onmouseover="window.status='Rename Script'; return true;" onmouseout="window.status='';">Rename</A>
       </TD>
