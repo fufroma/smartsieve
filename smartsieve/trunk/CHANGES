@@ -2,6 +2,7 @@ Smartsieve - Changes file
 -------------------------
 
 25 June 2004 S Grier
+* Handle notify action in custom rules.
 * Updated German translation file from Andreas Haase.
 
 09 June 2004 S Grier
