@@ -1,6 +1,10 @@
 Smartsieve - Changes file
 -------------------------
 
+01 June 2004 S Grier
+* Added setSession, authenticate and close functions to SmartSieve class to replace 
+  old AppSession functions.
+
 26 May 2004 S Grier
 * Handle Cyrus v2.0 logout Ok response.
 * Don't add extra NO responses to errstr following putscript.

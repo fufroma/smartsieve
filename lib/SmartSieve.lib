@@ -8,12 +8,123 @@
  */
 
 
-/*
- * class SmartSieve contains the generic SmartSieve functions 
+/**
+ * Class SmartSieve contains the generic SmartSieve functions 
  * used throughout the application.
  *
+ * @author Stephen Grier <stephengrier@users.sourceforge.net>
+ * @version $Revision$
  */
 class SmartSieve {
+
+   /**
+    * Set up the SmartSieve session. This should only be called when 
+    * a user logs in.
+    *
+    * @param auth string authentication user
+    * @param passwd string authentication password
+    * @param authz string authorization user
+    * @param server string server
+    * @param script string Sieve script to open
+    * @return mixed boolean true on success, string error if not
+    */
+    function setSession($auth, $passwd, $authz='', $server, $script=null)
+    {
+        global $default, $servers;
+        if (empty($auth)) {
+            return 'setSession: no auth name supplied';
+        }
+        if (empty($passwd)) {
+            return 'setSession: no password supplied';
+        }
+        if (empty($server)) {
+            return 'setSession: no server supplied';
+        }
+
+        $smartsieve = array();
+
+        if (!array_key_exists($server, $servers) ||
+            !is_array($servers[$server])) {
+            $srvkeys = array_keys($servers);
+            $server = (!empty($srvkeys)) ? $srvkeys[0] : '';
+        }
+        $smartsieve['server'] = SmartSieve::getServerValue($server, 'server');
+        $smartsieve['sieveport'] = SmartSieve::getServerValue($server, 'sieveport', '2000');
+        $smartsieve['imapport'] = SmartSieve::getServerValue($server, 'imapport', '143');
+        $smartsieve['alt_namespace'] = SmartSieve::getServerValue($server, 'alt_namespace', false);
+        $smartsieve['namespace_user_prefix'] = SmartSieve::getServerValue($server, 'namespace_user_prefix', '');
+        $smartsieve['namespace_shared_prefix'] = SmartSieve::getServerValue($server, 'namespace_shared_prefix', '');
+        $smartsieve['maildomain'] = SmartSieve::getServerValue($server, 'maildomain');
+
+        $smartsieve['auth'] = $auth;
+        $auth_domain = SmartSieve::getServerValue($server, 'auth_domain');
+        if (!empty($auth_domain) && strpos($auth,'@') === false) {
+            $smartsieve['auth'] .= '@' . $auth_domain;
+        }
+        $smartsieve['authz'] = $authz;
+        if ($authz == '') {
+            $smartsieve['authz'] = $auth;
+        }
+        if (!empty($auth_domain) && strpos($authz,'@') === false) {
+            $smartsieve['authz'] .= '@' . $auth_domain;
+        }
+
+        require_once $default->lib_dir . "/Crypt.php";
+        $key = Encrypt::generateKey();
+        $smartsieve['passwd'] = Encrypt::encrypt($passwd, $key);
+
+        $smartsieve['lscript'] = $script;
+
+        $_SESSION['smartsieve'] = $smartsieve;
+
+        register_shutdown_function(array('SmartSieve', 'close'));
+        return true;
+    }
+
+   /**
+    * Login to the managesieve server.
+    *
+    * @return mixed true on success, string error if not
+    */
+    function authenticate()
+    {
+        global $default;
+        if (!isset($_SESSION['smartsieve']) || !is_array($_SESSION['smartsieve'])) {
+            return 'authenticate: no session started';
+        }
+        $smartsieve = $_SESSION['smartsieve'];
+
+        require_once $default->lib_dir . "/Crypt.php";
+
+        $key = Encrypt::retrieveKey();
+        $passwd = Encrypt::decrypt($smartsieve['passwd'], $key);
+
+        global $managesieve;
+        $managesieve = new Managesieve();
+        $ret = $managesieve->open($smartsieve['server'], $smartsieve['sieveport']);
+        if ($ret !== true) {
+            return $managesieve->getError();
+        }
+        $ret = $managesieve->authenticate($smartsieve['auth'], $passwd, $smartsieve['authz'], SmartSieve::getConf('sasl_mech'));
+        if ($ret !== true) {
+            return $managesieve->getError();
+        }
+        return true;
+    }
+
+   /**
+    * Close the managesieve connection and destroy the managesieve object.
+    *
+    * @return boolean true
+    */
+    function close()
+    {
+        if (isset($GLOBALS['managesieve']) && is_object($GLOBALS['managesieve'])) {
+            $GLOBALS['managesieve']->close();
+            unset($GLOBALS['managesieve']);
+        }
+        return true;
+    }
 
     /*
      * return correct mailbox name. apply alternative namespacing if 
@@ -204,6 +315,24 @@ class SmartSieve {
             return $default->$option;
         }
         return null;
+    }
+
+   /**
+    * Get a value for a server set in servers.php
+    *
+    * @param skey string servers array index
+    * @param val  string server value
+    * @param def  string default value
+    * @return mixed server value, possibly null
+    */
+    function getServerValue($skey, $val, $def=null)
+    {
+        require_once "conf/servers.php";
+        global $servers;
+        if (isset($servers[$skey]) && isset($servers[$skey][$val])) {
+            return $servers[$skey][$val];
+        }
+        return $def;
     }
 
 
