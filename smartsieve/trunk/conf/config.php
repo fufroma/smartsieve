@@ -28,6 +28,14 @@ $default->allow_multi_scripts = true;
 // not created using SmartSieve or Websieve, set this to false.
 $default->allow_write_unrecognised_scripts = true;
 
+/* Websieve 0.61 includes a feature which will automatically use the ':matches' 
+ * comparator where the match string contains the special wildcard characters 
+ * ? or *. Setting websieve_auto_matches to true will keep compatibility with 
+ * this behaviour. Warning: unless you want full backwards compatibility with 
+ * Websieve you should set this to false, as users may get unexpected results.
+ */
+$default->websieve_auto_matches = false;
+
 /* default script filename. note that timsieved will add a .script 
  * extension when saving on the server. */
 $default->scriptfile = 'smartsieve';
