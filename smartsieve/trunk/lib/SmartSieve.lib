@@ -527,11 +527,28 @@ class Script {
         // actions
  
         if (!$rule['unconditional']) $newruletext .= ") {\n\t";
+
         if (preg_match("/folder/i",$rule['action'])) {
             $action_arg = $rule['action_arg'];
-            // should be INBOX.folder unless using alt namespace
-            if (!preg_match("/INBOX\./",$action_arg) && !$sieve->alt_namespace)
-                $action_arg = "INBOX." . $rule['action_arg'];
+
+// FIXME: this should probably go somewhere else.
+            if ($sieve->alt_namespace){
+                if (preg_match("/^INBOX$/i", $action_arg)){
+                    # do nothing.
+                }
+                elseif (preg_match("/^INBOX\..+/i", $action_arg)){
+                    $action_arg = substr($action_arg, 6);
+                }
+                elseif (preg_match("/^user\./i", $action_arg)){
+                    $mbox = substr($action_arg, 4);
+                    $action_arg = $sieve->namepace_user_prefix . $mbox;
+                }
+                elseif (preg_match("/^shared\./i", $action_arg)){
+                    $mbox = substr($action_arg, 6);
+                    $action_arg = $sieve->namespace_shared_prefix . $mbox;
+                }
+
+            }
             $newruletext .= "fileinto \"" . $action_arg . "\";";
         }
         if (preg_match("/reject/i",$rule['action'])) {
