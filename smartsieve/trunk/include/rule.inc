@@ -154,7 +154,22 @@
         &nbsp;
       </TD>
     </TR>
+    </TABLE>
+
+  </TD>
+</TR>
+<TR>
+  <TD CLASS="main">
+
 <?php if (SmartSieve::getConf('allow_custom') !== false || (isset($rule['action']) && $rule['action'] == 'custom')): ?>
+    <TABLE WIDTH="100%" CELLPADDING="5" BORDER="0" CELLSPACING="0">
+    <TR>
+      <TD CLASS="heading">
+        <?php echo SmartSieve::text("OR");?>:
+      </TD>
+      <TD CLASS="heading">
+        &nbsp;
+      </TD>
     <TR>
       <TD>
         <INPUT TYPE="radio" NAME="action" VALUE="custom"<?php echo (isset($rule['action']) && $rule['action'] == 'custom') ? ' CHECKED="checked"' : '';?>> <?php echo SmartSieve::text('Custom Rule');?>:
@@ -163,7 +178,6 @@
         <TEXTAREA NAME="custom" ROWS="3" COLS="40" WRAP="off"><?php if (isset($rule['action_arg']) && $rule['action'] == 'custom') echo SmartSieve::utf8Decode($rule['action_arg']);?></TEXTAREA>
       </TD>
     </TR>
-<?php endif; ?>
     </TABLE>
 
   </TD>
@@ -171,6 +185,7 @@
 <TR>
   <TD CLASS="main">
 
+<?php endif; ?>
     <TABLE WIDTH="100%" CELLPADDING="2" BORDER="0" CELLSPACING="0">
     <TR>
       <TD CLASS="options" COLSPAN="2">
