@@ -25,6 +25,7 @@ class SieveSession {
     var $extensions;      /* array: sieve extensions server supports. */
     var $starttls_avail;  /* boolean: will server do starttls? */
     var $socket_timeout;  /* socket timeout in seconds. */
+    var $errstr;          /* error text. */
 
     /* 
      * class constructor. 
@@ -42,6 +43,7 @@ class SieveSession {
 	$this->saslmethods = array('unknown');
 	$this->extensions = array('unknown');
 	$this->starttls_avail = false;
+        $this->errstr = '';
 
     }
     // end constructor
