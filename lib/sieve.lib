@@ -310,7 +310,7 @@ class SieveSession {
             $this->errstr = 'havespace: no connection open to ' . $this->server;
             return false;
         }
-        if (!$scriptfile){
+        if (!$scriptname){
             $this->errstr = 'havespace: no script name specified';
             return false;
         }
