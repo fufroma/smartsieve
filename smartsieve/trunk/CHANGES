@@ -1,6 +1,15 @@
 Smartsieve - Changes file
 -------------------------
 
+08 Oct 2002 S Grier
+* release_0_3_1devel
+
+07 Oct 2002 S Grier
+* default config changes: $default->scriptfile now defaults to 'smartsieve'. 
+  $default->logging now defaults to off.
+* rule.php: small bugfix. was writing error msg to log regardless of what 
+  retrieveMailboxList() returns.
+
 04 Oct 2002 S Grier
 * rewrite of vacation.php. now builds $vacation array from POST if submitted 
   or $script->vacation if not. this means we can't bypass chechRule() by 
