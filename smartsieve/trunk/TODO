@@ -12,6 +12,7 @@ required:
 10. magic_quotes_runtime must be Off.
 
 TODO:
+- call getMailboxName from retrieveMailboxList.
 - write a getScriptLine function to do rtrim, stripslashes, etc.
 - move functions to SmartSieve class: rule.php:checkRule(), 
   vacation.php:checkRule(), writeToLog(), getFormValue(), setUrl().
