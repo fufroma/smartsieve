@@ -34,8 +34,20 @@ if (isset($HTTP_SESSION_VARS['sieve']) && is_object($HTTP_SESSION_VARS['sieve'])
 	session_unregister('sieve');
     }
     else {
-	header('Location: ' . AppSession::setUrl('main.php'),true);
-	exit;
+        // we have a session. if we can authenticate, redirect to main.php.
+        // if not, we have a cookie problem.
+        if ($HTTP_SESSION_VARS['sieve']->authenticate()) {
+	    header('Location: ' . AppSession::setUrl('main.php'),true);
+	    exit;
+        }
+        else {
+            echo 'ERROR: failed to authenticate. please check your SmartSieve cookie settings<BR>';
+            $HTTP_SESSION_VARS['sieve']->writeToLog('ERROR: login.php: cookie problem', LOG_ERR);
+            $HTTP_SESSION_VARS['sieve'] = null;
+            session_unregister('sieve');
+            $HTTP_SESSION_VARS['scripts'] = null;
+            session_unregister('scripts');
+        }
     }
 }
 
