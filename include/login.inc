@@ -26,9 +26,20 @@
     <TD ALIGN="right"> <?php echo SmartSieve::text("Sieve Username");?>:
     </TD>
     <TD ALIGN="left">
-      <INPUT TYPE="text" TABINDEX="<?php echo $tabindex++;?>" NAME="sieveuid">
+      <INPUT TYPE="text" TABINDEX="<?php echo $tabindex++;?>" NAME="auth">
     </TD>
   </TR>
+<?php if (SmartSieve::getConf('allow_proxy_authz')): ?>
+  <TR CLASS="menu">
+    <TD ALIGN="right"> <?php echo SmartSieve::text("Proxy user");?>:
+    </TD>
+    <TD ALIGN="left">
+      <INPUT TYPE="text" TABINDEX="<?php echo $tabindex++;?>" NAME="authz">
+    </TD>
+  </TR>
+<?php else: ?>
+    <INPUT TYPE="hidden" NAME="authz" VALUE="">
+<?php endif; ?>
   <TR CLASS="menu">
     <TD ALIGN="right"> <?php echo SmartSieve::text("Password");?>:
     </TD>

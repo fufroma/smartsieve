@@ -1,6 +1,7 @@
 SmartSieve - TODO
 
 
+FIX serious bug in scripts.php rename function.
 Move charset value for each locale to conf/locales.php.
 
 TODO for 0.6
@@ -12,7 +13,7 @@ TODO for 0.6
 * move SieveSession object from $_SESSION to $GLOBALS scope
 * handle referrals
 * remove dependency on c-client by adding hardcoded imap functions in PHP
-* add support for proxy authorization
+* fix mailbox list for proxy authorization
 * do HAVESPACE before doing a PUTSCRIPT as the spec demands. HAVESPACE is broken up to 
   cyrus-2.0.16, so will need to handle this according to timsieved version
 * move functions to SmartSieve class: rule.php:checkRule(),vacation.php:checkRule(), 

@@ -1,6 +1,12 @@
 Smartsieve - Changes file
 -------------------------
 
+16 April 2004 S Grier
+* Support proxy authorization. We now authenticate as $sieve->auth, and authorize 
+  as $sieve->authz. Only users authenticating as a Cyrus admin or sieve_admin will 
+  be able to authorize as a different user. Also, note that the PHP imap extension 
+  doesn't support proxy authz, so the mailbox listing will be wrong.
+
 13 April 2004 S Grier
 * Added Russian koi8-r translation. Contributed by Alexander Borovsky aka Partizan.
 * Added $server['auth_domain'] option to append domain on usernames if 

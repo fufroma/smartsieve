@@ -35,7 +35,7 @@ if (!is_object($sieve) || !$sieve->authenticate()) {
 // start sieve session, and get the rules via the script object
 if (!$sieve->openSieveSession()) {
     echo SmartSieve::text("ERROR: ") . $sieve->errstr . "<BR>\n";
-    $sieve->writeToLog("ERROR: openSieveSession failed for " . $sieve->user .
+    $sieve->writeToLog("ERROR: openSieveSession failed for " . $sieve->authz .
 	': ' . $sieve->errstr, LOG_ERR);
     exit;
 }
@@ -67,7 +67,7 @@ $script = &$scripts[$sieve->workingscript];
 
 if (!$script->retrieveRules($sieve->connection)) {
     array_push($errors, SmartSieve::text('ERROR: ') . $script->errstr);
-    $sieve->writeToLog("ERROR: retrieveRules failed for " . $sieve->user .
+    $sieve->writeToLog("ERROR: retrieveRules failed for " . $sieve->authz .
 	": " . $script->errstr, LOG_ERR);
 }
 
@@ -128,14 +128,14 @@ if ($action) {
     /* write these changes. */
     if (!$script->updateScript($sieve->connection)) {
 	array_push($errors, SmartSieve::text('ERROR: ') . $script->errstr);
-	$sieve->writeToLog('ERROR: updateScript failed for ' . $sieve->user
+	$sieve->writeToLog('ERROR: updateScript failed for ' . $sieve->authz
 	    . ': ' . $script->errstr, LOG_ERR);
     }
     /* get the rules from the saved script again. */
     else {
 	if (!$script->retrieveRules($sieve->connection)) {
 	    array_push($errors, SmartSieve::text('ERROR: ') . $script->errstr);
-	    $sieve->writeToLog('ERROR: retrieveRules failed for ' . $sieve->user
+	    $sieve->writeToLog('ERROR: retrieveRules failed for ' . $sieve->authz
 	    	. ': ' . $script->errstr, LOG_ERR);
 	}
     }

@@ -43,7 +43,7 @@ if (isset($GLOBALS['HTTP_POST_VARS']['script'])) {
 // open sieve connection
 if (!$sieve->openSieveSession()) {
     echo SmartSieve::text("ERROR: ") . $sieve->errstr . "<BR>\n";
-    $sieve->writeToLog('ERROR: openSieveSession failed for ' . $sieve->user . 
+    $sieve->writeToLog('ERROR: openSieveSession failed for ' . $sieve->authz . 
         ': ' . $sieve->errstr, LOG_ERR);
     exit;
 }

@@ -34,7 +34,7 @@ if (!is_object($sieve) || !$sieve->authenticate()) {
 // open sieve connection
 if (!$sieve->openSieveSession()) {
     echo SmartSieve::text("ERROR: ") . $sieve->errstr . "<BR>\n";
-    $sieve->writeToLog('ERROR: openSieveSession failed for ' . $sieve->user . 
+    $sieve->writeToLog('ERROR: openSieveSession failed for ' . $sieve->authz . 
         ': ' . $sieve->errstr, LOG_ERR);
     exit;
 }
@@ -89,7 +89,7 @@ if ($action == 'createscript')
             if (is_object($scripts[$newscript])){
                 if (!$scripts[$newscript]->updateScript($sieve->connection)) {
                     array_push($errors, 'updateScript '.SmartSieve::text('failed: ') . $scripts[$newscript]->errstr);
-                    $sieve->writeToLog('scripts.php: updateScript failed for ' . $sieve->user
+                    $sieve->writeToLog('scripts.php: updateScript failed for ' . $sieve->authz
                         . ': ' . $scripts[$newscript]->errstr, LOG_ERR);
                 }
             }
@@ -157,7 +157,7 @@ if ($action == 'rename')
                         $scripts[$newscript]->name = $newscript;
                         if (!$scripts[$newscript]->updateScript($sieve->connection)) {
                             array_push($errors, 'updateScript '.SmartSieve::text('failed: ') . $scripts[$newscript]->errstr);
-                            $sieve->writeToLog('scripts.php: updateScript failed for ' . $sieve->user
+                            $sieve->writeToLog('scripts.php: updateScript failed for ' . $sieve->authz
                                 . ': ' . $scripts[$newscript]->errstr, LOG_ERR);
                             unset($scripts[$newscript]);
                         }

@@ -16,6 +16,12 @@ $default->language = "en_GB";
 // Set following as default character set.
 $default->charset = "ISO-8859-15";
 
+// Should we allow proxy authorization? If set to true SmartSieve will allow 
+// users to specify a user to authorize as; ie. they will authenticate as the 
+// the sieve authentication user, and be able to act as the proxy authorization 
+// user. Note: usually only Cyrus admins and sieve_admins can do this.
+$default->allow_proxy_authz = false;
+
 // Should we allow the user to select which language they wish to view 
 // SmartSieve in? If false $default->language will always be used.
 $default->user_select_lang = true;
