@@ -16,7 +16,7 @@
   <TD CLASS="main">
 
     <TEXTAREA NAME="text" ROWS="30" COLS="70" WRAP="off">
-<?php echo Script::removeEncoding(); ?>
+<?php echo $stext; ?>
 </TEXTAREA>
 
   </TD>
