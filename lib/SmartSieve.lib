@@ -339,7 +339,15 @@ class AppSession {
     * Update script list in response to a kick.
     */
     function doListScripts () {
-        return $GLOBALS['HTTP_SESSION_VARS']['sieve']->listScripts();
+        return count($GLOBALS['HTTP_SESSION_VARS']['sieve']->listScripts());
+    }
+
+
+   /*
+    * Return the number of scripts belonging to the user on ther server.
+    */
+    function getNumScripts () {
+        return count($GLOBALS['HTTP_SESSION_VARS']['sieve']->scriptlist);
     }
 
 
@@ -848,7 +856,8 @@ class Script {
 
     if (!AppSession::isActiveScript($this->name) &&
         ($default->update_activate_script || 
-         !$default->allow_multi_scripts)) {
+         !$default->allow_multi_scripts ||
+         AppSession::getNumScripts() == 0)) {
 	if (!$connection->activatescript($this->name)) {
 	    $this->errstr = 'updateScript: activatescript failed: ' . $connection->errstr;
 	    return false;

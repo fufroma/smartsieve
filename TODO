@@ -28,7 +28,6 @@ TODO:
 - config options for other sieve rule options (forward, reject etc).
 - improve sieve.lib:
     - do something with 'NO' responses, pehaps getError function.
-    - implement havespace and deletescript functions.
     - add support for other sasl mechanisms.
     - add ssl socket support, either with the sieve starttls command, 
       or fsockopen('ssl://server....
@@ -40,18 +39,19 @@ TODO:
 
 
 - support 'is' and 'matches' match types. will then support wildcard chars.
-- issue HAVESPACE call before doing PUTSCRIPT as the spec suggests.
+- issue HAVESPACE call before doing PUTSCRIPT as the spec suggests. havespace is broken 
+  upto cyrus-imapd-2.0.16, so will have to handle this according to timsieved version.
 - modify to handle magic_quotes_runtime = On (?)
 - add support for sasl proxy authentication. will need to do something 
   with imap_open() on rule.php, perhaps write function which will return 
   list of mboxes which the proxy user has write access to.
   note: this will allow admin access to users scripts.
 - help info.
-- need to think about interface for managing existing scripts.
 - sieve.lib: read() should put read chars into $this->read_buf or similar.
   then read() can return true or false, and set $this->socket_err if socket 
   timed out or no bytes found at the socket.
 - internationalization ?
+- support other backends. eg. postgresql, BerkeleyDB, etc.
 
 
 $Id$

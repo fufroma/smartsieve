@@ -1,6 +1,12 @@
 Smartsieve - Changes file
 -------------------------
 
+14 March 2003 S Grier
+* cleaned up scripts.php.
+* vacation status should default to 'on' when first set.
+* SmartSieve.lib: new getNumScripts function returns number of current user's scripts.
+* updateScript() will now set script active if no other script exists for user.
+
 12 March 2003 S Grier
 * scripts.php: added rename action.
 
