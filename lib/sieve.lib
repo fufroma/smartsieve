@@ -139,7 +139,7 @@ class SieveSession {
     function _selectsaslmech ($sasl_mech = '')
     {
         // list of SASL mechanisms SieveSession supports.
-        $ss_sasl_mechs = array('plain');
+        $ss_sasl_mechs = array('digest-md5','plain');
         // list of SASL mechanisms to use in auth attempt.
         $use_sasl_mechs = array();
 
@@ -187,6 +187,68 @@ class SieveSession {
                 fputs($this->socket,"$encoded\r\n");
                 $said = $this->read();
 
+                if (preg_match("/NO/",$said)) {
+                    $this->close();
+                    $this->errstr = "_authenticate: authentication failure connecting to $this->server";
+                    return false;
+                }
+                elseif (!preg_match("/OK/",$said)) {
+                    $this->close();
+                    $this->errstr = "_authenticate: bad authentication response from $this->server: $said";
+                    return false;
+                }
+                return true;
+                break;
+
+            case "digest-md5":
+                // follows rfc2831 for generating the $response to $challenge
+                fputs($this->socket, "AUTHENTICATE \"DIGEST-MD5\"\r\n");
+                // $clen is length of server challenge, we ignore it. 
+                $clen = $this->read();;
+                // read the challenge. the max length for this is 2048.
+                $challenge = $this->read();
+                // vars used when building $response_value and $response
+                $cnonce = base64_encode(md5(microtime()));
+                $ncount = "00000001";
+                $qop_value = "auth"; 
+                $digest_uri_value = 'sieve/' . $this->server;
+                // decode the challenge string
+                $result = array();
+                $challenge = base64_decode($challenge);
+                preg_match("/nonce=\"(.*)\"/U",$challenge, $matches);
+                $result['nonce'] = $matches[1];
+                preg_match("/realm=\"(.*)\"/U",$challenge, $matches);
+                $result['realm'] = $matches[1];
+                preg_match("/qop=\"(.*)\"/U",$challenge, $matches);
+                $result['qop'] = $matches[1];
+                // verify server supports qop=auth 
+                $qop = explode(",",$result['qop']);
+                if (!in_array($qop_value, $qop)) {
+                   // rfc2831: client MUST fail if no qop methods supported
+                   return false;
+                }
+                // build the $response_value
+                $string_a1 = utf8_encode($this->uid).":";
+                $string_a1 .= utf8_encode($result['realm']).":";
+                $string_a1 .= utf8_encode($this->passwd);
+                $string_a1 = pack('H*', md5($string_a1));
+                $A1 = $string_a1.":".$result['nonce'].":".$cnonce.":".utf8_encode($this->proxy);
+                $A1 = md5($A1);
+                $A2 = md5("AUTHENTICATE:$digest_uri_value");
+                $string_response = $result['nonce'].":".$ncount.":".$cnonce.":".$qop_value;
+                $response_value = md5($A1.":".$string_response.":".$A2);
+                // build the challenge $response
+                $reply = "charset=utf-8,username=\"" . $this->uid . "\",realm=\"" . $result['realm'] . "\",";
+                $reply .= "nonce=\"" . $result['nonce'] . "\",nc=$ncount,cnonce=\"" . $cnonce . "\",";
+                $reply .= "digest-uri=\"" . $digest_uri_value . "\",response=" . $response_value . ",";
+                $reply .= "qop=" . $qop_value . ",authzid=\"" . utf8_encode($this->proxy)."\"";
+                $response = base64_encode($reply);
+                fputs($this->socket, "\"$response\"\r\n");
+
+                $said = $this->read();
+                while (!preg_match("/^OK/",$said) && !preg_match("/^NO/",$said)){
+                    $said = $this->read();
+                }
                 if (preg_match("/NO/",$said)) {
                     $this->close();
                     $this->errstr = "_authenticate: authentication failure connecting to $this->server";
