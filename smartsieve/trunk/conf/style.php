@@ -156,4 +156,7 @@ $css['a.option:hover']['font-family'] = 'helvetica,sans-serif';
 $css['a.option:hover']['font-size'] = '9pt';
 $css['a.option:hover']['text-decoration'] = 'none';
 
+$css['.inactivescript']['background-color'] = '#f1f1f1';
+$css['.activescript']['background-color'] = '#FFFFFF';
+
 ?>
