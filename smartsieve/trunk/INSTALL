@@ -102,8 +102,8 @@ REQUIREMENTS
      --with-mcrypt=/libmcrypt/install/dir
    
    SmartSieve also supports the PHP Extension and Application Repository 
-   (PEAR) Crypt_Rc4 and Crypt_HCEMD5 libraries for encryption purposees. 
-   The Crypt_Rc4 library is not included in any PHP distrobutions, but 
+   (PEAR) Crypt_Rc4 and Crypt_HCEMD5 libraries for encryption purposes. 
+   The Crypt_Rc4 library is not included in any PHP distributions, but 
    is available from the PEAR repository. You can install it with 
    something like:
 
@@ -115,7 +115,7 @@ REQUIREMENTS
    have the Crypt_HCEMD5 library installed. It has since been removed 
    completely from the PEAR repository. If you are using php-4.3.0 or 
    newer and you want to use the Crypt_HCEMD5 library, you will need 
-   to get it from the php-4.2.x distrobution.
+   to get it from the php-4.2.x distribution.
 
    If you are using either of the PEAR libraries, make sure their 
    location is included in the PHP include_path for scripts to be able  
