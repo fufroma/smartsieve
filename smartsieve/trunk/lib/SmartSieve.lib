@@ -836,8 +836,9 @@ class Script {
         return false;
     }
 
-    if ($default->update_activate_script && 
-	!AppSession::isActiveScript($this->name)) {
+    if (!AppSession::isActiveScript($this->name) &&
+        ($default->update_activate_script || 
+         !$default->allow_multi_scripts)) {
 	if (!$connection->activatescript($this->name)) {
 	    $this->errstr = 'updateScript: activatescript failed: ' . $connection->errstr;
 	    return false;
