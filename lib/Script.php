@@ -91,17 +91,15 @@ class Script {
                     $rule = array();
                     $rule['priority'] = $bits[1];
                     $rule['status'] = $bits[2];
-                    $rule['from'] = $bits[3];
-                    $rule['to'] = $bits[4];
-                    $rule['subject'] = $bits[5];
+                    $rule['from'] = $this->unescapeChars($bits[3]);
+                    $rule['to'] = $this->unescapeChars($bits[4]);
+                    $rule['subject'] = $this->unescapeChars($bits[5]);
                     $rule['action'] = $bits[6];
-                    $rule['action_arg'] = $bits[7];
-		    // <crnl>s will be encoded as \\n. undo this.
-		    $rule['action_arg'] = preg_replace("/\\\\n/","\r\n",$rule['action_arg']);
+                    $rule['action_arg'] = $this->unescapeChars($bits[7]);
                     $rule['flg'] = $bits[8];   // bitwise flag
-                    $rule['field'] = $bits[9];
-                    $rule['field_val'] = $bits[10];
-                    $rule['size'] = $bits[11];
+                    $rule['field'] = $this->unescapeChars($bits[9]);
+                    $rule['field_val'] = $this->unescapeChars($bits[10]);
+                    $rule['size'] = $this->unescapeChars($bits[11]);
                     $rule['continue'] = ($bits[8] & $continuebit);
                     $rule['gthan'] = ($bits[8] & $sizebit); // use 'greater than'
                     $rule['anyof'] = ($bits[8] & $anyofbit);
@@ -121,13 +119,11 @@ class Script {
                 }
                 if (preg_match("/^ *#vacation&&(.*)&&(.*)&&(.*)&&(.*)/i",$line,$bits)){
                     $vacation['days'] = $bits[1];
-                    $vaddresslist = $bits[2];
+                    $vaddresslist = $this->unescapeChars($bits[2]);
                     $vaddresslist = preg_replace("/\"|\s/","",$vaddresslist);
                     $vaddresses = array();
                     $vaddresses = preg_split("/,/",$vaddresslist);
-                    $vacation['text'] = $bits[3];
-		    // <crnl>s will be encoded as \\n. undo this.
-		    $vacation['text'] = preg_replace("/\\\\n/","\r\n",$vacation['text']);
+                    $vacation['text'] = $this->unescapeChars($bits[3]);
                     $vacation['status'] = $bits[4];
                     $vacation['addresses'] = &$vaddresses;
                 }
@@ -424,13 +420,11 @@ class Script {
     foreach ($this->rules as $rule){
       // only add rule to foot if status != deleted. this is how we delete a rule.
       if ($rule['status'] != 'DELETED') {
-	// we need to handle \r\n here.
-	$rule['action_arg'] = preg_replace("/\r\n/","\\n",$rule['action_arg']);
 	/* reset priority value. note: we only do this
 	 * for compatibility with Websieve. */
 	$rule['priority'] = $pcount;
-        $newscriptfoot .= "#rule&&" . $rule['priority'] . "&&" . $rule['status'] . "&&" . $rule['from'] . "&&" . $rule['to'] . "&&" . $rule['subject'] . "&&" . $rule['action'] .
-"&&" . $rule['action_arg'] . "&&" . $rule['flg'] . "&&" . $rule['field'] . "&&" . $rule['field_val'] . "&&" . $rule['size'] . "\n";
+        $newscriptfoot .= "#rule&&" . $rule['priority'] . "&&" . $this->escapeChars($rule['status']) . "&&" . $this->escapeChars($rule['from']) . "&&" . $this->escapeChars($rule['to']) . "&&" . $this->escapeChars($rule['subject']) . "&&" . $rule['action'] .
+"&&" . $this->escapeChars($rule['action_arg']) . "&&" . $rule['flg'] . "&&" . $this->escapeChars($rule['field']) . "&&" . $this->escapeChars($rule['field_val']) . "&&" . $rule['size'] . "\n";
 	$pcount = $pcount+2;
       }
     }
@@ -440,10 +434,10 @@ class Script {
         $first = 1;
         foreach ($vacation['addresses'] as $address) {
             if (!$first) $newscriptfoot .= ", ";
-            $newscriptfoot .= "\"" . $address . "\"";
+            $newscriptfoot .= "\"" . $this->escapeChars($address) . "\"";
             $first = 0;
         }
-	$vacation['text'] = preg_replace("/\r\n/","\\n",$vacation['text']);
+	$vacation['text'] = $this->escapeChars($vacation['text']);
         $newscriptfoot .= "&&" . $vacation['text'] . "&&" . $vacation['status'] . "\n";
     }
     $newscriptfoot .= "#mode&&" . $this->mode . "\n";
@@ -494,6 +488,32 @@ function removeEncoding ()
     }
     return $raw;
 }
+
+   /**
+    * Make a string safe for the encoded index. Replace CRLFs and & chars.
+    *
+    * @param string $string The string to make safe
+    * @return string The safe string
+    */
+    function escapeChars($string)
+    {
+        $string = preg_replace("/\r\n/", "\\n", $string);
+        $string = preg_replace("/&/", "\&", $string);
+        return $string;
+    }
+
+   /**
+    * Unescape a string made safe by escapeChars().
+    *
+    * @param string $string The string to unescape
+    * @return string The unescaped string
+    */
+    function unescapeChars($string)
+    {
+        $string = preg_replace("/\\\\n/", "\r\n", $string);
+        $string = preg_replace("/\\\&/", "&", $string);
+        return $string;
+    }
 
 
 }
