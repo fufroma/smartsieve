@@ -57,7 +57,7 @@ if ($script->mode == 'advanced'){
 
 /* do rule status change if requested. */
 
-if (isset($GLOBALS['HTTP_POST_VARS']['action'])) {
+if ($GLOBALS['HTTP_POST_VARS']['action']) {
 
     $action = AppSession::getFormValue('action');
 
