@@ -23,6 +23,7 @@ class SieveSession {
 	$this->implementation = array('unknown');
 	$this->saslmethods = array('unknown');
 	$this->capabilities = array('unknown');
+	$this->starttls_avail = false;
 
   }
   // end constructor
@@ -62,6 +63,8 @@ class SieveSession {
 		$capabilities = $bits[1];
 		$this->capabilities = split(" ", $capabilities);
 	    }
+            elseif (preg_match("/^\"STARTTLS\"/",$said))
+                $this->starttls_avail = true;
 	    $said = $this->read();
 	  }
 	}

@@ -1,6 +1,10 @@
 Smartsieve - Changes file
 -------------------------
 
+30 Oct 2002 S Grier
+* sieve.lib: checks for "STARTTLS" capability. this is new in timesieved-1.1.0
+  (cyrus-imapd-2.1).
+
 23 Oct 2002 S Grier
 * main.php: $errstr is now $errors array. will also now report $msgs.
 
