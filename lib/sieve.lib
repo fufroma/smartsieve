@@ -1,0 +1,271 @@
+<?php
+/*
+ * $Id$
+ *
+ * Copyright 2002 Stephen Grier <stephengrier@users.sourceforge.net>
+ *
+ * See the inclosed NOTICE file for conditions of use and distribution.
+ */
+
+
+class SieveSession {
+
+  // class constructor
+  function SieveSession () {
+
+	// some defaults to be overridden
+	$this->server = 'localhost';
+	$this->port = '2000';
+	$this->proxy = '';
+	$this->uid = '';
+	$this->passwd = '';
+
+	$this->implementation = array('unknown');
+	$this->saslmethods = array('unknown');
+	$this->capabilities = array('unknown');
+
+  }
+  // end constructor
+
+
+  // class methods
+
+  function start () {
+
+	if(!isset($this->socket)){
+	    $this->socket = fsockopen($this->server, $this->port, $this->errnum, $this->errstr, "60");
+	}
+	if (!$this->socket) {
+	    return false;
+	}
+
+	$said = $this->read();
+	if (!preg_match("/timsieved/i",$said)) {
+	    $this->close();
+	    $this->errstr = "start: bad response from $this->server: $said";
+	    return false;
+	}
+
+	// If response starts ""IMPLEMENTATION" "(..." server is Cyrus version 2.
+	// else, we will assume Cyrus version 1.
+
+	if (preg_match("/IMPLEMENTATION/",$said))
+	{
+	  while (!preg_match("/^OK/",$said)) {
+	    if (preg_match("/^\"IMPLEMENTATION\" +\"(.*)\"/",$said,$bits))
+		$this->implementation = $bits[1];
+	    elseif (preg_match("/^\"SASL\" +\"(.*)\"/",$said,$bits)) {
+		$auth_types = $bits[1];
+		$this->saslmethods = split(" ", $auth_types);
+	    }
+	    elseif (preg_match("/^\"SIEVE\" +\"(.*)\"/",$said,$bits)) {
+		$capabilities = $bits[1];
+		$this->capabilities = split(" ", $capabilities);
+	    }
+	    $said = $this->read();
+	  }
+	}
+	else
+	{
+	    // assume cyrus v1.
+	    if (preg_match("/\"(.+)\" +\"(.+)\"/",$said,$bits)) {
+		$this->implementation = $bits[1];
+		$sasl_str = $bits[2];  // should look like: SASL={PLAIN,...}
+		if (preg_match("/SASL=\{(.+)\}/",$sasl_str,$morebits)) {
+		    $auth_types = $morebits[1];
+		    $this->saslmethods = split(", ", $auth_types);
+		}
+	    }
+	    else {
+		// a bit desperate if we get here.
+		$this->implementation = $said;
+		$this->saslmethods = $said;
+	    }
+	}
+
+	$said = $this->read(); // retrieve blank line following OK
+
+	$authstr = $this->proxy . "\x00" . $this->uid . "\x00" . $this->passwd;
+	$encoded = base64_encode($authstr);
+	$len = strlen($encoded);
+	fputs($this->socket,"AUTHENTICATE \"PLAIN\" \{$len+}\r\n");
+	fputs($this->socket,"$encoded\r\n");
+	$said = $this->read();
+
+	if (preg_match("/NO/",$said)) {
+	    $this->close();
+	    $this->errstr = "start: authentication failure connecting to $this->server";
+	    return false;
+	}
+	elseif (!preg_match("/OK/",$said)) {
+	    $this->close;
+	    $this->errstr = "start: bad authentication response from $this->server: $said";
+	    return false;
+	}
+
+	return true;
+  }
+
+  function close () {
+
+	if (!$this->socket) {
+	    return true;
+	}
+	fputs($this->socket,"LOGOUT\r\n");
+	$rc = fclose ($this->socket);
+	if ($rc != 1) {
+	    $this->errstr = "close: failed closing socket to $this->server";
+	    return false; 
+	}
+	return true;
+
+  }
+
+  function read () {
+
+	while (!feof ($this->socket)) {
+	    $char = fgets($this->socket,1);
+	    if (($char == "\n") || ($char == "\r")) {
+		return $buffer;
+	    }
+	    $buffer .= $char;
+	}
+	return $buffer;
+  }
+
+
+  function listscripts () {
+	if (!$this->socket) {
+            $this->errstr = "listscripts: no connection open to $this->server";
+            return false;
+        }
+
+	$scripts = array();
+
+	fputs($this->socket,"LISTSCRIPTS\r\n");
+
+	$said = $this->read();
+	while (!preg_match("/^OK/",$said) && !preg_match("/^NO/",$said)) {
+
+	    // Cyrus v1 script lines look like '"script*"' with the 
+	    // asterisk denoting the active script. Cyrus v2 script 
+	    // lines will look like '"script" ACTIVE' if active.
+
+	    if (preg_match("/^\"(.+)\"\s*(.+)*$/m",$said,$bits)) {
+		if (preg_match("/\*$/",$bits[1])){
+		    $bits[1] = preg_replace("/\*$/","",$bits[1]);
+		    $this->activescript = $bits[1];
+		}
+		if ($bits[2] == 'ACTIVE')
+		    $this->activescript = $bits[1];
+		array_push($scripts,$bits[1]);
+	    }
+	    $said = $this->read();
+	}
+
+	if (preg_match("/^OK/",$said)) {
+	    $this->scriptlist = $scripts;
+            return true;
+        }
+ 
+        $this->errstr = "listscripts: could not get list of scripts: $said";
+        return false;
+  }
+
+
+  function getscript ($scriptfile) {
+	if (!isset($scriptfile)) {
+	    $this->errstr = "getscript: no script file specified";
+	    return false;
+	}
+	if (!$this->socket) {
+	    $this->errstr = "getscript: no connection open to $this->server";
+	    return false;
+	}
+
+	fputs($this->socket,"GETSCRIPT \"$scriptfile\"\r\n");
+
+	$said = $this->read();
+	while ((!preg_match("/^OK/",$said)) && (!preg_match("/^NO/",$said))) {
+	    // replace newlines which read() removed
+	    if (!preg_match("/\n$/",$said)) $said .= "\n";
+	    $script .= $said;
+	    $said = $this->read();
+	}
+
+	if (preg_match("/^OK/",$said)) {
+	    if (!isset($script)) {
+		$this->errstr = "getscript: zero length script";
+		return false;
+	    }
+	    return $script;
+	}
+
+	$this->errstr = "getscript: could not get script $scriptfile: $said";
+	return false;
+  }
+
+
+  function activatescript ($scriptfile) {
+	if (!isset($scriptfile)) {
+            $this->errstr = "activatescript: no script file specified";
+            return false;
+        }
+
+        if (!$this->socket) {
+            $this->errstr = "activatescript: no connection open to $this->server";
+            return false;
+        }
+
+	fputs($this->socket,"SETACTIVE \"$scriptfile\"\r\n");
+
+	$said = $this->read(); // blank line here?
+	$said = $this->read();
+
+	if (preg_match("/^OK/",$said)) {
+            return true;
+        }
+
+	$this->errstr = "activatescript: could not activate script $scriptfile: $said";
+        return false;
+  }
+
+
+  function putscript ($scriptfile,$script) {
+	if (!isset($scriptfile)) {
+            $this->errstr = "putscript: no script file specified";
+            return false;
+        }
+	if (!isset($script)) {
+            $this->errstr = "putscript: no script specified";
+            return false;
+        }
+	if (!$this->socket) {
+            $this->errstr = "putscript: no connection open to $this->server";
+            return false;
+        }
+
+	$len = strlen($script);
+	fputs($this->socket,"PUTSCRIPT \"$scriptfile\" \{$len+}\r\n");
+	fputs($this->socket,"$script\r\n");
+
+	$said = '';
+	while ($said == '') {
+	    $said = $this->read();
+	}
+ 
+        if (preg_match("/^OK/",$said)) {
+	    return true;
+	}
+
+        $this->errstr = "putscript: could not put script $scriptfile: $said";
+        return false;
+  }
+
+
+
+}
+// end SieveSession class
+
+
+?>

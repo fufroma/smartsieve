@@ -1,0 +1,644 @@
+<?php
+/*
+ * $Id$
+ *
+ * Copyright 2002 Stephen Grier <stephengrier@users.sourceforge.net>
+ *
+ * See the inclosed NOTICE file for conditions of use and distribution.
+ */
+
+
+class AppSession {
+
+  // class constructor
+  function AppSession () {
+    global $default;
+
+    // defaults
+    $this->user = '';
+    $this->passwd = '';
+    $this->scriptfile = $default->scriptfile;
+    $this->server = '127.0.0.1';
+    $this->proxy = '';
+    $this->sieveport = '2000';
+    $this->imapport = '143';
+    $this->alt_namespace = false;
+    $this->maildomain = 'localhost';
+
+    return true;
+  }
+
+
+  // class methods
+
+
+  function initialize () {
+	global $sieve, $HTTP_POST_VARS, $servers;
+
+	require_once $GLOBALS['default']->lib_dir . "/Encrypt.php";
+
+	// can't to much if user didn't supply these
+	// from the login form
+	if (!$GLOBALS['HTTP_POST_VARS']['sieveuid'] || !$GLOBALS['HTTP_POST_VARS']['passwd']) {
+	    return false;
+	}
+
+	$this->user = $this->getFormValue('sieveuid');
+	// encrypt the passwd. decrypt when needed.
+	$key = Encrypt::generateKey();
+	$this->passwd = Encrypt::encrypt($this->getFormValue('passwd'),$key);
+
+	// user supplied overrides
+	if (!empty($GLOBALS['HTTP_POST_VARS']['scriptfile']))
+	    $this->scriptfile = $this->getFormValue('scriptfile');
+	if (isset($GLOBALS['HTTP_POST_VARS']['server']))
+	{
+	    $server = $servers[$HTTP_POST_VARS['server']];
+	    if (!is_array($server)) return false;
+
+	    $this->server = $server['server'];
+	    $this->sieveport = $server['sieveport'];
+	    $this->imapport = $server['imapport'];
+	    $this->alt_namespace = $server['alt_namespace'];
+	    $this->maildomain = $server['maildomain'];
+	}
+
+	$GLOBALS['HTTP_SESSION_VARS']['sieve'] = &$this;
+	session_register('sieve');
+
+	$GLOBALS['HTTP_SESSION_VARS']['script'] = new Script($this->scriptfile);
+	session_register('script');
+
+	return true;
+  }
+
+
+  function authenticate () {
+
+    if (!$this->openSieveSession()) {
+	return false;
+    }
+    if (!$this->closeSieveSession()) {
+	return false;
+    }
+
+    return true;
+  }
+
+
+  // open a sieve session
+  function openSieveSession () {
+    global $default, $HTTP_SESSION_VARS;
+
+    require_once $GLOBALS['default']->lib_dir . "/Encrypt.php";
+
+    if (!isset($HTTP_SESSION_VARS['sieve'])){
+        return false;
+    }
+ 
+    $this->connection = new SieveSession;
+    if (!$this->connection) return false;
+ 
+    // we need to set the connection info
+    // in the SieveSession object
+    $this->connection->uid = $this->user;
+    $key = Encrypt::retrieveKey();
+    $passwd = Encrypt::decrypt($this->passwd,$key);
+    $this->connection->passwd = $passwd;
+    $this->connection->server = $this->server;
+    $this->connection->port = $this->sieveport;
+    $this->connection->proxy = $this->proxy;
+ 
+    if (!$this->connection->start())
+        return false;
+
+    return true;
+  }
+
+
+
+  // close a sieve session
+  function closeSieveSession () {
+    global $HTTP_SESSION_VARS;
+
+    if (!isset($this->connection)) {
+	return false;
+    }
+
+    if (!$this->connection->close())
+        return false;
+
+    $this->connection = null;
+    return true;
+  }
+
+
+
+  // get a list of imap mailboxes for this user
+  function retrieveMailboxList () 
+  {
+    global $default;
+    require_once $GLOBALS['default']->lib_dir . "/Encrypt.php";
+
+    $connstr = '{' . $this->server . ':' . $this->imapport . '}INBOX';
+    // get encrypted passwd.
+    $key = Encrypt::retrieveKey();
+    $passwd = Encrypt::decrypt($this->passwd, $key);
+    $conn = imap_open($connstr, $this->user, $passwd, OP_HALFOPEN);
+    if (!$conn){
+	$this->errstr = "retrieveMailboxList: imap_open failed: " . imap_last_error();
+	return false;
+    }
+
+    $mboxlist = array();
+    $mboxes = array();
+    $connstr = '{' . $this->server . ':' . $this->imapport . '}';
+    $mboxes = imap_listmailbox($conn,$connstr,"*");
+
+    if (!is_array($mboxes) || count($mboxes) <= 0){
+	$this->errstr = "retrieveMailboxList: imap_listmailbox failed: " . imap_last_error();
+	return false;
+    }
+
+    reset($mboxes);
+    foreach ($mboxes as $mbox){
+	$mbox = @imap_utf7_decode($mbox);
+	$label = str_replace('{' . "$this->server:$this->imapport" . '}', '', $mbox);
+	array_push($mboxlist,$label);
+    }
+
+    $this->mboxlist = $mboxlist;
+    imap_close($conn);
+
+    return true;
+  }
+
+
+  // log a message.
+  function writeToLog ($msg,$level = LOG_DEBUG)
+  {
+    global $default;
+    static $log;
+
+    if (!$default->logging) return true;
+
+    if ($level > $default->logging_level) return true;
+
+    if (!$msg){
+	$this->errstr = "writeToLog: no message to log";
+	return false;
+    }
+
+    if (!is_object($log)){
+
+	include_once "$default->lib_dir/Log.php";
+
+	if (!isset($default->logging_method) ||
+	    !isset($default->logging_facility) ||
+	    !isset($default->logging_ident))
+	{
+	    $this->errstr = "writeToLog: logging not configured correctly";
+	    return false;
+	}
+
+	$log = new Log($default->logging_method,
+		$default->logging_facility,
+		$default->logging_ident);
+
+	if ($log->errstr){
+	    $this->errstr = "writeToLog: " . $log->errstr;
+	    return false;
+	}
+
+	if (!is_object($log)){
+	    $this->errstr = "writeToLog: failed to create log object";
+	    return false;
+	}
+    }
+
+    if (!$log->writetoLog($msg,$level)){
+	$this->errstr = "writeToLog: failed writing to log: " .
+		$log->errstr;
+	return false;
+    }
+
+    return true;
+
+  }
+
+
+
+  /*
+   * Return a cleaned form supplied value. Strip out anything which 
+   * looks like an HTML tag, and any backslashes if magic_quotes.gpc
+   * is on. Strip trailing whitespace.
+   */
+  function getFormValue ($var)
+  {
+	if (isset($GLOBALS['HTTP_POST_VARS'][$var]))
+            $val = $GLOBALS['HTTP_POST_VARS'][$var];
+	elseif (isset($GLOBALS['HTTP_GET_VARS'][$var]))
+	    $val = $GLOBALS['HTTP_GET_VARS'][$var];
+	else
+	    $val = '';
+
+	/* is magic_quotes_gpc set to on in php.ini? */
+	static $magicquotes;
+	if (!isset($magicquotes))
+	    $magicquotes = get_magic_quotes_gpc();
+
+	if (!is_array($val)){
+
+	    if ($magicquotes)
+	        $val = stripslashes($val);
+
+	    /* strip anything which looks like HTML. */
+	    $val = strip_tags($val);
+
+	    /* remove trailing whitespace. */
+	    $val = rtrim($val);
+
+	}
+
+	return $val;
+  }
+
+
+
+}
+// end Session class
+
+
+
+class Script {
+
+  // class constructor
+  function Script ($scriptfile) {
+
+	$this->scriptfile = $scriptfile;
+	$this->script = '';
+	$this->rules = array();
+	$this->vacation = array();
+	$this->scriptlist = array();
+	$this->pcount = 0;            /* highest priority value in ruleset */
+  }
+  // end contructor
+
+
+  // class functions
+
+
+  // get the list of sieve scripts for this user.
+  function listScripts ($connection) {
+ 
+    if (!is_object($connection)) {
+        $this->errstr = "listScripts: no sieve session open";
+        return false;
+    }
+ 
+    if (!$connection->listscripts()) {
+	$this->errstr = $connection->errstr;
+        return false;
+    }
+    $this->scriptlist = $connection->scriptlist;
+    $this->activescript = $connection->activescript;
+    return true;
+  }
+
+
+  // get sieve script rules for this user
+  function retrieveRules ($connection) {
+    global $HTTP_SESSION_VARS;
+    $continuebit = 1;
+    $sizebit = 2;
+    $anyofbit = 4;
+    $keepbit = 8;
+    $regexbit = 128;
+ 
+    if (!isset($this->scriptfile)){
+        return false;
+    }
+    if (!is_object($connection)) {
+	$this->errstr = "retrieveRules: no sieve session open";
+	return false;
+    }
+ 
+    // fetch a list of current scripts
+    if (!$this->scriptlist) {
+        if (!$this->listScripts($connection)) {
+            return false;
+        }
+    }
+ 
+    $scriptfile = $this->scriptfile;
+    foreach ($this->scriptlist as $scriptname) {
+        if (preg_match("/$scriptfile/", $scriptname))
+            $exists = true;
+    }
+ 
+    // if script doesn't yet exist, return true.
+    if (!$exists) {
+        return true;
+    }
+ 
+    $script = $connection->getscript($this->scriptfile);
+ 
+    if ($connection->errstr) {
+	$this->errstr = $connection->errstr;
+        return false;
+    }
+ 
+    $lines = array();
+    $lines = preg_split("/\n/",$script); //,PREG_SPLIT_NO_EMPTY);
+ 
+    $rules = array();
+    $vacation = array();
+    $regexps = array('^ *##PSEUDO','^ *#rule','^ *#vacation','^ *#mode');
+ 
+    $line = array_shift($lines);
+    while (isset($line)){
+        foreach ($regexps as $regexp){
+            if (preg_match("/$regexp/i",$line)){
+                $line = rtrim($line);
+                if (preg_match(
+        "/^ *#rule&&(.*)&&(.*)&&(.*)&&(.*)&&(.*)&&(.*)&&(.*)&&(.*)&&(.*)&&(.*)&&(.*)$/i",                                $line,$bits)){
+                    $rule = array();
+                    $rule['priority'] = $bits[1];
+                    $rule['status'] = $bits[2];
+                    $rule['from'] = $bits[3];
+                    $rule['to'] = $bits[4];
+                    $rule['subject'] = $bits[5];
+                    $rule['action'] = $bits[6];
+                    $rule['action_arg'] = $bits[7];
+		    // <crnl>s will be encoded as \\n. undo this.
+		    $rule['action_arg'] = preg_replace("/\\\\n/","\r\n",$rule['action_arg']);
+                    $rule['flg'] = $bits[8];   // bitwise flag
+                    $rule['field'] = $bits[9];
+                    $rule['field_val'] = $bits[10];
+                    $rule['size'] = $bits[11];
+                    $rule['continue'] = ($bits[8] & $continuebit);
+                    $rule['gthan'] = ($bits[8] & $sizebit); // use 'greater than'
+                    $rule['anyof'] = ($bits[8] & $anyofbit);
+                    $rule['keep'] = ($bits[8] & $keepbit);
+                    $rule['regexp'] = ($bits[8] & $regexbit);
+                    if (!$rule['from'] && !$rule['to'] && !$rule['subject'] &&
+                        !$rule['field'] && !$rule['size'] && $rule['action'])
+                        $rule['unconditional'] = 1;
+ 
+                    array_push($rules,$rule);
+		    if ($rule['priority'] > $this->pcount)
+			$this->pcount = $rule['priority'];
+                }
+                if (preg_match("/^ *#vacation&&(.*)&&(.*)&&(.*)&&(.*)/i",$line,$bits)){
+                    $vacation['days'] = $bits[1];
+                    $vaddresslist = $bits[2];
+                    $vaddresslist = preg_replace("/\"|\s/","",$vaddresslist);
+                    $vaddresses = array();
+                    $vaddresses = preg_split("/,/",$vaddresslist);
+                    $vacation['text'] = $bits[3];
+		    // <crnl>s will be encoded as \\n. undo this.
+		    $vacation['text'] = preg_replace("/\\\\n/","\r\n",$vacation['text']);
+                    $vacation['status'] = $bits[4];
+                    $vacation['addresses'] = &$vaddresses;
+                }
+            }
+        }
+        $line = array_shift($lines);
+    }
+ 
+    $this->script = $script;
+    $this->rules = $rules;
+    $this->vacation = $vacation;
+ 
+    return true;
+  }
+ 
+ 
+  // update and save sieve script
+  function updateScript ($connection) {
+    global $HTTP_SESSION_VARS,$default,$sieve;
+ 
+    $activerules = 0;
+    $regexused = 0;
+    $rejectused = 0;
+ 
+    include "$default->lib_dir/version.php";
+ 
+    // we have the currently saved sieve script in $HTTP_SESSION_VARS['sieve']['script'].
+    // we want to regenerate this according to $HTTP_SESSION_VARS['sieve']['rules'].
+ 
+    if (!is_object($connection)) {
+	$this->errstr = "updateScript: no sieve session open";
+        return false;
+    }
+ 
+    // lets generate the main body of the script from our rules
+ 
+    $newscriptbody = "";
+    $continue = 1;
+ 
+    foreach ($this->rules as $rule){
+      $newruletext = "";
+ 
+      // don't print this rule if disabled.
+      if ($rule['status'] != 'ENABLED') {
+      }
+      else {
+ 
+        $activerules = 1;
+ 
+        // conditions
+ 
+        $anyall = "allof";
+        if ($rule['anyof']) $anyall = "anyof";
+        $match = ":contains";
+        if ($rule['regexp']) {
+            $match = ":regex";
+            $regexused = 1;
+        }
+        $started = 0;
+ 
+        if (!$rule['unconditional']) {
+            if (!$continue) $newruletext .= "els";
+            $newruletext .= "if " . $anyall . " (";
+            if ($rule['from']) {
+                $newruletext .= "address " . $match . " [\"From\"]";
+                $newruletext .= " \"" . $rule['from'] . "\"";
+                $started = 1;
+            }
+            if ($rule['to']) {
+                if ($started) $newruletext .= ", ";
+                $newruletext .= "address " . $match . " [\"To\",\"TO\",\"Cc\",\"CC\"]";
+                $newruletext .= " \"" . $rule['to'] . "\"";
+                $started = 1;
+            }
+            if ($rule['subject']) {
+                if ($started) $newruletext .= ", ";
+                $newruletext .= "header " . $match . " \"subject\"";
+                $newruletext .= " \"" . $rule['subject'] . "\"";
+                $started = 1;
+            }
+            if ($rule['field'] && $rule['field_val']) {
+                if ($started) $newruletext .= ", ";
+                $newruletext .= "header " . $match . " \"" . $rule['field'] . "\"";
+                $newruletext .= " \"" . $rule['field_val'] . "\"";
+                $started = 1;
+            }
+            if ($rule['size']) {
+                $xthan = " :under ";
+                if ($rule['gthan']) $xthan = " :over ";
+                if ($started) $newruletext .= ", ";
+                $newruletext .= "size " . $xthan . $rule['size'] . "K";
+                $started = 1;
+            }
+ 
+        }
+ 
+        // actions
+ 
+        if (!$rule['unconditional']) $newruletext .= ") {\n\t";
+        if (preg_match("/folder/i",$rule['action'])) {
+            $action_arg = $rule['action_arg'];
+            // should be INBOX.folder unless using alt namespace
+            if (!preg_match("/INBOX\./",$action_arg) && !$sieve->alt_namespace)
+                $action_arg = "INBOX." . $rule['action_arg'];
+            $newruletext .= "fileinto \"" . $action_arg . "\";";
+        }
+        if (preg_match("/reject/i",$rule['action'])) {
+            $newruletext .= "reject text: \n" . $rule['action_arg'] . "\n.\n;";
+            $rejectused = 1;
+        }
+        if (preg_match("/address/i",$rule['action']))
+            $newruletext .= "redirect \"" . $rule['action_arg'] . "\";";
+        if (preg_match("/discard/i",$rule['action']))
+            $newruletext .= "discard;";
+        if ($rule['keep']) $newruletext .= "\n\tkeep;";
+        if (!$rule['unconditional']) $newruletext .= "\n}";
+ 
+        $continue = 0;
+        if ($rule['continue']) $continue = 1;
+        if ($rule['unconditional']) $continue = 1;
+ 
+        $newscriptbody .= $newruletext . "\n\n";
+ 
+      } // end 'if ! ENABLED'
+    }
+ 
+    // vacation rule
+ 
+    if ($this->vacation) {
+        $vacation = $this->vacation;
+	if (!$vacation['days']) $vacation['days'] = $default->vacation_days;
+	if (!$vacation['text']) $vacation['text'] = $default->vacation_text;
+	if (!$vacation['status']) $vacation['status'] = 'on';
+
+	// filter out invalid addresses.
+	$ok_vaddrs = array();
+	foreach($vacation['addresses'] as $addr){
+	    if ($addr != '' && preg_match("/\@/",$addr)) 
+		array_push($ok_vaddrs,$addr);
+	}
+	$vacation['addresses'] = $ok_vaddrs;
+
+	if (!$vacation['addresses'][0]){
+            $defaultaddr = $sieve->user . '@' . $sieve->maildomain;
+	    array_push($vacation['addresses'],$defaultaddr);
+	}
+        if ($vacation['status'] == 'on') {
+            $newscriptbody .= "vacation :days " . $vacation['days'] . " :addresses [";
+            $first = 1;
+            foreach ($vacation['addresses'] as $vaddress) {
+                if (!$first) $newscriptbody .= ", ";
+                $newscriptbody .= "\"" . $vaddress . "\"";
+                $first = 0;
+            }
+            $newscriptbody .= "] text:\n" . $vacation['text'] . "\n.\n;\n\n";
+        }
+	// update with any changes.
+	$this->vacation = $vacation;
+    }
+ 
+    // generate the script head
+ 
+    $newscripthead = "";
+    $newscripthead .= "#Mail filter rules for " . $sieve->user . "\n";
+    $newscripthead .= "#Generated by SmartSieve " . VERSION . " " . date("l dS of F Y h:i:s A");
+    $newscripthead .= "\n";
+ 
+    if ($activerules) {
+        $newscripthead .= "require [\"fileinto\"";
+        if ($regexused) $newscripthead .= ",\"regex\"";
+        if ($rejectused) $newscripthead .= ",\"reject\"";
+        if ($this->vacation && $this->vacation['status'] == 'on')
+            $newscripthead .= ",\"vacation\"";
+        $newscripthead .= "];\n\n";
+    }
+    else {
+	// no active rules, but might still have an active vacation rule
+	if ($this->vacation && $this->vacation['status'] == 'on')
+	    $newscripthead .= "require [\"vacation\"];\n\n";
+    }
+	
+ 
+    // generate the encoded script foot
+ 
+    $newscriptfoot = "";
+    $pcount = 1;
+    $newscriptfoot .= "##PSEUDO script start\n";
+    foreach ($this->rules as $rule){
+      // only add rule to foot if status != deleted. this is how we delete a rule.
+      if ($rule['status'] != 'DELETED') {
+	// we need to handle \r\n here.
+	$rule['action_arg'] = preg_replace("/\r\n/","\\n",$rule['action_arg']);
+	/* reset priority value. note: we only do this
+	 * for compatibility with Websieve. */
+	$rule['priority'] = $pcount;
+        $newscriptfoot .= "#rule&&" . $rule['priority'] . "&&" . $rule['status'] . "&&" . $rule['from'] . "&&" . $rule['to'] . "&&" . $rule['subject'] . "&&" . $rule['action'] .
+"&&" . $rule['action_arg'] . "&&" . $rule['flg'] . "&&" . $rule['field'] . "&&" . $rule['field_val'] . "&&" . $rule['size'] . "\n";
+	$pcount = $pcount+2;
+      }
+    }
+    if ($this->vacation) {
+        $vacation = $this->vacation;
+        $newscriptfoot .= "#vacation&&" . $vacation['days'] . "&&";
+        $first = 1;
+        foreach ($vacation['addresses'] as $address) {
+            if (!$first) $newscriptfoot .= ", ";
+            $newscriptfoot .= "\"" . $address . "\"";
+            $first = 0;
+        }
+	$vacation['text'] = preg_replace("/\r\n/","\\n",$vacation['text']);
+        $newscriptfoot .= "&&" . $vacation['text'] . "&&" . $vacation['status'] . "\n";
+    }
+    $newscriptfoot .= "#mode&&basic\n";
+ 
+    $newscript = $newscripthead . $newscriptbody . $newscriptfoot;
+    $this->script = $newscript;
+ 
+    $scriptfile = $this->scriptfile;
+    if (!$connection->putscript($scriptfile,$newscript))
+    {
+	$this->errstr = $connection->errstr;
+        return false;
+    }
+
+    if ($default->update_activate_script && 
+	$this->scriptfile != $this->activescript) {
+	if (!$connection->activatescript($this->scriptfile)) {
+	    $this->errstr = $connection->errstr;
+	    return false;
+	}
+	if (!$this->listScripts($connection)) {
+	    $this->errstr = $connection->errstr;
+	    return false;
+	}
+    }
+ 
+    return true;
+  }
+
+
+}
+
+
+?>

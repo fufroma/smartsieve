@@ -1,0 +1,45 @@
+
+required:
+	1. php-4.x
+	2. register_globals must be on.
+	3. track vars on. should always be with php-4.x.
+	4. php must be compiled with imap support.
+	5. php-4.3.0 + openssl for ssl/tls support.
+	6. apache should be configured to check .htaccess files.
+	7. set session.save_path in php.ini to secure location.
+	8. PEAR with Crypt/HCEMD5.php.
+	9. cyrus-imap must be using sasl libraries (ie. for proxy authorization).
+	10. magic_quotes_runtime must be Off.
+
+TODO:
+	-  make it possible to switch logging off.
+	-  cross site scripting: filter form data using htmlspecialchars and/or
+	   strip_tags().
+	-  inner table width formatting on main.php.
+	-  set stylesheet colours with RRGGBB codes.
+	-  config options for other sieve rule options (forward, reject etc).
+	-  improve sieve.lib:
+		- function args.
+		- undef $this->errstr.
+		- return codes.
+	-  vacation rule checkbox on main page.
+	-  generic error function, to use when openSieveSession() fails.
+	- add config option as whether to return to main.php or report 
+	  success on successful update of rule or vacation.
+
+
+	-  modify to handle magic_quotes_runtime = On (?)
+	-  add support for sasl proxy authentication. will need to do something 
+	   with imap_open() on rule.php, perhaps write function which will return 
+	   list of mboxes which the proxy user has write access to.
+	   note: this will allow admin access to users scripts.
+	-  help info.
+	-  convert for register_globals = Off.
+	-  perhaps allow access to different scripts. could have drop down list of 
+	   users scripts, allowing user to view each one.
+	-  sieve.lib - ssl imap connections.
+		- could use fsockopen('ssl://server...
+		  or do something with the sieve STARTTLS command.
+
+
+$Id$
