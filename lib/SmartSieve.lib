@@ -8,6 +8,44 @@
  */
 
 
+/*
+ * class SmartSieve contains the generic SmartSieve functions 
+ * used throughout the application.
+ *
+ */
+class SmartSieve {
+
+    /*
+     * return correct mailbox name. apply alternative namespacing if 
+     * necessary.
+     * /
+    function getMailboxName ($mbox) {
+
+        if ($GLOBALS['sieve']->alt_namespace){
+            if (preg_match("/^INBOX$/i", $mbox)){
+                # do nothing.
+            }
+            elseif (preg_match("/^INBOX\..+/i", $mbox)){
+                $mbox = substr($mbox, 6);
+            }
+            elseif (preg_match("/^user\./i", $mbox)){
+                $tmp = substr($mbox, 4);
+                $mbox = $GLOBALS['sieve']->namespace_user_prefix . $tmp;
+            }
+            elseif (preg_match("/^shared\./i", $mbox)){
+                $tmp = substr($mbox, 6);
+                $mbox = $GLOBALS['sieve']->namespace_shared_prefix . $tmp;
+            }
+        }
+        return $mbox;
+    }
+
+}
+
+/* end class SmartSieve. */
+
+
+
 class AppSession {
 
   // class constructor
@@ -23,6 +61,8 @@ class AppSession {
     $this->sieveport = '2000';
     $this->imapport = '143';
     $this->alt_namespace = false;
+    $this->namespace_user_prefix = '';
+    $this->namespace_shared_prefix = '';
     $this->maildomain = 'localhost';
 
     return true;
@@ -60,6 +100,8 @@ class AppSession {
 	    $this->sieveport = $server['sieveport'];
 	    $this->imapport = $server['imapport'];
 	    $this->alt_namespace = $server['alt_namespace'];
+            $this->namespace_user_prefix = $server['namespace_user_prefix'];
+            $this->namespace_shared_prefix = $server['namespace_shared_prefix'];
 	    $this->maildomain = $server['maildomain'];
 	}
 
@@ -529,36 +571,18 @@ class Script {
         if (!$rule['unconditional']) $newruletext .= ") {\n\t";
 
         if (preg_match("/folder/i",$rule['action'])) {
-            $action_arg = $rule['action_arg'];
-
-// FIXME: this should probably go somewhere else.
-            if ($sieve->alt_namespace){
-                if (preg_match("/^INBOX$/i", $action_arg)){
-                    # do nothing.
-                }
-                elseif (preg_match("/^INBOX\..+/i", $action_arg)){
-                    $action_arg = substr($action_arg, 6);
-                }
-                elseif (preg_match("/^user\./i", $action_arg)){
-                    $mbox = substr($action_arg, 4);
-                    $action_arg = $sieve->namepace_user_prefix . $mbox;
-                }
-                elseif (preg_match("/^shared\./i", $action_arg)){
-                    $mbox = substr($action_arg, 6);
-                    $action_arg = $sieve->namespace_shared_prefix . $mbox;
-                }
-
-            }
-            $newruletext .= "fileinto \"" . $action_arg . "\";";
+            $newruletext .= "fileinto \"" . $rule['action_arg'] . "\";";
         }
         if (preg_match("/reject/i",$rule['action'])) {
             $newruletext .= "reject text: \n" . $rule['action_arg'] . "\n.\n;";
             $rejectused = 1;
         }
-        if (preg_match("/address/i",$rule['action']))
+        if (preg_match("/address/i",$rule['action'])) {
             $newruletext .= "redirect \"" . $rule['action_arg'] . "\";";
-        if (preg_match("/discard/i",$rule['action']))
+        }
+        if (preg_match("/discard/i",$rule['action'])) {
             $newruletext .= "discard;";
+        }
         if ($rule['keep']) $newruletext .= "\n\tkeep;";
         if (!$rule['unconditional']) $newruletext .= "\n}";
  

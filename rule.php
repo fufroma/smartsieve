@@ -133,7 +133,8 @@ if ($action == 'delete')
 }
 if ($action == 'save') 
 {
-    if (!$ret = checkRule($rule)){    /* rule passed sanity checks */
+    $ret = checkRule($rule);
+    if ($ret == 'OK'){    /* rule passed sanity checks */
 
         // if existing rule, update. add new if not.
 	if ($script->rules[$ruleID]){
@@ -516,7 +517,11 @@ function checkRule($rule) {
     if (preg_match("/\D/",$rule['size']))
         return "message size value must be a positive integer";
 
-    return 0;
+    /* apply alternative namespacing to mailbox if necessary. */
+    if ($rule['action'] == 'folder')
+        $rule['action_arg'] = SmartSieve::getMailboxName($rule['action_arg']);
+
+    return 'OK';
 }
 
 

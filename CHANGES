@@ -1,7 +1,11 @@
 Smartsieve - Changes file
 -------------------------
 
-01 Oct 2002 S Grier
+04 Nov 2002 S Grier
+* fixed namespace support. now done in new SmartSieve::getMailboxName() 
+  function. handles user and shared namespaces also.
+
+01 Nov 2002 S Grier
 * added note on PLAIN SASL auth requirement to INSTALL.
 * improved alt namespace support. still not right. NOTE: temporarily broken.
 

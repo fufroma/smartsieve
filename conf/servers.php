@@ -20,6 +20,12 @@
  * and you do not want to do imap-ssl you will need to set 
  * this to '143/imap/notls'.
  *
+ * alt_namespace: set this to true if the server is using the 
+ * alternative namespace. You should also set namespace_user_prefix 
+ * and namespace_shared_prefix to the prefixes the server uses 
+ * for the other users namespace and the shared namespaces 
+ * respectively.
+ *
  * maildomain: ie. username@maildomain. You should not include 
  * the @ character. if this is anything other than empty, this 
  * will be used in vacation auto-responses when no addresses 
@@ -43,6 +49,8 @@ $servers['example2'] = array(
     'sieveport' => '2000',
     'imapport' => '143',
     'alt_namespace' => 'true',
+    'namespace_user_prefix' => 'user',
+    'namespace_shared_prefix' => 'shared',
     'maildomain' => ''
 );
 
