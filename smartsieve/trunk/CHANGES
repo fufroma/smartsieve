@@ -2,6 +2,7 @@ Smartsieve - Changes file
 -------------------------
 
 28 Nov 2002 S Grier
+* initialize SieveSession object with function arguments.
 * added var declarations for AppSession and Script classes.
 * keep server defaults if not set in conf/servers.php.
 
