@@ -13,12 +13,13 @@
  * is set to true in conf/conf.php).
  *
  * imapport: port to connect to imapd; usually 143. If you
- * want to do imap-ssl set this to '993/imap/ssl'. Note that 
- * if you are using a self-signed certificate on your imap 
- * server, you sould set this to '993/imap/novalidate-cert'.
- * If you are using php-4.1.2 or later with imap-ssl enabled, 
- * and you do not want to do imap-ssl you will need to set 
- * this to '143/imap/notls'.
+ * want to do imap-ssl set this to '993/imap/ssl', or even 
+ * '143/imap/tls'. Note that if you are using a self-signed 
+ * certificate on your imap server, you sould set this to 
+ * '993/imap/ssl/novalidate-cert'. Also, if you have compiled 
+ * the c-client libraries with ssl support and you are using 
+ * php-4.1.2 or later with imap-ssl enabled, you will need to 
+ * set this to '143/imap/notls' if you do not want imap-ssl.
  *
  * alt_namespace: set this to true if the server is using the 
  * alternative namespace. You should also set namespace_user_prefix 
