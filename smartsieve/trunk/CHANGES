@@ -1,6 +1,11 @@
 Smartsieve - Changes file
 -------------------------
 
+14 May 2003 S Grier
+* can now reverse a match condition by preceding a match string with the ! 
+  character, eg. "!matchstr" = 'not :contains "matchstr"'.
+* now interprets * and ? as wildcard chars and implements the :matches match type.
+
 13 May 2003 S Grier
 * scripts.php:
    fixed Activate link broken in IE-6.0 (bug #732546).
