@@ -1,6 +1,16 @@
 Smartsieve - Changes file
 -------------------------
 
+28 Jan 2003 S Grier
+* first bash at scripts page for managing scripts.
+* smartsieve.css stylesheet replaced by css.php and style.php.
+* session name now set by new $default->session_name config option.
+* page status line reports whether working script is active.
+* new scriptExists, isActiveScript and doListScripts functions in AppSession class.
+  these are initially needed by the Script class.
+* initialize $errstr properly in the AppSession and Script class.
+* Script class: $scriptfile variable changed to $name. remove $scriptlist.
+
 21 Jan 2003 S Grier
 * call count() not non-existent arraycount() in initialWorkingScript().
 

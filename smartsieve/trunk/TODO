@@ -12,6 +12,7 @@ required:
 10. magic_quotes_runtime must be Off.
 
 TODO:
+- fix stylesheet forbidden problem.
 - apply patch to Log.php.
 - call getMailboxName from retrieveMailboxList.
 - write a getScriptLine function to do rtrim, stripslashes, etc.
