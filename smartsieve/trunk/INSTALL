@@ -41,13 +41,12 @@ REQUIREMENTS
 2. SmartSieve requires PHP version 4.x or greater. Note that 
    versions 4.1.1 and earlier are vulnerable to a remote vulnerability 
    in the way it handles multipart/form-data. Version 4.1.2 is 
-   currently known to work fine with SmartSieve, and versions 
-   4.2.2 and 4.2.3 should also work ok.
+   currently known to work fine with SmartSieve, as are versions 
+   4.2.2 and 4.2.3.
 
    Note: php-4.2 and above install with register_globals set to 
-   off by default. While future releases of SmartSieve will work 
-   adequately with register_globals set to off, it currently 
-   requires it to be set to 'On' (ie. in php.ini).
+   off by default. SmartSieve is no longer dependent on the value of 
+   register_globals and should work fine if this is set to 'Off'.
 
    The PHP magic_quotes_runtime variable must be set to 'Off'. This 
    is usually the PHP default.
@@ -117,8 +116,7 @@ server's webroot containing the following:
 <?php phpinfo(); ?>
 
 Check that the include_path contains the location of Crypt/HCEMD5.php. 
-Make sure that magic_quotes_runtime is set to 'Off', and that 
-register_globals is set to 'On'.
+Make sure that magic_quotes_runtime is set to 'Off'.
 
 SmartSieve uses PHP's native support for session handling. PHP will 
 usually save session data in files under /tmp. Although SmartSieve 
