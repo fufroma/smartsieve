@@ -1,7 +1,7 @@
 SMARTSIEVE SIEVE SCRIPT MANAGER
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-SmartSieve-0.3.1devel
+SmartSieve-0.3.2devel
 
 SmartSieve is a web based graphical user interface for creating and 
 managing sieve scripts on a Cyrus imap mail server. It provides a 
