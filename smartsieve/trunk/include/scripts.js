@@ -56,6 +56,21 @@ function deleteScript()
     document.scripts.submit();
 }
 
+function renameScript()
+{
+    if (numSelected() == 0){
+        alert('Please select the script to rename');
+        return false;
+    }
+    var newscript = prompt('Please supply the new name for this script','');
+    if (newscript){
+        document.scripts.action.value = 'rename';
+        document.scripts.newscript.value = newscript;
+        document.scripts.submit();
+    }
+
+}
+
 function numSelected()
 {
     num = 0;

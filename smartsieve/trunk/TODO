@@ -12,6 +12,7 @@ required:
 10. magic_quotes_runtime must be Off.
 
 TODO:
+- remove PEAR Crypt/HCEMD5 dependency.
 - vacation and reject text abbreviation in rule summaries.
 - view raw script option.
 - should 'keep' be an action rather than an option?
