@@ -43,6 +43,9 @@ TODO:
 		- could use fsockopen('ssl://server...
 		  or do something with the sieve STARTTLS command.
 	-  need to think about interface for managing existing scripts.
+	-  add check on whether script was previously created using
+           SmartSieve, Websieve or unknown if editing an existing script.
+           We should warn user if script not created using SmartSieve.
 
 
 $Id$
