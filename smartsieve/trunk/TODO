@@ -3,6 +3,7 @@ SmartSieve - TODO
 
 TODO for 0.6
 
+* test against Cyrus 2.2.x and virtual domains. handle domain in usernames
 * allow user to switch script into direct edit mode
 * fix mcrypt.php: MCRYPT_DEV_RANDOM->MCRYPT_RAND, keep IV, and mcrypt_generic_deinit
 * add support for cram-md5 authentication
