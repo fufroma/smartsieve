@@ -35,15 +35,6 @@ if (isset($GLOBALS['HTTP_POST_VARS']['script'])) {
     exit;
 }
 
-// get the list of mailboxes for this user.
-// we will need it below for file into: select box.
-if (!$sieve->mboxlist){
-  if (!$sieve->retrieveMailboxList()){
-    array_push($errors, 'ERROR: ' . $sieve->errstr);
-    $sieve->writeToLog("ERROR: " . $sieve->errstr, LOG_ERR);
-  }
-}
-
 // open sieve connection
 if (!$sieve->openSieveSession()) {
     print "ERROR: " . $sieve->errstr . "<BR>\n";
@@ -136,8 +127,7 @@ require "$default->include_dir/scripts.js";
         <TD CLASS="menu">
           &nbsp;
           <a href="<?php print AppSession::setUrl('login.php?reason=logout');?>">Logout</a> |
-          <a href="<?php print AppSession::setUrl('main.php');?>">View All
-Rules</a> |
+          <a href="<?php print AppSession::setUrl('main.php');?>">View All Rules</a> |
           <a href="<?php print AppSession::setUrl('vacation.php');?>">Vacation Settings</a> |
           <a href="<?php print AppSession::setUrl('rule.php');?>">New Filter Rule</a>
 <?php if ($default->allow_multi_scripts) { ?>|
@@ -197,14 +187,14 @@ Rules</a> |
 <TR>
   <TD CLASS="statusouter">
     <TABLE WIDTH="100%" CELLPADDING="2" BORDER="0" CELLSPACING="0">
-      <TR>
-        <TD CLASS="status">
+      <TR CLASS="status">
+        <TD>
           &nbsp;User: <?php print $sieve->user; ?>
         </TD>
-        <TD CLASS="status">
+        <TD>
           &nbsp;Server: <?php print $sieve->server; ?>
         </TD>
-        <TD CLASS="status">
+        <TD>
           &nbsp;Script: <?php print $sieve->workingscript; ?>
         </TD>
 <?php if (AppSession::isActiveScript($sieve->workingscript)) { ?>
@@ -246,24 +236,41 @@ Rules</a> |
 
 if ($sieve->scriptlist){ ?>
       <TR>
-        <TH CLASS="heading" WIDTH="10%">&nbsp;</TH>
-        <TH CLASS="heading" WIDTH="60%">Script</TH>
-        <TH CLASS="heading" WIDTH="10%">Active</TH>
-        <TH CLASS="heading" WIDTH="10%">No of Rules</TH>
-        <TH CLASS="heading" WIDTH="10%">Activate</TH>
+        <TH WIDTH="10%">&nbsp;</TH>
+        <TH WIDTH="60%">Script</TH>
+        <TH WIDTH="10%">Status</TH>
+        <TH WIDTH="10%">Size</TH>
+        <TH WIDTH="10%">&nbsp;</TH>
       </TR>
 <?php
 
     $i = 0;
     foreach ($sieve->scriptlist as $script){
-        if (AppSession::isActiveScript($script)) $class = 'activescript';
-        else $class='inactivescript';
+        $class = 'inactivescript';
+        $eclass = 'inactive';
+        $status='NOT ACTIVE';
+        if (AppSession::isActiveScript($script)) {
+            $class = 'activescript';
+            $eclass = 'active';
+            $status = 'ACTIVE';
+        }
+        $size = '';
+        if (isset($scripts[$script]))
+            $size = $scripts[$script]->size . 'bytes';
 ?>
     <TR CLASS="<?php echo $class;?>">
-      <TD><INPUT TYPE="checkbox" NAME="scriptID[]" VALUE="<?php print $i; ?>"></TD>
-      <TD><A CLASS="rule" HREF="" onclick="viewScript('<?php echo $script; ?>'); return false;" onmouseover="window.status='View This Script'; return true;" onmouseout="window.status='';"><?php echo $script; ?></A></TD>
-      <TD>Active</TD>
-      <TD>&nbsp;</TD>
+      <TD>
+        <INPUT TYPE="checkbox" NAME="scriptID[]" VALUE="<?php print $i; ?>">
+      </TD>
+      <TD>
+        <A CLASS="rule" HREF="" onclick="viewScript('<?php echo $script; ?>'); return false;" onmouseover="window.status='View This Script'; return true;" onmouseout="window.status='';"><?php echo $script; ?></A>
+      </TD>
+      <TD CLASS="<?php echo $eclass; ?>">
+        <?php echo $status; ?> 
+      </TD>
+      <TD>
+        &nbsp;<?php echo $size; ?> 
+      </TD>
       <TD>
         <A HREF="" onclick="setActive(<?php echo $i ?>); return false;" onmouseover="window.status='Set script <?php echo $script; ?> as the active script'; return true;" onmouseout="window.status='';">Set Active</A>
       </TD>

@@ -1,6 +1,12 @@
 Smartsieve - Changes file
 -------------------------
 
+07 March 2003 S Grier
+* various style sheet improvements.
+* main.php: set column widths on rules table.
+* main.php: fixed broken javascript: style.background -> style.backgroundColor.
+* main.php: removed nowrap from rule summaries.
+
 04 March 2003 S Grier
 * onmouseover handlers reference window.status (bug 696102).
 

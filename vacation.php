@@ -224,14 +224,14 @@ Rules</a> |
 <TR>
   <TD CLASS="statusouter">
     <TABLE WIDTH="100%" CELLPADDING="2" BORDER="0" CELLSPACING="0">
-      <TR>
-        <TD CLASS="status">
+      <TR CLASS="status">
+        <TD>
           &nbsp;User: <?php print $sieve->user; ?>
         </TD>
-        <TD CLASS="status">
+        <TD>
           &nbsp;Server: <?php print $sieve->server; ?>
         </TD>
-        <TD CLASS="status">
+        <TD>
           &nbsp;Script: <?php print $sieve->workingscript; ?>
         </TD>
 <?php if (AppSession::isActiveScript($sieve->workingscript)) { ?>
@@ -258,8 +258,8 @@ Rules</a> |
   <TD CLASS="main">
 
     <TABLE WIDTH="100%" CELLPADDING="5" BORDER="0" CELLSPACING="0">
-    <TR>
-      <TD CLASS="ruleinfo">
+    <TR CLASS="heading">
+      <TD>
     <?php if ($script->vacation) {
 	 print "Edit Vacation Auto-respond settings";
        } 
@@ -275,9 +275,9 @@ Rules</a> |
   <TD CLASS="main">
 
     <TABLE WIDTH="100%" CELLPADDING="2" BORDER="0" CELLSPACING="0">
-    <TR>
-      <TD CLASS="<?php if ($vacation['status'] == 'on') {print "ruleenabled\">ENABLED";} 
-				else print "ruledisabled\">DISABLED"; ?>
+    <TR CLASS="heading">
+      <TD CLASS="<?php echo ($vacation['status'] == 'on') ? 'enabled' : 'disabled';?>">
+        <?php echo ($vacation['status'] == 'on') ? 'ENABLED' : 'DISABLED';?> 
       </TD>
     </TR>
     </TABLE>
@@ -289,7 +289,7 @@ Rules</a> |
 
     <TABLE WIDTH="100%" CELLPADDING="5" BORDER="0" CELLSPACING="0">
     <TR>
-      <TD CLASS="ruleinfo">
+      <TD CLASS="heading">
 Vacation:
       </TD>
       <TD CLASS="heading">&nbsp;</TD>
