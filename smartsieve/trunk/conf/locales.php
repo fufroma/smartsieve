@@ -20,6 +20,9 @@ $locales['en_GB']['charset'] = 'ISO-8859-1';
 $locales['es_ES']['display'] = 'Espa&ntilde;ol';
 $locales['es_ES']['charset'] = 'ISO-8859-15';
 
+$locales['fr_FR']['display'] = 'Fran&ccedil;ais';
+$locales['fr_FR']['charset'] = 'ISO-8859-1';
+
 $locales['it_IT']['display'] = 'Italiano';
 $locales['it_IT']['charset'] = 'ISO-8859-15';
 
