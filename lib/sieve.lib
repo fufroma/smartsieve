@@ -24,7 +24,10 @@ class SieveSession {
     var $saslmethods;     /* array: SASL auth methods server supports. */
     var $extensions;      /* array: sieve extensions server supports. */
     var $starttls_avail;  /* boolean: will server do starttls? */
+    var $socket;          /* file pointer to open socket. */
     var $socket_timeout;  /* socket timeout in seconds. */
+    var $scriptlist;      /* array: user's scripts on the server. */
+    var $activescript;    /* the currently active script on server (if any). */
     var $errstr;          /* error text. */
 
     /* 
@@ -43,6 +46,8 @@ class SieveSession {
 	$this->saslmethods = array('unknown');
 	$this->extensions = array('unknown');
 	$this->starttls_avail = false;
+        $this->scriptlist = array();
+        $this->activescript = '';
         $this->errstr = '';
 
     }

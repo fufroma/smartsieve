@@ -145,7 +145,7 @@ if ($action == 'save')
     if ($ret == 'OK'){    /* rule passed sanity checks */
 
         // if existing rule, update. add new if not.
-	if ($script->rules[$ruleID]){
+	if (isset($script->rules[$ruleID])){
 	    $script->rules[$ruleID] = $rule;
 	}
 	else array_push($script->rules, $rule);
@@ -523,6 +523,7 @@ function getRulePOSTValues ($ruleID)
     if (!$rule['from'] && !$rule['to'] && !$rule['subject'] &&
        !$rule['field'] && !$rule['size'] && $rule['action'])
        $rule['unconditional'] = 1;
+    else $rule['unconditional'] = 0;
     $rule['flg'] = $rule['continue'] | $rule['gthan'] | $rule['anyof'] | $rule['keep'] | $rule['regexp'];
 
     return $rule;

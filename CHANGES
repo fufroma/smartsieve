@@ -1,6 +1,11 @@
 Smartsieve - Changes file
 -------------------------
 
+10 March 2003 S Grier
+* scripts.php: fixed delete action.
+* fixed undefined warnings caused by SieveSession object.
+* rule.php: fixed undefined warnings.
+
 09 March 2003 S Grier
 * scripts.php: added delete action. not quite right yet though.
 * sieve.lib: added havespace and deletescript functions.

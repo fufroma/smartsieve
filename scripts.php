@@ -87,7 +87,7 @@ if ($action == 'createscript')
         array_push($errors,'script ' . $newscript . ' already exists');
     }
     else {
-        if (!is_object($scripts[$newscript]))
+        if (!isset($scripts[$newscript]))
             $scripts[$newscript] = new Script($newscript);
         if (is_object($scripts[$newscript])){
             if (!$scripts[$newscript]->updateScript($sieve->connection)) {
@@ -117,10 +117,10 @@ if ($action == 'delete')
                     array_push($errors,'deletescript failed: ' . $sieve->connection->errstr);
                 else
                     array_push($msgs,"script '$sname' successfully deleted");
-        } // end foreach
+            }
+        }
         if (!AppSession::doListScripts())
             array_push($errors,'AppSession::doListScripts failed: ' . AppSession::getError());
-        }
     }
 }
 
