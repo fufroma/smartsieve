@@ -1,6 +1,10 @@
 Smartsieve - Changes file
 -------------------------
 
+15 May 2003 S Grier
+* lib/Crypt/mcrypt.php:
+   fixed undefined index warnings in $args array.
+
 14 May 2003 S Grier
 * can now reverse a match condition by preceding a match string with the ! 
   character, eg. "!matchstr" = 'not :contains "matchstr"'.
