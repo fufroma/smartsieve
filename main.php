@@ -398,27 +398,29 @@ function buildRule($rule) {
     $andor = " AND ";
     $started = 0;
     if ($rule['anyof']) $andor = " OR ";
-    $match = "contains";
-    if ($rule['regexp']) $match = "matches regexp";
     $complete = "IF ";
     if ($rule['unconditional']) $complete = "[Unconditional] ";
 
     if ($rule['from']) {
+        $match = setMatchType($rule['from'],$rule['regexp']);
 	$complete .= "'From:' " . $match . " '" . $rule['from'] . "'";
 	$started = 1;
     }
     if ($rule['to']) {
 	if ($started) $complete .= $andor;
+        $match = setMatchType($rule['to'],$rule['regexp']);
 	$complete .= "'To:' " . $match . " '" . $rule['to'] . "'";
 	$started = 1;
     }
     if ($rule['subject']) {
 	if ($started) $complete .= $andor;
+        $match = setMatchType($rule['subject'],$rule['regexp']);
 	$complete .= "'Subject:' " . $match . " '" . $rule['subject'] . "'";
 	$started = 1;
     }
     if ($rule['field'] && $rule['field_val']) {
 	if ($started) $complete .= $andor;
+        $match = setMatchType($rule['field_val'],$rule['regexp']);
 	$complete .= "'" . $rule['field'] . "' " . $match . " '" . $rule['field_val'] . "'";
 	$started = 1;
     }
@@ -441,6 +443,25 @@ function buildRule($rule) {
     if ($rule['continue']) $complete .= " [Continue]";
     if ($rule['keep']) $complete .= " [Keep a copy]";
     return $complete;
+}
+
+function setMatchType (&$matchstr, $regex = false)
+{
+    $match = 'contains';
+    if (preg_match("/\s*!/", $matchstr)) 
+        $match = 'does not contain';
+    if (preg_match("/\*|\?/", $matchstr)){
+        $match = 'matches';
+        if (preg_match("/\s*!/", $matchstr))
+            $match = 'does not match';
+    }
+    if ($regex){
+        $match = 'matches regexp';
+        if (preg_match("/\s*!/", $matchstr))
+            $match = 'does not match regexp';
+    }
+    $matchstr = preg_replace("/^\s*!/","",$matchstr);
+    return $match;
 }
 
 ?>
