@@ -2,6 +2,9 @@ Smartsieve - Changes file
 -------------------------
 
 04 Jan 2003 S Grier
+* main.php: don't do rule mods if HTTP_POST_VARS['action'] is set, only if 
+  a positive value. This is necessary for drop-down script list box to work.
+* lib/SmartSieve.lib: now gets updated script list for each updateScript call.
 * fixed bug in sieve.lib's activatescript: no longer need to read extra newline.
 
 03 Jan 2003 S Grier
