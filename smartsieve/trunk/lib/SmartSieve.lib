@@ -775,9 +775,11 @@ class Script {
 	    $this->errstr = 'updateScript: activatescript failed: ' . $connection->errstr;
 	    return false;
 	}
-	if (!$this->listScripts($connection)) {
-	    return false;
-	}
+    }
+
+    /* get the updated script list and active script. */
+    if (!$this->listScripts($connection)) {
+        return false;
     }
  
     return true;
