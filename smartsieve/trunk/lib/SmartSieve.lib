@@ -791,6 +791,79 @@ class SmartSieve {
         return $lib;
     }
 
+
+   /**
+    * Convert a non-UTF-8 encoded string into UTF-8. We must assume the string is 
+    * currently encoded in the charset used for the current language.
+    *
+    * @param string $string  The string to convert
+    * @return string  UTF-8 encoded string
+    */
+    function utf8Encode($string)
+    {
+        $charset = SmartSieve::getCharset();
+
+        if (strtolower($charset) == 'utf-8') {
+            return $string;
+        }
+
+        /* Try iconv. */
+        if (extension_loaded('iconv')) {
+            $recoded = @iconv($charset, 'UTF-8', $string);
+            if ($recoded) {
+                return $recoded;
+            }
+        }
+
+        /* Try mbstring. */
+        if (extension_loaded('mbstring')) {
+            $recoded = @mb_convert_encoding($string, 'UTF-8', $charset);
+            if ($recoded) {
+                return $recoded;
+            }
+        }
+
+        /* If all else fails, use utf8_encode(). If $string contains 
+         * non-ISO-8859-1 characters, they will not be encoded correctly. */
+        return utf8_encode($string);
+    }
+
+
+   /**
+    * Convert a UTF-8 encoded string into the charset of the current language. 
+    *
+    * @param string $string  The UTF-8 string to convert
+    * @return string  The decoded string
+    */
+    function utf8Decode($string)
+    {
+        $charset = SmartSieve::getCharset();
+
+        if (strtolower($charset) == 'utf-8') {
+            return $string;
+        }
+
+        /* Try iconv. */
+        if (extension_loaded('iconv')) {
+            $recoded = @iconv('UTF-8', $charset, $string);
+            if ($recoded) {
+                return $recoded;
+            }
+        }
+
+        /* Try mbstring. */
+        if (extension_loaded('mbstring')) {
+            $recoded = @mb_convert_encoding($string, $charset, 'UTF-8');
+            if ($recoded) {
+                return $recoded;
+            }
+        }
+
+        /* If all else fails, use utf8_decode(). If $string contains
+         * non-ISO-8859-1 characters, they will not be decoded correctly. */
+        return utf8_decode($string);
+    }
+
 }
 
 /* end class SmartSieve. */
