@@ -886,7 +886,7 @@ class Script {
  
     $newscript = $newscripthead . $newrequire . $newscriptbody . $newscriptfoot;
     if ($this->mode == 'advanced' || $this->so == false)
-        $newscript = $newscripthead . $this->script  . $newscriptfoot;
+        $newscript = $newscripthead . $this->removeEncoding()  . $newscriptfoot;
     $this->script = $newscript;
  
     $scriptfile = $this->name;
@@ -915,6 +915,27 @@ class Script {
  
     return true;
   }
+
+
+/* return Sieve script text with the encoded lines stripped out. */
+function removeEncoding ()
+{
+    global $script;
+    $raw = '';
+    $encs = array('^ *##PSEUDO','^ *#rule','^ *#vacation','^ *#mode',
+                  '^ *# ?Mail(.*)rules for','^ *# ?Created by Websieve',
+                  '^ *#Generated (.+) SmartSieve');
+    $lines = array();
+    $lines = explode("\n", $script->script);
+    foreach ($lines as $line){
+        foreach ($encs as $enc){
+            if (preg_match("/$enc/", $line))
+                continue 2;
+        }
+        $raw .= $line . "\n";
+    }
+    return $raw;
+}
 
 
 }

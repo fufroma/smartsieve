@@ -1,6 +1,9 @@
 Smartsieve - Changes file
 -------------------------
 
+13 August 2003 S Grier
+* moved removeEncoding() to Script:: class. call from updateScript().
+
 11 August 2003 S Grier
 * added support for Websieve's advanced mode. A new direct edit interface will allow editing 
   advanced mode scripts and scripts not created by SmartSieve or Websieve.

@@ -344,25 +344,6 @@ function setMatchType (&$matchstr, $regex = false)
     return $match;
 }
 
-/* return Sieve script text with the encoded lines stripped out. */
-function removeEncoding ()
-{
-    global $script;
-    $raw = '';
-    $encs = array('^ *##PSEUDO','^ *#rule','^ *#vacation','^ *#mode',
-                  '^ *# ?Mail(.*)rules for','^ *# ?Created by Websieve',
-                  '^ *#Generated (.+) SmartSieve');
-    $lines = array();
-    $lines = explode("\n", $script->script);
-    foreach ($lines as $line){
-        foreach ($encs as $enc){
-            if (preg_match("/$enc/", $line))
-                continue 2;
-        }
-        $raw .= $line . "\n";
-    }
-    return $raw;
-}
 
 ?>
 
