@@ -133,7 +133,7 @@ if ($action == 'delete')
 }
 if ($action == 'save') 
 {
-    $ret = checkRule($rule);
+    $ret = checkRule(&$rule);
     if ($ret == 'OK'){    /* rule passed sanity checks */
 
         // if existing rule, update. add new if not.
