@@ -1,6 +1,10 @@
 Smartsieve - Changes file
 -------------------------
 
+03 Nov 2003 S Grier
+* fixed small bug in custom rule handling. should not be deemed unconditional if action_arg starts
+  with (els)if.
+
 29 Oct 2003 S Grier
 * vacation rule changes:
  - $default->vacation_days now defaults to 7 and max_vacation_days is now 30 as per 
