@@ -47,6 +47,11 @@ TODO:
 - help info.
 - perhaps allow access to different scripts. could have drop down list of 
   users scripts, allowing user to view each one.
+  Should probably default to loading the currently active script, rather 
+  than having a box on the login page.
+- should have array of script object $scripts. would involve quite a bit 
+  of work. eg. would have $scripts['scriptname']. We should probably 
+  remove $sieve-scriptfile, and initialize the script object elsewhere.
 - need to think about interface for managing existing scripts.
 - sieve.lib: read() should put read chars into $this->read_buf or similar.
   then read() can return true or false, and set $this->socket_err if socket 

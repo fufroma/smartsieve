@@ -35,6 +35,12 @@ if (!$sieve->openSieveSession()) {
 	': ' . $sieve->errstr, LOG_ERROR);
     exit;
 }
+
+// change working script if requested.
+if (isset($GLOBALS['HTTP_POST_VARS']['script'])) {
+    $script->scriptfile = AppSession::getFormValue('script');
+}
+
 if (!$script->retrieveRules($sieve->connection)) {
     array_push($errors, 'ERROR: ' . $script->errstr);
     $sieve->writeToLog("ERROR: retrieveRules failed for " . $sieve->user .
@@ -148,6 +154,18 @@ require "$default->include_dir/main.js";
 	  <a href="<?php print $default->main_help_url; ?>">Help</a> <?php } /* endif. */ ?>
 
 	</TD>
+        <TD CLASS="menu" ALIGN="right">
+          &nbsp;
+          <SELECT NAME="script" onchange="document.rules.submit();">
+<?php foreach ($script->scriptlist as $s){
+          $str = "\t\t<OPTION VALUE=\"$s\"";
+          if ($s == $script->scriptfile)
+              $str .= " SELECTED=\"selected\"";
+          $str .= ">$s</OPTION>\n";
+          print $str;
+      } ?>
+          </SELECT>
+        </TD>
       </TR>
     </TABLE>
   </TD>
