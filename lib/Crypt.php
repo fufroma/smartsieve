@@ -127,12 +127,12 @@ class Encrypt {
         }
 
         if ($crypt_lib == ''){
-            AppSession::writeToLog('ERROR: cannot find a usable cryptography library.', LOG_ERR);
+            SmartSieve::writeToLog('ERROR: cannot find a usable cryptography library.', LOG_ERR);
             echo 'ERROR: Cannot find a usable cryptography library. ' .
                         'Please read the INSTALL file for info on this.';
             exit;
         }
-        AppSession::writeToLog('getCryptLib: found cryptography library ' . $crypt_lib, LOG_DEBUG);
+        SmartSieve::writeToLog('getCryptLib: found cryptography library ' . $crypt_lib, LOG_DEBUG);
         return $crypt_lib;
     }
 
