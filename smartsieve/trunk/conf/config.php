@@ -113,6 +113,9 @@ $default->socket_timeout = 5;
 // 'MCRYPT', 'RC5', 'HCEMD5', and ''.
 $default->crypt_lib = '';
 
+// an array containing any values needed by the Crypt object.
+$default->crypt_args = array();
+
 // logging
 
 // should we log messages?

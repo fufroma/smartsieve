@@ -69,7 +69,10 @@ class Encrypt {
 
         if (!isset($crypt) || !is_object($crypt)){
             $lib = Encrypt::getCryptLib();
-            $args = array('key'=>$key);
+            $args = array();
+            if (isset($GLOBALS['default']->crypt_args)) 
+                $args = $GLOBALS['default']->crypt_args;
+            $args['key'] = $key;
             $crypt = SmartSieveCrypt::factory($lib, $args);
         }
         return $crypt->encrypt($string);
@@ -85,7 +88,10 @@ class Encrypt {
 
         if (!isset($crypt) || !is_object($crypt)){
             $lib = Encrypt::getCryptLib();
-            $args = array('key'=>$key);
+            $args = array();
+            if (isset($GLOBALS['default']->crypt_args)) 
+                $args = $GLOBALS['default']->crypt_args;
+            $args['key'] = $key;
             $crypt = SmartSieveCrypt::factory($lib, $args);
         }
         return $crypt->decrypt($data);
