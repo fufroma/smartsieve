@@ -13,7 +13,7 @@ require "$default->config_dir/servers.php";
 require "$default->lib_dir/sieve.lib";
 require "$default->lib_dir/SmartSieve.lib";
 
-session_name('SIEVE_SESSION');
+session_name($default->session_name);
 @session_start();
 
 // if a session already exists, go to main page
@@ -79,7 +79,7 @@ if (isset($HTTP_POST_VARS['sieveuid']) && isset($HTTP_POST_VARS['passwd'])) {
 
 <HTML>
 <HEAD><TITLE><?php print $default->page_title; ?></TITLE>
-<LINK HREF="<?php print $default->config_dir; ?>/smartsieve.css" REL="stylesheet" TYPE="text/css">
+<LINK HREF="<?php print AppSession::setUrl('css.php'); ?>" REL="stylesheet" TYPE="text/css">
 <?php
 
 include "$default->include_dir/login.js";
