@@ -12,9 +12,15 @@ required:
 	10. magic_quotes_runtime must be Off.
 
 TODO:
-	-  note about what SmartSieve is not: ie. does not parse sieve.
+	-  try to cope without session cookies. would need to append 
+	   ?session_name()=session_id() to all urls for this.
+	-  change to handle unixhierarchysep ('/' instead of '.' in fileinto).
+	-  handle userprefix and sharedprefix in altnamespace.
+	-  modify to check if script was written by SmartSieve. probably 
+	   need a config option as to disable saving or just warn user.
+	   - fix mode advanced bug while we're at it. warn about this too.
 	-  script head date + format config setting.
-	-  welcome message + config option.
+	-  welcome message on login.php + config option.
 	-  cross site scripting: filter form data using htmlspecialchars and/or
 	   strip_tags().
 	-  inner table width formatting on main.php.
@@ -26,8 +32,6 @@ TODO:
 		- return codes.
 	-  vacation rule checkbox on main page.
 	-  generic error function, to use when openSieveSession() fails.
-	-  add config option as whether to return to main.php or report 
-	   success on successful update of rule or vacation.
 	-  add $servers->imapflags value to conf/servers.php (?).
 
 
