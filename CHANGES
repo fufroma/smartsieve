@@ -2,6 +2,9 @@ Smartsieve - Changes file
 -------------------------
 
 07 March 2003 S Grier
+* vacation.php: fixed 'undefined' warnings.
+* new allow_write_unrecognised_scripts config option. this controls whether 
+  users are able to overwrite scripts not created using SmartSieve.
 * various style sheet improvements.
 * main.php: set column widths on rules table.
 * main.php: fixed broken javascript: style.background -> style.backgroundColor.
