@@ -183,19 +183,18 @@ class SmartSieve {
     */
     function getCharset()
     {
-        global $default;
-        static $lang;
+        static $charset;
 
-        if (!isset($lang))
+        if (!isset($charset)) {
             $lang = SmartSieve::getLang();
-
-        @include "$default->lang_dir/$lang/strings.php";
-
-        if (isset($charset)){
-            return $charset;
+            include SmartSieve::getConf('config_dir') . '/locales.php';
+            if (isset($locales[$lang]['charset'])) {
+                $charset = $locales[$lang]['charset'];
+            } else {
+                $charset = SmartSieve::getConf('charset', 'ISO-8859-1');
+            }
         }
-
-        return $default->charset;
+        return $charset;
     }
 
    /*
