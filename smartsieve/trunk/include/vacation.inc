@@ -62,15 +62,13 @@ Days:
       </TD>
       <TD>
         <SELECT NAME="days">
+          <OPTION VALUE="0"<?php if (!$vacation['days']) echo ' SELECTED';?>></OPTION>
 <?php
-if (!$default->max_vacation_days) $default->max_vacation_days = 10;
-for ($i = 0; $i <= $default->max_vacation_days; $i++){
-    $opt = "\t\t<OPTION ";
-    if ($vacation['days'] == $i) $opt .= "SELECTED ";
-    $opt .= "VALUE=\"$i\">$i</OPTION>\n";
-    print $opt;
-}
+$max_days = !empty($default->max_vacation_days) ? $default->max_vacation_days : 30;
+for ($i = 1; $i <= $max_days; $i++){
 ?>
+          <OPTION VALUE="<?php echo $i;?>"<?php if ($vacation['days']==$i) echo ' SELECTED';?>><?php echo $i;?></OPTION>
+<?php } ?>
         </SELECT>
       </TD>
     </TR>

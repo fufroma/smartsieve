@@ -1,6 +1,17 @@
 Smartsieve - Changes file
 -------------------------
 
+29 Oct 2003 S Grier
+* vacation rule changes:
+ - $default->vacation_days now defaults to 7 and max_vacation_days is now 30 as per 
+   draft-showalter-sieve-vacation-04.
+ - new require_vacation_days and require_vacation_addresses config options. If these are set to 
+   false the defaults are ignored and the user will be able to not specify these values, in which 
+   case we will not then include the :days or :addresses arguments when writing the vacation rule 
+   to the script. These are optional arguments in draft-showalter-sieve-vacation-04.
+ - new buildVacationString() function in main.php for an improved vacation rule summary.
+ - display defaults on vacation.php if no current vacation rule.
+
 27 Oct 2003 S Grier
 * moved html from rule.php, scripts.php, vacation.php and login.php to templates.
 

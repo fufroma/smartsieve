@@ -78,17 +78,36 @@ $default->page_title = 'SmartSieve';
 /* welcome message on the login page. */
 $default->login_page_heading = '&nbsp; Welcome to SmartSieve';
 
-// if this is anything other than empty, this will be taken as the default 
-// number of vacation days, rather than demanding the user supply a value.
-$default->vacation_days = '4';
+/* Vacation settings. */
 
-// if this is anything other than empty, this will be taken as the default
-// text to send in vacation auto-responses, rather than demanding the user 
-// supply something.
-$default->vacation_text = '';
+// should we always include the vacation days argument when setting a vacation rule?
+// if this is set to true, and the user does not supply a value for this field, we 
+// will use $default->vacation_days if set, or demand the user supply one. If false, 
+// we will not include the days argument if the user does not supply a value and the 
+// server will use its default value.
+$default->require_vacation_days = true;;
+
+// the default number to use in the :days argument of a vacation rule. if 
+// $default->require_vacation_days is set, this will be used if the user does 
+// not supply a value. if empty and require_vacation_days is set, we will demand 
+// the user supply a value.
+$default->vacation_days = '7';
 
 // what is the maximum number of vacation days to have the user choose from?
-$default->max_vacation_days = '5';
+$default->max_vacation_days = '30';
+
+// should we always include the :addresses argument when setting a vacation rule?
+// if set to true, and the user does not supply any addresses, we will include 
+// user@maildomain in this field. if maildomain is not set for this server in 
+// conf/servers.php we will demand the user supply at least one address. If false, 
+// we will not include the :addresses argument at all if the user does not supply 
+// any extra vacation addresses.
+$default->require_vacation_addresses = true;
+
+// if this is anything other than empty this will be used as the default text 
+// to send in vacation auto-responses when the user doesn't supply any. If empty, 
+// we will always demand the user supply this.
+$default->vacation_text = '';
 
 /* what is the maximum number of characters an input field should accept? */
 $default->max_field_chars = 50;

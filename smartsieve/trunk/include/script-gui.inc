@@ -92,15 +92,7 @@ if ($script->vacation){
         <?php echo $status; ?>
       </TD>
       <TD COLSPAN="2">
-        <A CLASS="rule" HREF="<?php print AppSession::setUrl('vacation.php'); ?>">days: <?php print $script->vacation['days']; ?> addresses: <?php
-
-        $first = 1;
-        foreach ($script->vacation['addresses'] as $address) {
-            if (!$first) print ", ";
-            print "\"" . htmlspecialchars($address) . "\"";
-            $first = 0;
-        }
-        print " text: " . htmlspecialchars($script->vacation['text']); ?></A>
+        <A CLASS="rule" HREF="<?php print AppSession::setUrl('vacation.php'); ?>"><?php echo buildVacationString();?></A>
       </TD>
     </TR>
 <?php
