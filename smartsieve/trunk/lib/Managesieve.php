@@ -11,8 +11,8 @@
 define ("F_NO", 0);             
 define ("F_OK", 1);
 define ("F_BYE", 2);
-define ("F_DATA", 3);
-define ("F_BYTES", 4);
+define ("F_UNKNOWN", 3);
+define ("F_DATA", 4);
 define ("F_EOF", 5);
 
 // Managesieve response codes
@@ -44,7 +44,7 @@ class Managesieve {
     * @var string
     * @access public
     */
-    var $server='127.0.0.1';
+    var $server = '127.0.0.1';
 
    /**
     * The port of the managesieve server.
@@ -172,7 +172,7 @@ class Managesieve {
         socket_set_timeout($this->_socket, $socket_timeout);
         socket_set_blocking($this->_socket, true);
 
-        return $this->parse_capability();
+        return $this->parseCapability();
     }
 
 
@@ -182,68 +182,55 @@ class Managesieve {
     *
     * @return true on success, false on failure.
     */
-    function parse_capability()
+    function parseCapability()
     {
         unset($this->resp);
         $this->_errstr = '';
 
         if (!is_resource($this->_socket)){
-            $this->_errstr = 'parse_capability: no server connection';
+            $this->_errstr = 'parseCapability: no server connection';
             return false;
         }
 
-        $said = $this->read();
-        if (strstr($said, "timsieved") == false) {
-            $this->close();
-            $this->_errstr = "parse_capability: bad response from $this->server: $said";
-            return false;
-        }
+        // Cyrus v2.x response will look like: "IMPLEMENTATION" "Cyrus timsieved..."
+        // Cyrus v1.x will look like: "Cyrus timsieved v1.0.0" "SASL={PLAIN,...}"
 
-        // If response is "IMPLEMENTATION" "Cyrus timsieved..." 
-        // server is Cyrus version 2.
-
-        $tokens = explode("\"", $said);
-
-        if ($tokens[1] == "IMPLEMENTATION"){
-            $this->_capabilities['implementation'] = $tokens[3];
-            while ($this->get_response() == F_DATA){
-                $tokens = explode("\"", $this->resp['data']);
-                switch ($tokens[1]){
-                    case "SASL":
-                        // "SASL" "PLAIN DIGEST-MD5"
-                        $this->_capabilities['sasl'] = explode(" ", $tokens[3]);
-                        break;
-                    case "SIEVE":
-                        // "SIEVE" "fileinto reject envelope vacation"
-                        $this->_capabilities['extensions'] = explode(" ", $tokens[3]);
-                        break;
-                    case "STARTTLS":
-                        $this->_capabilities['starttls'] = true;
-                        break;
-                    default:
-                        $this->_capabilities['unknown_banners'][] = $this->resp['data'];
-                        break;
-                }
+        while ($this->getResponse() == F_DATA) {
+            $tokens = explode("\"", $this->resp['data']);
+            if (substr($tokens[1], 0, 15) == 'Cyrus timsieved') {
+                // Cyrus v1.x
+                $this->_capabilities['implementation'] = $tokens[1];
+                // $tokens[3] should look like "SASL={PLAIN, LOGIN}"
+                $mechstr = substr(strstr($tokens[3], '{'), 1, strlen($tokens[3])-1);
+                $this->_capabilities['sasl'] = explode(", ", $mechstr);
+                return true;
+            }
+            switch ($tokens[1]) {
+                case "IMPLEMENTATION":
+                    // "IMPLEMENTATION" "Cyrus timsieved v2.2.3"
+                    $this->_capabilities['implementation'] = $tokens[3];
+                    break;
+                case "SASL":
+                    // "SASL" "PLAIN DIGEST-MD5"
+                    $this->_capabilities['sasl'] = explode(" ", $tokens[3]);
+                    break;
+                case "SIEVE":
+                    // "SIEVE" "fileinto reject envelope vacation"
+                    $this->_capabilities['extensions'] = explode(" ", $tokens[3]);
+                    break;
+                case "STARTTLS":
+                    $this->_capabilities['starttls'] = true;
+                    break;
+                default:
+                    $this->_capabilities['unknown_banners'][] = $line;
+                    break;
             }
         }
-        // elseif response is "Cyrus timsieved v1..." "SASL={PLAIN, LOGIN}"
-        // we will assume server is Cyrus v1.
-        elseif (strstr($tokens[1], "Cyrus timsieved") == true){
-            $this->_capabilities['implementation'] = $tokens[1];
-            // $tokens[3] should look like "SASL={PLAIN, LOGIN}"
-            $mechstr = substr(strstr($tokens[3], '{'), 1, strlen($tokens[3])-1);
-            $this->_capabilities['sasl'] = explode(", ", $mechstr);
-// FIXME: OK line here?
+        if ($this->resp['state'] == F_OK) {
+            return true;
         }
-        else {
-            // unknown version.
-            // a bit desperate if we get here.
-            $this->_capabilities['implementation'] = $said;
-            $this->_capabilities['sasl'] = $said;
-	}
-
-// if result is OK?
-        return true;
+        $this->_errstr = 'parseCapability: capability failed: ' . $this->responseToString();
+        return false;
     }
 
 
@@ -254,7 +241,7 @@ class Managesieve {
     *
     * @return string line read from socket.
     */
-    function read ()
+    function read()
     {
         $buffer = '';
         $this->_sock_timed_out = false;
@@ -285,142 +272,148 @@ class Managesieve {
     * the RC_* values, reflect a server response of NO, OK, BYE, unspecified 
     * response data, or a socket timeout. Any response code, error or data 
     * will be set in $this->resp[];
+    *
+    * return int one of the F_* codes
     */
-    function get_response ()
+    function getResponse()
     {
         unset($this->resp);
         $this->resp = array();
         $this->_errstr = '';
-
         $line = $this->read();
-        $this->resp['raw'] = $line;
-        // match NO {34}\r\n...\r\n...
-        // {34} is lenth of error message string, including CRLFs.
-        // we strip out the CRLFs which separate each error message.
-// FIXME: replace preg_match() calls with explode().
-        if (preg_match("/^NO \{(\d+)\}\r\n$/",$line, $m)){
-            $errstr = $this->read();
-            while (strlen($errstr) < $m[1]){
-                $errstr .= $this->read();
-// FIXME: we should probably strip the CRLFs.
-            }
-            // read the CRLF which terminates the multiline error string.
-            $this->read();
-            $this->resp['code'] = RC_UNKNOWN;
-            $this->resp['errstr'] = $errstr;
-            $this->resp['state'] = F_NO;
-            return F_NO;
+
+        // Check for socket timeout
+        if ($this->_sock_timed_out === true){
+            $this->resp['data'] = $line;
+            return $this->resp['state'] = F_EOF;
         }
-        // match NO "error msg"
-        elseif (preg_match("/^NO \"(.+)\"\r\n$/",$line, $m)){
-            $this->resp['code'] = RC_UNKNOWN;
-            $this->resp['errstr'] = $m[1];
-            $this->resp['state'] = F_NO;
-            return F_NO;
-// FIXME: we should read any extra response lines, in case there are some.
-        }
-        // match NO ("QUOTA") "xxxx"
-        elseif (preg_match("/^NO \(\"(\w+)\"\) \"(.+?)\"\r\n$/",$line, $m)){
-            $rc = $m[1];
-            switch ($rc){
-                case "QUOTA":
-                    $this->resp['code'] = RC_QUOTA;
-                    $this->resp['errstr'] = $m[2];
-                    break;
-                default:
-                    $this->resp['code'] = RC_UNKNOWN;
-                    $this->resp['errstr'] = "$rc " . $m[2];
-                    break;
+        // match NO
+        elseif (substr($line, 0, 2) == 'NO') {
+            // match NO {34}\r\n...\r\n...
+            // {34} is lenth of error message string, including CRLFs.
+            if (preg_match("/^NO \{(\d+)\}\r\n$/", $line, $m)){
+                $len_read = 0;
+                while ($len_read < $m[1]) {
+                    $line = $this->read();
+                    if ($this->_sock_timed_out === true) {
+                        return $this->resp['state'] = F_EOF;
+                    }
+                    $this->resp['errstr'][] = substr($line, 0, -2);
+                    $len_read += strlen($line);
+                }
+                // read the CRLF which terminates the multiline error string.
+                $this->read();
             }
-            $this->resp['state'] = F_NO;
-            return F_NO;
-        }
-        // match NO ("SASL" "authentication failure") "Authentication error"
-        elseif (preg_match("/^NO \(\"(.+?)\" \"(.+?)\"\) \"(.+)\"\r\n$/",$line,$m)){
-            switch ($m[1]){
-                case "SASL":
-                    $this->resp['code'] = RC_SASL;
-                    $this->resp['code_args'] = $m[2];
-                    $this->resp['errstr'] = $m[3];
-                    break;
-                default:
-                    $this->resp['code'] = RC_UNKNOWN;
-                    $this->resp['code_args'] = $m[2];
-                    $this->resp['errstr'] = $m[3];
-                    break;
+            // match NO "error msg"
+            elseif (preg_match("/^NO \"(.+)\"\r\n$/", $line, $m)){
+                $this->resp['errstr'][] = $m[1];
             }
-            $this->resp['state'] = F_NO;
-            return F_NO;
+            // match NO ("QUOTA") "xxxx"
+            // match NO ("SASL" "authentication failure") "Authentication error"
+            elseif (preg_match("/^NO \(\"(.+?)\"( \".+?\")?\) \"(.+)\"\r\n$/",$line,$m)){
+                switch ($m[1]) {
+                    case "QUOTA":
+                        $this->resp['code'] = RC_QUOTA;
+                        break;
+                    case "SASL":
+                        $this->resp['code'] = RC_SASL;
+                        break;
+                    default:
+                        $this->resp['code'] = RC_UNKNOWN;
+                        $this->resp['data'] = $line;
+                        break;
+                }
+                if ($m[2] !== '') {
+                    $this->resp['code_args'] = substr($m[2], 2, -1);
+                }
+                $this->resp['errstr'][] = $m[3];
+            }
+            else {
+                $this->resp['code'] = RC_UNKNOWN;
+                $this->resp['data'] = $line;
+            }
+            return $this->resp['state'] = F_NO;
         }
         // match OK
-        elseif ($line == "OK\r\n"){
-            $this->resp['state'] = F_OK;
-            $this->resp['code'] = RC_UNKNOWN;
-            return F_OK;
-        }
-        // match OK "Logout Complete"
-        elseif (preg_match("/^OK \"(.+)\"\r\n$/",$line,$m)){
-            $this->resp['state'] = F_OK;
-            $this->resp['code'] = RC_UNKNOWN;
-            $this->resp['errstr'] = $m[1];
-            return F_OK;
-        }
-        // match OK (SASL "cnNwYX1ZG...NzmY3MDN==")
-        elseif (preg_match("/^OK \((\w+) \"(.+)\"\)\r\n$/",$line,$m)){
-            switch ($m[1]){
-                case "SASL":
-                    $this->resp['code'] = RC_SASL;
-                    $this->resp['code_args'] = $m[2];
-                    break;
-                default:
-                    $this->resp['code'] = RC_UNKNOWN;
-                    $this->resp['code_args'] = $m[2];
-                    break;
+        elseif (substr($line, 0, 2) == 'OK') {
+            if ($line == "OK\r\n") {
             }
-            $this->resp['state'] = F_OK;
-            return F_OK;
-        }
-        // match BYE (REFERRAL "server") "Try Remote."
-        elseif (preg_match("/^BYE \((.+) \"(.+)\"\) \"(.+)\"\r\n$/",$line, $m)){
-            $rc = $m[1];
-            switch ($rc){
-                case "REFERRAL":
-                    $this->resp['code'] = RC_REFERRAL;
-                    $this->resp['code_args'] = $m[2];
-                    $this->resp['errstr'] = $m[3];
-                    break;
-                default:
-                    $this->resp['code'] = RC_UNKNOWN;
-                    $this->resp['code_args'] = $m[2];
-                    $this->resp['errstr'] = $m[3];
-                    break;
+            // match OK "Logout Complete"
+            elseif (preg_match("/^OK \"(.+)\"\r\n$/", $line, $m)) {
+                $this->resp['errstr'][] = $m[1];
             }
-            $this->resp['state'] = F_BYE;
-            return F_BYE;
+            // match OK (SASL "cnNwYX1ZG...NzmY3MDN==")
+            elseif (preg_match("/^OK \((\w+?) \"(.+)\"\)\r\n$/",$line,$m)) {
+                switch ($m[1]) {
+                    case "SASL":
+                        $this->resp['code'] = RC_SASL;
+                        break;
+                    default:
+                        $this->resp['code'] = RC_UNKNOWN;
+                        $this->resp['data'] = $line;
+                        break;
+                }
+                $this->resp['code_args'] = $m[2];
+            }
+            else {
+                $this->resp['code'] = RC_UNKNOWN;
+                $this->resp['data'] = $line;
+            }
+            return $this->resp['state'] = F_OK;
         }
-        // match {123}
+        // match BYE
+        elseif (substr($line, 0, 3) == 'BYE') {
+            // match BYE (REFERRAL "server") "Try Remote."
+            if (preg_match("/^BYE \((.+) \"(.+)\"\) \"(.+)\"\r\n$/",$line, $m)){
+                switch ($m[1]){
+                    case "REFERRAL":
+                        $this->resp['code'] = RC_REFERRAL;
+                        break;
+                    default:
+                        $this->resp['code'] = RC_UNKNOWN;
+                        $this->resp['data'] = $line;
+                        break;
+                }
+                $this->resp['code_args'] = $m[2];
+                $this->resp['errstr'][] = $m[3];
+            }
+            else {
+                $this->resp['code'] = RC_UNKNOWN;
+                $this->resp['data'] = $line;
+            }
+            return $this->resp['state'] = F_BYE;
+        }
+        // match {123}\r\n.........\r\n
         elseif (preg_match("/^\{(\d+)\+?\}\r\n$/", $line, $m)){
-            $this->resp['size'] = $m[1];
-            $this->resp['state'] = F_BYTES;
-            return F_BYTES;
+            $str = '';
+            while (strlen($str) < $m[1]) {
+                $str .= $this->read();
+                if ($this->_sock_timed_out === true) {
+                    $this->resp['data'] = $str;
+                    return $this->resp['state'] = F_EOF;
+                }
+            }
+            $this->resp['data'] = substr($str, 0, $m[1]);
+            return $this->resp['state'] = F_DATA;
         }
-        // check for timeout if, for some reason, we've missed result token.
-        if ($this->_sock_timed_out == true){
-            $this->resp['data'] = $line;
-            $this->resp['state'] = F_EOF;
-            return F_EOF;
+        // match listscripts and capability response "......"
+        // Not told how much data to read, so return each line as F_DATA.
+        elseif (preg_match("/^\"[^\"]+?\"( ACTIVE| \".+\")?\r\n$/", $line)) {
+            $this->resp['data'] = substr($line, 0, -2);
+            return $this->resp['state'] = F_DATA;
         }
-        // else data
+        // else an unrecognised response.
         $this->resp['data'] = $line;
-        $this->resp['state'] = F_DATA;
-        return F_DATA;
+        return $this->resp['state'] = F_UNKNOWN;
     }
 
 
-   /*
-    * Build a message string from a response.
+   /**
+    * Return a textual version of the $resp structure returned by getResponse().
+    *
+    * @return string message
     */
-    function response_to_string()
+    function responseToString()
     {
         $msg = '';
         if (empty($this->resp)){
@@ -429,53 +422,62 @@ class Managesieve {
         $resp = $this->resp;
         if ($resp['state'] == F_OK){
             $msg .= '[' . F_OK . '] ';
-            if (isset($resp['code']) && $resp['code'] != RC_UNKNOWN){
+            if (isset($resp['code'])){
                 if ($resp['code'] == RC_SASL){
                     $msg .= 'received final SASL response';
                 }else{
-                    $msg .= 'unknown response code: ' . $resp['raw'];
+                    $msg .= 'unknown response code: ' . $resp['data'];
                 }
             }
             if (isset($resp['errstr'])){
-                $msg .= $resp['errstr'];
+                foreach ($resp['errstr'] as $errstr) {
+                    $msg .= $errstr;
+                }
             }
         }
         if ($resp['state'] == F_NO){
             $msg .= '[' . F_NO . '] ';
-            if (isset($resp['code']) && $resp['code'] != RC_UNKNOWN){
+            if (isset($resp['code'])){
                 if ($resp['code'] == RC_QUOTA){
-                    $msg .= 'over quota: ' . $resp['errstr'];
+                    $msg .= 'over quota: ' . $resp['errstr'][0];
                 } elseif ($resp['code'] == RC_SASL) {
-                    $msg .= 'SASL error: ' . $resp['code_args'] . ': ' . $resp['errstr'];
+                    $msg .= 'SASL error: ' . $resp['code_args'] . ': ' . $resp['errstr'][0];
                 }else{
-                    $msg .= 'unknown response code: ' . $resp['raw'];
+                    $msg .= 'unknown response code: ' . $resp['data'];
                 }
             }
             elseif (isset($resp['errstr'])){
-                $msg .= $resp['errstr'];
+                foreach ($resp['errstr'] as $errstr) {
+                    $msg .= "$errstr ";
+                }
             }
         }
         if ($resp['state'] == F_BYE){
             $msg .= 'BYE received: ';
-            if (isset($resp['code']) && $resp['code'] != RC_UNKNOWN){
+            if (isset($resp['code'])){
                 if ($resp['code'] == RC_REFERRAL){
-                    $msg .= "referred to '" . $resp['code_args'] . "': " . $resp['errstr'];
+                    $msg .= "referred to '" . $resp['code_args'] . "': " . $resp['errstr'][0];
                 }else{
-                    $msg .= 'unknown response code: ' . $resp['raw'];
+                    $msg .= 'unknown response code: ' . $resp['data'];
                 }
             }
         }
-        if ($resp['state'] == F_BYTES){
-            $msg .= $resp['size'] . ' bytes of data to follow';
-        }
         if ($resp['state'] == F_EOF){
             $msg .= 'socket timed out while reading server response';
+            if ($resp['data'] != '') {
+                $msg .= ': ' . $resp['data'];
+            } elseif (!empty($resp['errstr'])) {
+                $msg .= ': ';
+                foreach ($resp['errstr'] as $errstr) {
+                    $msg .= "$errstr ";
+                }
+            }
         }
         if ($resp['state'] == F_DATA){
-            $msg .= 'received data';
+            $msg .= 'data received';
         }
-        if ($msg == ''){
-            return $resp['raw'];
+        if ($resp['state'] == F_UNKNOWN){
+            $msg .= 'unknown response: ' . $resp['data'];
         }
         return $msg;
     }
@@ -495,12 +497,12 @@ class Managesieve {
         // List of SASL mechanisms this class supports.
         $supported_mechs = array('digest-md5','plain');
 
-        if (!empty($sasl_mech)){
-            if (!in_array(strtolower($sasl_mech), $supported_sasl_mechs)) {
-                $this->_errstr = "_selectsaslmech: mechanism \"$sasl_mech\" not supported";
+        if (!empty($mech)){
+            if (!in_array(strtolower($mech), $supported_mechs)) {
+                $this->_errstr = "_selectsaslmech: mechanism \"$mech\" not supported";
                 return false;
             }
-            $use_mechs = array($sasl_mech);
+            $use_mechs = array($mech);
         } else {
             $use_mechs = $supported_mechs;
         }
@@ -516,8 +518,14 @@ class Managesieve {
     }
 
 
-   /*
-    * Authenticate using the SASL mechanism selected.
+   /**
+    * Authenticate user against the server.
+    *
+    * @param auth string authentication user
+    * @param passwd string authentication password
+    * @param authz string authorization user
+    * @param sasl_mech string SASL auth method
+    * @return boolean true on success, false on failure
     */
     function authenticate($auth, $passwd, $authz=null, $sasl_mech=null)
     {
@@ -556,36 +564,24 @@ class Managesieve {
                 fputs($this->_socket,"AUTHENTICATE \"PLAIN\" \{$len+}\r\n");
                 fputs($this->_socket,"$authstr\r\n");
 
-                switch ($this->get_response()){
-                    case F_NO:
-                        $this->_errstr = "authenticate: authentication failure connecting to $this->server: " . $this->response_to_string();
-                        return false;
-                        break;
-                    case F_OK:
-                        $this->_state = S_AUTHENTICATED;
-                        return true;
-                        break;
-                    default:
-                        $this->_errstr = "authenticate: bad authentication response from $this->server: " . $this->response_to_string();
-                        return false;
-                        break;
+                if ($this->getResponse() == F_OK) {
+                    $this->_state = S_AUTHENTICATED;
+                    return true;
                 }
+                $this->_errstr = "authenticate: authentication failure connecting to $this->server: " . $this->responseToString();
+                return false;
                 break;
 
             case "digest-md5":
-// FIXME: make digest-md5 code use new read(), get_response(), response_to_string().
                 // follows rfc2831 for generating the $response to $challenge
                 fputs($this->_socket, "AUTHENTICATE \"DIGEST-MD5\"\r\n");
-                // $clen is length of server challenge. 
-                $this->get_response();
-                if ($this->resp['state'] != F_BYTES) {
-                    $this->_errstr = 'authenticate: ' . $this->response_to_string();
+                // read the challenge. the max length for this is 2048.
+                // don't include the CRLF returned by $this->read().
+                $this->getResponse();
+                if ($this->resp['state'] != F_DATA) {
+                    $this->_errstr = 'authenticate: ' . $this->responseToString();
                     return false;
                 }
-                $clen = $this->resp['size'];
-                // read the challenge. the max length for this is 2048.
-                // don't include the CRLF returned by get_response().
-                $this->get_response();
                 $challenge = substr($this->resp['data'], 0, -2);
                 // vars used when building $response_value and $response
                 $cnonce = base64_encode(md5(microtime()));
@@ -625,7 +621,7 @@ class Managesieve {
                 $response = base64_encode($reply);
                 fputs($this->_socket, "\"$response\"\r\n");
 
-                $this->get_response();
+                $this->getResponse();
 
                 // With SASL v2 the server sends the final response success data within the 
                 // data portion of the SASL response code. With SASL v1.x, however, the server 
@@ -633,25 +629,20 @@ class Managesieve {
                 // before the server sends the final SASL response.
                 if (!preg_match("/Cyrus timsieved (v1\.1|v2\.\d)/", $this->_capabilities['implementation'])){
                     // Response should be either "{xxx}\r\nresponse string\r\n" or "NO".
-                    if ($this->resp['state'] == F_BYTES) {
-                        $this->get_response();
+                    if ($this->resp['state'] == F_DATA) {
                         // put the empty request.
                         fputs($this->_socket, "{0+}\r\n");
                         fputs($this->_socket, "\r\n");
-                        $this->get_response();
+                        $this->getResponse();
                     }
                 }
 
-                if ($this->resp['state'] == F_NO) {
-                    $this->_errstr = "authenticate: authentication failure connecting to $this->server: " . $this->response_to_string();
-                    return false;
+                if ($this->resp['state'] == F_OK) {
+                    $this->_state = S_AUTHENTICATED;
+                    return true;
                 }
-                elseif ($this->resp['state'] != F_OK) {
-                    $this->_errstr = "authenticate: bad authentication response from $this->server: " . $this->response_to_string();
-                    return false;
-                }
-                $this->_state = S_AUTHENTICATED;
-                return true;
+                $this->_errstr = "authenticate: authentication failure connecting to $this->server: " . $this->responseToString();
+                return false;
                 break;
 
             default:
@@ -663,10 +654,12 @@ class Managesieve {
     }
 
 
-   /*
-    * Issue the logout command.
+   /**
+    * Logout of the current session.
+    *
+    * @return boolean true on success, false on failure
     */
-    function logout ()
+    function logout()
     {
         unset($this->resp);
         $this->_errstr = '';
@@ -677,36 +670,29 @@ class Managesieve {
         }
         if ($this->_state == S_AUTHENTICATED){
             fputs($this->_socket,"LOGOUT\r\n");
-            switch ($this->get_response()){
-                case F_OK:
-                    $this->_state = S_CONNECTED;
-                    return true;
-                    break;
-                case F_NO:
-                    $this->_errstr = 'logout: failed to logout: ' . $this->response_to_string();
-                    return false;
-                    break;
-                default:
-                    $this->_errstr = 'logout: bad logout response: ' . $this->response_to_string();
-                    return false;
-                    break;
+            if ($this->getResponse() == F_OK) {
+                $this->_state = S_CONNECTED;
+                return true;
             }
+            $this->_errstr = 'logout: failed to logout: ' . $this->responseToString();
+            return false;
         }
         return true;
     }
 
-// FIXME: merge logout() and close()
 
-    /*
-     * Close the socket connection.
-     */
-    function close () 
+   /**
+    * Close the socket.
+    *
+    * @return boolean true on success, false on failure
+    */
+    function close() 
     {
         unset($this->resp);
         $this->_errstr = '';
 
         if (is_resource($this->_socket)) {
-            if ($this->_state = S_AUTHENTICATED){
+            if ($this->_state == S_AUTHENTICATED){
                 $this->logout();
             }
             if (!fclose($this->_socket)){
@@ -714,192 +700,180 @@ class Managesieve {
                 return false; 
             }
         }
-        $this->_socket = false;
+        $this->_socket = null;
         $this->_state = S_NOCONNECTION;
         return true;
     }
 
 
-    /*
-     * Return an array containing the list of sieve scripts on the 
-     * server belonging to the authzed user.
-     */
-    function listscripts ()
+   /**
+    * Return an array containing server Capabilities.
+    *
+    * @return mixed array of server capability values, or false on failure
+    */
+    function capability()
+    {
+        unset($this->resp);
+        $this->_errstr = '';
+                                                                                           
+        if (!is_resource($this->_socket)) {
+            $this->_errstr = 'capability: no server connection';
+            return false;
+        }
+        fputs($this->_socket,"CAPABILITY\r\n");
+        return ($this->parseCapability()) ? $this->_capabilities : false;
+    }
+
+
+   /**
+    * Return a list of the Sieve scripts owned by the authzed user.
+    *
+    * @return mixed array containing Sieve scripts, or false on failure
+    */
+    function listScripts()
     {
         unset($this->resp);
         $this->_errstr = '';
 
         if (!is_resource($this->_socket)) {
-            $this->_errstr = 'listscripts: no server connection';
+            $this->_errstr = 'listScripts: no server connection';
             return false;
         }
-
         $scripts = array();
-
         fputs($this->_socket,"LISTSCRIPTS\r\n");
-
-        while ($this->get_response() == F_DATA){
-
-            // Cyrus v1 script lines look like '"script*"' with the 
-            // asterisk denoting the active script. Cyrus v2 script 
-            // lines will look like '"script" ACTIVE' if active.
-
-            $tokens = explode(" ",substr($this->resp['data'],0,-2));
+        while ($this->getResponse() == F_DATA) {
+            $tokens = explode(" ", $this->resp['data']);
             $tokens[0] = substr($tokens[0],1,-1);
-
             $active = false;
             // Cyrus v2 active script: "script" ACTIVE
             if (isset($tokens[1]) && $tokens[1] == 'ACTIVE'){
                 $active = true;
             }
             // Cyrus v1 active script: "script*"
-            if (strstr($tokens[0], -1) == '*'){
+            if (substr($tokens[0], -1) == '*'){
                 $tokens[0] = substr($tokens[0], 0, -1);
                 $active = true;
             }
             $scripts[$tokens[0]] = $active;
         }
-
-        switch ($this->resp['state']){
-            case F_OK:
-                return $scripts;
-                break;
-            case F_NO:
-                $this->_errstr = 'listscripts: failed: ' . $this->response_to_string();
-                return false;
-                break;
-            default:
-                $this->_errstr = 'listscripts: bad response: ' . $this->response_to_string();
-                break;
+        if ($this->resp['state'] == F_OK) {
+            return $scripts;
         }
+        $this->_errstr = 'listScripts: failed: ' . $this->responseToString();
         return false;
     }
 
 
-    /*
-     * Retrieve the contents of Sieve script $scriptname.
-     * Return false if the script does not exist.
-     */
-    function getscript ($scriptname)
+   /**
+    * Retrieve the contents of a Sieve script.
+    *
+    * @param string script name
+    * @return mixed script text or false if failure
+    */
+    function getScript($name)
     {
         unset($this->resp);
         $this->_errstr = '';
 
-        if (empty($scriptname)) {
-            $this->_errstr = "getscript: no script file specified";
-            return false;
-        }
         if (!is_resource($this->_socket)) {
-            $this->_errstr = "getscript: no server connection";
+            $this->_errstr = "getScript: no server connection";
             return false;
         }
-
         $script = array('raw'=>'','size'=>0);
-
-        fputs($this->_socket,"GETSCRIPT \"$scriptname\"\r\n");
-
-        // if OK 1st line of response should be script length: {123}
-        if ($this->get_response() == F_BYTES){
-            $script['size'] = $this->resp['size'];
-        }else{
-            $this->_errstr = "getscript: could not get script \"$scriptname\": " . $this->response_to_string();
-            return false;
+        fputs($this->_socket,"GETSCRIPT \"$name\"\r\n");
+        if ($this->getResponse() == F_DATA) {
+            $script['raw'] = $this->resp['data'];
+            $script['size'] = strlen($this->resp['data']);
+            if ($this->getResponse() == F_OK) {
+                return $script;
+            }
         }
-
-        $raw = '';
-        while ($this->get_response() == F_DATA){
-            $raw .= $this->resp['data'];
-        }
-
-        if ($this->resp['state'] != F_OK){
-            $this->_errstr = "getscript: could not get script \"$scriptname\": " . $this->response_to_string();
-            return false;
-        }
-        // don't include trailing CRLF
-        $script['raw'] = substr($raw,0,$script['size']);
-        return $script;
+        $this->_errstr = "getScript: could not get script \"$name\": " . $this->responseToString();
+        return false;
     }
 
 
-    /*
-     * Set $scriptname as the active script. If $scrptname is the empty
-     * string "", SETACTIVE "" will deactivate any active script.
-     */
-    function activatescript ($scriptname='')
+   /**
+    * Set a script as the active script on the server. A zero lenth script name
+    * will deactivate the existing active script.
+    *
+    * @param name string name of script to set as the active script
+    * @return boolean true on success, false on failure
+    */
+    function setActive($name='')
     {
         unset($this->resp);
         $this->_errstr = '';
 
         if (!is_resource($this->_socket)) {
-            $this->_errstr = "activatescript: no server connection";
+            $this->_errstr = "setActive: no server connection";
             return false;
         }
-
-        fputs($this->_socket,"SETACTIVE \"$scriptname\"\r\n");
-
-        if ($this->get_response() == F_OK) {
+        fputs($this->_socket,"SETACTIVE \"$name\"\r\n");
+        if ($this->getResponse() == F_OK) {
             return true;
         }
-
-        $this->_errstr = "activatescript: could not activate script \"$scriptname\": " . $this->response_to_string();
+        $this->_errstr = "setActive: could not activate script \"$name\": " . $this->responseToString();
         return false;
     }
 
 
-   /*
+   /**
     * Check that the user will not exceed sieve_maxscriptsize or 
-    * sieve_maxscripts by uploading $scriptname of size $size bytes.
+    * sieve_maxscripts by uploading script $name of size $size bytes.
     * Note: HAVESPACE is broken in Cyrus up to v2.0.16.
+    *
+    * @param name string containing script name
+    * @param size integer size of script in bytes
+    * return boolean true if server will allow, false if not
     */
-    function havespace ($scriptname='', $size=0)
+    function haveSpace($name, $size)
     {
         unset($this->resp);
         $this->_errstr = '';
 
         if (!is_resource($this->_socket)) {
-            $this->_errstr = 'havespace: no server connection';
+            $this->_errstr = 'haveSpace: no server connection';
             return false;
         }
-
-        fputs($this->_socket,"HAVESPACE \"$scriptname\" $size\r\n");
-
-        if ($this->get_response() == F_OK) {
+        fputs($this->_socket,"HAVESPACE \"$name\" $size\r\n");
+        if ($this->getResponse() == F_OK) {
             return true;
         }
-
-        $this->_errstr = 'havespace: ' . $this->response_to_string();
+        $this->_errstr = 'haveSpace: ' . $this->responseToString();
         return false;
     }
 
 
-   /*
-    * Submit the script $name containing $text to the server.
-    * The script will not be active until we call $this->activatescript().
-    * Zero length scripts should be allowed.
+   /**
+    * Put script $name containing $text on the server. The script will not be 
+    * set active. Zero length scripts should be allowed.
+    *
+    * @param name string containing name of script
+    * @param text string containing script content
+    * @return boolean true on success, or false on failure
     */
-    function putscript ($name,$text='')
+    function putScript($name,$text='')
     {
         unset($this->resp);
         $this->_errstr = '';
 
         if (!is_resource($this->_socket)) {
-            $this->_errstr = "putscript: no server connection";
+            $this->_errstr = "putScript: no server connection";
             return false;
         }
-
         $len = strlen($text);
         fputs($this->_socket,"PUTSCRIPT \"$name\" \{$len+}\r\n");
         fputs($this->_socket,"$text\r\n");
-
-        if ($this->get_response() == F_OK){
+        if ($this->getResponse() == F_OK){
             return true;
         }
-
-        $this->_errstr = "putscript: could not put script \"$name\": " . $this->response_to_string();
+        $this->_errstr = "putScript: could not put script \"$name\": " . $this->responseToString();
 //FIXME: Work-around for bug in Cyrus 2.0.
         /* Work-around for extra response bug in Cyrus 2.0. */
         if ($this->resp['state'] == F_NO && 
-            $this->resp['errstr'] == 'Did not specify script data') {
+            $this->resp['errstr'][0] == 'Did not specify script data' &&
+            !preg_match("/Cyrus timsieved (v1\.1|v2\.\d)/", $this->_capabilities['implementation'])){
             while ($str = $this->read()) {
                 $this->_errstr .= $str;
             }
@@ -908,26 +882,26 @@ class Managesieve {
     }
 
 
-   /*
-    * Delete the script $scriptname.
+   /**
+    * Delete a Sieve script
+    *
+    * @param name string script to delete
+    * @return boolean true on success, false on failure
     */
-    function deletescript ($scriptname)
+    function deleteScript($name)
     {
         unset($this->resp);
         $this->_errstr = '';
 
         if (!is_resource($this->_socket)) {
-            $this->_errstr = "deletescript: no server connection";
+            $this->_errstr = "deleteScript: no server connection";
             return false;
         }
-
-        fputs($this->_socket,"DELETESCRIPT \"$scriptname\"\r\n");
-
-        if ($this->get_response() == F_OK){
+        fputs($this->_socket,"DELETESCRIPT \"$name\"\r\n");
+        if ($this->getResponse() == F_OK){
             return true;
         }
-
-        $this->_errstr = "deletescript: could not delete script \"$scriptname\": " . $this->response_to_string();
+        $this->_errstr = "deleteScript: could not delete script \"$name\": " . $this->responseToString();
         return false;
     }
 
