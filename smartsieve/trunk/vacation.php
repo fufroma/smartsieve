@@ -14,7 +14,8 @@ require "$default->lib_dir/SmartSieve.lib";
 
 session_name('SIEVE_SESSION');
 @session_start();
-$errstr = '';
+$errors = array();
+$msgs = array();
 
 $sieve = &$GLOBALS['HTTP_SESSION_VARS']['sieve'];
 $script = &$GLOBALS['HTTP_SESSION_VARS']['script'];
@@ -36,6 +37,25 @@ if (!$sieve->openSieveSession()) {
 }
 
 
+$vacation = array();   /* $script->vacation. */
+
+/* if save, enable or disable was selected from vacation.php, then get 
+ * the vacation values from POST data. if not, use $script->vacation.
+ */
+if (isset($GLOBALS['HTTP_POST_VARS']['submitted'])) {
+    $address = AppSession::getFormValue('addresses');
+    $address = preg_replace("/\"|\\\/","",$address);
+    $addresses = array();
+    $addresses = preg_split("/\s*,\s*|\s+/",$address);
+    $vacation['text'] = AppSession::getFormValue('text');
+    $vacation['days'] = AppSession::getFormValue('days');
+    $vacation['addresses'] = $addresses;
+    $vacation['status'] = AppSession::getFormValue('status');
+}
+else {
+    $vacation = $script->vacation;
+}
+
 /* save vacation settings if requested. */
 
 $action = AppSession::getFormValue('thisAction');
@@ -45,17 +65,21 @@ if ($action == 'enable') {
         $script->vacation['status'] = 'on';
         /* write and save the new script. */
         if (!$script->updateScript($sieve->connection)) {
-            $errstr .= "ERROR: " . $script->errstr . "<BR>\n";
+            array_push($errors, 'ERROR: ' . $script->errstr);
             $sieve->writeToLog("ERROR: vacation.php: can't update script: "
                 . $script->errstr, LOG_ERROR);
         }
         else {
-            header('Location: ' . $baseurl . 'main.php',true);
-            exit;
+            array_push($msgs, 'vacation settings successfully enabled.');
+            if ($default->return_after_update){
+                header('Location: ' . $baseurl . 'main.php',true);
+                exit;
+            }
+            $vacation['status'] = 'on';
         }
     }
     else {
-        $errstr .= "ERROR: vacation setting not yet saved.";
+        array_push($errors, 'ERROR: vacation setting not yet saved.');
         $sieve->writeToLog('ERROR: vacation setting not yet saved.', LOG_ERROR);
     }
 }
@@ -64,43 +88,44 @@ if ($action == 'disable') {
         $script->vacation['status'] = 'off';
         /* write and save the new script. */
         if (!$script->updateScript($sieve->connection)) {
-            $errstr .= "ERROR: " . $script->errstr . "<BR>\n";
-            $sieve->writeToLog("ERROR: vacation.php: can't update script: "                . $script->errstr, LOG_ERROR);
+            array_push($errors, 'ERROR: ' . $script->errstr);
+            $sieve->writeToLog("ERROR: vacation.php: can't update script: " 
+                    . $script->errstr, LOG_ERROR);
         }
         else {
-            header('Location: ' . $baseurl . 'main.php',true);
-            exit;
+            array_push($msgs, 'vacation settings successfully disabled.');
+            if ($default->return_after_update){
+                header('Location: ' . $baseurl . 'main.php',true);
+                exit;
+            }
+            $vacation['status'] = 'off';
         }
     }
     else {
-        $errstr .= "ERROR: vacation setting not yet saved.";
+        array_push($errors, 'ERROR: vacation setting not yet saved.');
 	$sieve->writeToLog('ERROR: vacation setting not yet saved.', LOG_ERROR);
     }
 }
 if ($action == 'save') 
 {
-    $script->vacation['text'] = AppSession::getFormValue('text');
-    $script->vacation['days'] = AppSession::getFormValue('days');
-    $address = AppSession::getFormValue('addresses');
-    $address = preg_replace("/\"|\\\/","",$address);
-    $addresses = array();
-    $addresses = preg_split("/\s*,\s*|\s+/",$address);
-    $script->vacation['addresses'] = &$addresses;
-
     /* if checkRule() doesn't return an error, write the modified script. */
-    if (!$ret = checkRule($script->vacation)){
+    if (!$ret = checkRule($vacation)){
+        $script->vacation = $vacation;
         if (!$script->updateScript($sieve->connection)) {
-            $errstr .= "ERROR: " . $script->errstr . "<BR>\n";
+            array_push($errors, 'ERROR: ' . $script->errstr);
 	    $sieve->writeToLog("ERROR: vacation.php: can't update script: "
 		. $script->errstr, LOG_ERROR);
         }
         else {
-	    header('Location: ' . $baseurl . 'main.php',true);
-	    exit;
+            array_push($msgs, 'your changes have been successfully saved.');
+            if ($default->return_after_update){
+	        header('Location: ' . $baseurl . 'main.php',true);
+	        exit;
+            }
         }
     }
     else
-	$errstr .= "ERROR: " . $ret . "<BR>\n";
+	array_push($errors, 'ERROR: ' . $ret);
 }
 
 
@@ -144,18 +169,27 @@ Rules</a> |
 </TABLE>
  
 <BR>
-<?php if ($errstr) {  ?>
+<?php if ($errors || $msgs) {  ?>
 
 <TABLE WIDTH="100%" CELLPADDING="5" BORDER="0" CELLSPACING="0">
+<?php foreach ($errors as $err){ ?>
   <TR>
     <TD CLASS="errors">
-      <?php print $errstr; ?>
+      <?php print $err; ?>
     </TD>
   </TR>
+<?php }
+      foreach ($msgs as $msg){ ?>
+  <TR>
+    <TD CLASS="messages">
+      <?php echo "$msg\n"; ?>
+    </TD>
+  </TR>
+<?php } ?>
 </TABLE>
 
 <BR>
-<?php } //end if $errstr ?>
+<?php } //end if $errors ?>
 
 <TABLE WIDTH="100%" CELLPADDING="1" BORDER="0" CELLSPACING="0">
 <TR>
@@ -196,7 +230,7 @@ Rules</a> |
 
     <TABLE WIDTH="100%" CELLPADDING="2" BORDER="0" CELLSPACING="0">
     <TR>
-      <TD CLASS="<?php if ($script->vacation['status'] == 'on') {print "ruleenabled\">ENABLED";} 
+      <TD CLASS="<?php if ($vacation['status'] == 'on') {print "ruleenabled\">ENABLED";} 
 				else print "ruledisabled\">DISABLED"; ?>
       </TD>
     </TR>
@@ -220,7 +254,7 @@ Auto-respond text:
       </TD>
       <TD NOWRAP="nowrap">
         <TEXTAREA NAME="text" ROWS="3" COLS="40" WRAP="hard" TABINDEX="1">
-<?php if ($script->vacation['text']) print $script->vacation['text']; ?>
+<?php if ($vacation['text']) print $vacation['text']; ?>
 </TEXTAREA>
       </TD>
     </TR>
@@ -234,7 +268,7 @@ Days:
 if (!$default->max_vacation_days) $default->max_vacation_days = 10;
 for ($i = 0; $i <= $default->max_vacation_days; $i++){
     $opt = "\t\t<OPTION ";
-    if ($script->vacation['days'] == $i) $opt .= "SELECTED ";
+    if ($vacation['days'] == $i) $opt .= "SELECTED ";
     $opt .= "VALUE=\"$i\">$i</OPTION>\n";
     print $opt;
 }
@@ -248,10 +282,10 @@ Addresses:
       </TD>
       <TD>
         <INPUT TYPE="text" NAME="addresses" <?php
-if (is_array($script->vacation['addresses'])) {
+if (is_array($vacation['addresses'])) {
     print "VALUE=\"";
     $first = 1;
-    foreach ($script->vacation['addresses'] as $address) {
+    foreach ($vacation['addresses'] as $address) {
       if (!$first) print ", ";
       print $address; 
       $first = 0;
@@ -287,7 +321,9 @@ if (is_array($script->vacation['addresses'])) {
 </TR>
 </TABLE>
 
+<INPUT TYPE="hidden" NAME="submitted" VALUE="1">
 <INPUT TYPE="hidden" NAME="thisAction" VALUE="">
+<INPUT TYPE="hidden" NAME="status" VALUE="<?php echo $vacation['status'] ? $vacation['status'] : 'off'; ?>">
 
 </FORM>
 
