@@ -1,6 +1,13 @@
 Smartsieve - Changes file
 -------------------------
 
+30 Sept 2002 S Grier
+* changed all occurrences of <? to <?php to eradicate dependency on 
+  short_open_tag php config option.
+
+27 Sept 2002 S Grier
+* release_0_1_0devel
+
 26 Sept 2002 S Grier
 * moved TODO text to new TODO file.
 * wrote README text.

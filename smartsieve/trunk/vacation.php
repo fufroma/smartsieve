@@ -105,9 +105,9 @@ if ($action == 'save')
 ?>
 
 <HTML>
-<HEAD><TITLE><? print $default->page_title; ?></TITLE>
+<HEAD><TITLE><?php print $default->page_title; ?></TITLE>
 <LINK HREF="<?php print $default->config_dir; ?>/smartsieve.css" REL="stylesheet" TYPE="text/css">
-<?
+<?php
 
 require "$default->include_dir/vacation.js";
 
@@ -118,7 +118,7 @@ require "$default->include_dir/vacation.js";
 
 <BODY>
 
-<FORM ACTION="<? print $default->baseurl ?>vacation.php" METHOD="post" NAME="thisVacation">
+<FORM ACTION="<?php print $default->baseurl ?>vacation.php" METHOD="post" NAME="thisVacation">
 
 <TABLE WIDTH="100%" CELLPADDING="2" BORDER="0" CELLSPACING="0">
 <TR>
@@ -127,10 +127,10 @@ require "$default->include_dir/vacation.js";
       <TR>
         <TD CLASS="menu">
           &nbsp;
-          <a href="<? print $default->baseurl; ?>login.php?reason=logout">Logout</a> |
-          <a href="<? print $default->baseurl; ?>vacation.php">Vacation Messages</a> |
-          <a href="<? print $default->baseurl; ?>main.php">Main</a> |
-          <a href="<? print $default->baseurl; ?>rule.php">New Filter Rule</a> <?php if ($default->vacation_help_url){ ?>|
+          <a href="<?php print $default->baseurl; ?>login.php?reason=logout">Logout</a> |
+          <a href="<?php print $default->baseurl; ?>vacation.php">Vacation Messages</a> |
+          <a href="<?php print $default->baseurl; ?>main.php">Main</a> |
+          <a href="<?php print $default->baseurl; ?>rule.php">New Filter Rule</a> <?php if ($default->vacation_help_url){ ?>|
           <a href="<?php print $default->vacation_help_url; ?>">Help</a> <?php } /* endif. */ ?>
 
         </TD>
@@ -146,22 +146,22 @@ require "$default->include_dir/vacation.js";
 <TABLE WIDTH="100%" CELLPADDING="5" BORDER="0" CELLSPACING="0">
   <TR>
     <TD CLASS="errors">
-      <? print $errstr; ?>
+      <?php print $errstr; ?>
     </TD>
   </TR>
 </TABLE>
 
 <BR>
-<? } //end if $errstr ?>
+<?php } //end if $errstr ?>
 
 <TABLE WIDTH="100%" CELLPADDING="1" BORDER="0" CELLSPACING="0">
 <TR>
   <TD CLASS="statusouter">
     <TABLE WIDTH="100%" CELLPADDING="2" BORDER="0" CELLSPACING="0">
       <TR>
-        <TD CLASS="status">&nbsp;User: <?print $sieve->user; ?></TD>
-        <TD CLASS="status">&nbsp;Server: <?print $sieve->server; ?></TD>
-        <TD CLASS="status">&nbsp;Script: <?print $sieve->scriptfile; ?></TD>
+        <TD CLASS="status">&nbsp;User: <?php print $sieve->user; ?></TD>
+        <TD CLASS="status">&nbsp;Server: <?php print $sieve->server; ?></TD>
+        <TD CLASS="status">&nbsp;Script: <?php print $sieve->scriptfile; ?></TD>
       </TR>
     </TABLE>
   </TD>
@@ -177,7 +177,7 @@ require "$default->include_dir/vacation.js";
     <TABLE WIDTH="100%" CELLPADDING="5" BORDER="0" CELLSPACING="0">
     <TR>
       <TD CLASS="ruleinfo">
-    <? if ($script->vacation) {
+    <?php if ($script->vacation) {
 	 print "Edit Vacation Auto-respond settings";
        } 
        else print "Create New Vacation Auto-respond settings:"; 
@@ -193,7 +193,7 @@ require "$default->include_dir/vacation.js";
 
     <TABLE WIDTH="100%" CELLPADDING="2" BORDER="0" CELLSPACING="0">
     <TR>
-      <TD CLASS="<? if ($script->vacation['status'] == 'on') {print "ruleenabled\">ENABLED";} 
+      <TD CLASS="<?php if ($script->vacation['status'] == 'on') {print "ruleenabled\">ENABLED";} 
 				else print "ruledisabled\">DISABLED"; ?>
       </TD>
     </TR>
@@ -217,7 +217,7 @@ Auto-respond text:
       </TD>
       <TD NOWRAP="nowrap">
         <TEXTAREA NAME="text" ROWS="3" COLS="40" WRAP="hard" TABINDEX="1">
-<? if ($script->vacation['text']) print $script->vacation['text']; ?>
+<?php if ($script->vacation['text']) print $script->vacation['text']; ?>
 </TEXTAREA>
       </TD>
     </TR>
@@ -227,7 +227,7 @@ Days:
       </TD>
       <TD>
         <SELECT NAME="days">
-<?
+<?php
 if (!$default->max_vacation_days) $default->max_vacation_days = 10;
 for ($i = 0; $i <= $default->max_vacation_days; $i++){
     $opt = "\t\t<OPTION ";
@@ -244,7 +244,7 @@ for ($i = 0; $i <= $default->max_vacation_days; $i++){
 Addresses:
       </TD>
       <TD>
-        <INPUT TYPE="text" NAME="addresses" <? 
+        <INPUT TYPE="text" NAME="addresses" <?php
 if (is_array($script->vacation['addresses'])) {
     print "VALUE=\"";
     $first = 1;
@@ -270,12 +270,12 @@ if (is_array($script->vacation['addresses'])) {
       <TD CLASS="options" COLSPAN="2">
         <BR>
         <A CLASS="option" HREF="" onclick="Submit('save'); return false;" onmouseover="status='Save Changes'; return true;" onmouseout="status='';">Save Changes</a>
-<? if ($script->vacation) { ?>
+<?php if ($script->vacation) { ?>
          |
         <A CLASS="option" HREF="" onclick="Submit('enable'); return false;" onmouseover="status='Enable'; return true;" onmouseout="status='';">Enable</a>
          | 
         <A CLASS="option" HREF="" onclick="Submit('disable'); return false;" onmouseover="status='Disable'; return true;" onmouseout="status='';">Disable</a>
-<? } ?>
+<?php } ?>
       </TD>
     </TR>
     </TABLE>
@@ -288,7 +288,7 @@ if (is_array($script->vacation['addresses'])) {
 
 </FORM>
 
-<?
+<?php
 
 $sieve->closeSieveSession();
 

@@ -67,7 +67,7 @@ if (isset($HTTP_POST_VARS['sieveuid']) && isset($HTTP_POST_VARS['passwd'])) {
 ?>
 
 <HTML>
-<HEAD><TITLE><? print $default->page_title; ?></TITLE>
+<HEAD><TITLE><?php print $default->page_title; ?></TITLE>
 <LINK HREF="<?php print $default->config_dir; ?>/smartsieve.css" REL="stylesheet" TYPE="text/css">
 <?php
 
@@ -78,7 +78,7 @@ include "$default->include_dir/login.js";
 </HEAD>
 
 <CENTER>
-<?
+<?php
 if (isset($HTTP_GET_VARS['reason']) && $HTTP_GET_VARS['reason'] == 'failure') {
     print "Login failed! Please try again.<BR>\n";
 }
@@ -93,24 +93,24 @@ $tabindex = 1;
 
 <BODY onload="setFocus()">
 
-<FORM ACTION="<? $default->baseurl ?>login.php" METHOD="post" NAME="login">
+<FORM ACTION="<?php $default->baseurl ?>login.php" METHOD="post" NAME="login">
 
 <CENTER>
 <TABLE WIDTH="300" CELLPADDING="5" BORDER="0" CELLSPACING="0">
 <TR CLASS="menu">
     <TD ALIGN="right"> Sieve Username: 
     </TD>
-    <TD ALIGN="left"><INPUT TYPE="text" tabindex="<? print $tabindex;$tabindex++;?>" name="sieveuid">
+    <TD ALIGN="left"><INPUT TYPE="text" tabindex="<?php print $tabindex;$tabindex++;?>" name="sieveuid">
     </TD>
 </TR>
 <TR CLASS="menu">
     <TD ALIGN="right"> Password:
     </TD>
-    <TD ALIGN="left"><INPUT TYPE="password" TABINDEX="<? print $tabindex;$tabindex++;?>" NAME="passwd">
+    <TD ALIGN="left"><INPUT TYPE="password" TABINDEX="<?php print $tabindex;$tabindex++;?>" NAME="passwd">
     </TD>
 </TR>
 
-<?
+<?php
 if ($default->user_select_server)
 {
 ?>
@@ -162,7 +162,7 @@ else print "<INPUT TYPE=\"hidden\" NAME=\"scriptfile\" VALUE=\"".$default->scrip
 ?>
 
 <TR CLASS="menu">
-    <TD ALIGN="center" COLSPAN="2"><INPUT TYPE="submit" NAME="submit" TABINDEX="<? print $tabindex;$tabindex++;?>" VALUE="Log In">
+    <TD ALIGN="center" COLSPAN="2"><INPUT TYPE="submit" NAME="submit" TABINDEX="<?php print $tabindex;$tabindex++;?>" VALUE="Log In">
     </TD>
 <TR>
 </TABLE>
