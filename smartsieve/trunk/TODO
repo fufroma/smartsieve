@@ -2,8 +2,6 @@ SmartSieve - TODO
 
 
 Move charset value for each locale to conf/locales.php.
-Look at the hard wrap on vacation message (reject text?) textbox.
-Markus Rechtien's auth_with_domain patch.
 
 TODO for 0.6
 

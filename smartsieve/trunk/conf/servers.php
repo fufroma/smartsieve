@@ -35,6 +35,13 @@
  * if require_vacation_addresses is false in conf/config.php 
  * this value has no effect.
  *
+ * auth_domain: You can use this option to set a domain value 
+ * which will be appended to usernames to make them fully-qualified. 
+ * This is useful if your server supports virtual domains but can 
+ * only determine the domain from the username, and you want to save 
+ * your users the trouble of typing their fully-qualified username 
+ * themselves.
+ *
  * $Id$
  */
 

@@ -277,14 +277,6 @@ class AppSession {
 	    return false;
 	}
 
-	$this->user = $this->getFormValue('sieveuid');
-	// encrypt the passwd. decrypt when needed.
-	$key = Encrypt::generateKey();
-	$this->passwd = Encrypt::encrypt($this->getFormValue('passwd'),$key);
-
-	// user supplied overrides
-	if (!empty($GLOBALS['HTTP_POST_VARS']['scriptfile']))
-	    $this->lscript = $this->getFormValue('scriptfile');
 	if (isset($GLOBALS['HTTP_POST_VARS']['server']))
 	{
 	    $server = $servers[$HTTP_POST_VARS['server']];
@@ -308,6 +300,20 @@ class AppSession {
 	    if (isset($server['maildomain'])) 
                 $this->maildomain = $server['maildomain'];
 	}
+
+        if (isset($server['auth_domain']) && strpos($this->getFormValue('sieveuid'),'@') === false) {
+            $this->user = $this->getFormValue('sieveuid') . '@' . $server['auth_domain'];
+        } else {
+            $this->user = $this->getFormValue('sieveuid');
+        }
+        // encrypt the passwd. decrypt when needed.
+        $key = Encrypt::generateKey();
+        $this->passwd = Encrypt::encrypt($this->getFormValue('passwd'),$key);
+
+        // user supplied overrides
+        if (!empty($GLOBALS['HTTP_POST_VARS']['scriptfile'])) {
+            $this->lscript = $this->getFormValue('scriptfile');
+        }
 
 	$GLOBALS['HTTP_SESSION_VARS']['sieve'] = &$this;
 	session_register('sieve');
@@ -1004,9 +1010,13 @@ class Script {
             $vacation['addresses'] = $ok_vaddrs;
         }
 
-	if (!is_array($vacation['addresses']) || empty($vacation['addresses'][0])){
-            if (!empty($default->require_vacation_addresses)){
-                if (!$sieve->maildomain){
+	if ((!is_array($vacation['addresses']) || empty($vacation['addresses'][0])) 
+            && !empty($default->require_vacation_addresses)) {
+            // If $sieve->user is fully-qualified, use that.
+            if (strpos($sieve->user,'@') !== false) {
+                array_push($vacation['addresses'],$sieve->user);
+            } else {
+                if (empty($sieve->maildomain)){
                     $this->errstr = 'updateScript: no valid vacation addresses supplied';
                     return false;
                 }
