@@ -60,8 +60,11 @@ if (isset($GLOBALS['HTTP_POST_VARS']['submitted'])) {
     $vacation['addresses'] = $addresses;
     $vacation['status'] = AppSession::getFormValue('status');
 }
-else {
+elseif ($script->vacation) {
     $vacation = $script->vacation;
+}
+else {
+    $vacation = array('status'=>'','text'=>'','days'=>0,'addresses'=>array());
 }
 
 /* save vacation settings if requested. */
@@ -163,8 +166,7 @@ require "$default->include_dir/vacation.js";
         <TD CLASS="menu">
           &nbsp;
           <a href="<?php print AppSession::setUrl('login.php?reason=logout');?>">Logout</a> |
-          <a href="<?php print AppSession::setUrl('main.php');?>">View All
-Rules</a> |
+          <a href="<?php print AppSession::setUrl('main.php');?>">View All Rules</a> |
           <a href="<?php print AppSession::setUrl('vacation.php');?>">Vacation Settings</a> |
           <a href="<?php print AppSession::setUrl('rule.php');?>">New Filter Rule</a>
 <?php if ($default->allow_multi_scripts) { ?>|
@@ -277,7 +279,12 @@ Rules</a> |
     <TABLE WIDTH="100%" CELLPADDING="2" BORDER="0" CELLSPACING="0">
     <TR CLASS="heading">
       <TD CLASS="<?php echo ($vacation['status'] == 'on') ? 'enabled' : 'disabled';?>">
-        <?php echo ($vacation['status'] == 'on') ? 'ENABLED' : 'DISABLED';?> 
+        <?php if ($script->vacation){
+                  if ($vacation['status'] == 'on')
+                      echo 'ENABLED';
+                  else echo 'DISABLED';
+              }
+              else echo '&nbsp;'; ?> 
       </TD>
     </TR>
     </TABLE>

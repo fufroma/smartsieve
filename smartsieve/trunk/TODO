@@ -14,7 +14,6 @@ required:
 TODO:
 - view raw script option.
 - should 'keep' be an action rather than an option?
-- fix stylesheet forbidden problem.
 - call getMailboxName from retrieveMailboxList.
 - write a getScriptLine function to do rtrim, stripslashes, etc.
 - move functions to SmartSieve class: rule.php:checkRule(), 
@@ -22,9 +21,6 @@ TODO:
 - call checkRule(),checkVacation() from updateScript().
 - add file/line number to log messages.
 - change to handle unixhierarchysep ('/' instead of '.' in fileinto).
-- modify to check if script was written by SmartSieve. probably 
-  need a config option as to disable saving or just warn user.
-  - fix mode advanced bug while we're at it. warn about this too.
 - cross site scripting: filter form data using htmlspecialchars and/or
   strip_tags().
 - config options for other sieve rule options (forward, reject etc).
