@@ -166,8 +166,13 @@ require "$default->include_dir/vacation.js";
           <a href="<?php print AppSession::setUrl('main.php');?>">View All
 Rules</a> |
           <a href="<?php print AppSession::setUrl('vacation.php');?>">Vacation Settings</a> |
-          <a href="<?php print AppSession::setUrl('rule.php');?>">New Filter Rule</a> <?php if ($default->vacation_help_url){ ?>|
-          <a href="<?php print $default->vacation_help_url; ?>">Help</a> <?php } /* endif. */ ?>
+          <a href="<?php print AppSession::setUrl('rule.php');?>">New Filter Rule</a>
+<?php if ($default->allow_multi_scripts) { ?>|
+          <A HREF="<?php print AppSession::setUrl('scripts.php');?>">Manage Scripts</A>
+<?php } ?>
+<?php if ($default->vacation_help_url){ ?>|
+          <a href="<?php print $default->vacation_help_url; ?>">Help</a>
+<?php } ?>
 
         </TD>
 <?php if ($default->allow_multi_scripts) { ?>
