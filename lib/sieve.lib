@@ -281,7 +281,6 @@ class SieveSession {
 
 	fputs($this->socket,"SETACTIVE \"$scriptfile\"\r\n");
 
-	$said = $this->read(); // blank line here?
 	$said = $this->read();
 
 	if (preg_match("/^OK/",$said)) {
