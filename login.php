@@ -105,6 +105,13 @@ $jsonload = 'setFocus()';
 $srvkeys = array_keys($servers);
 $fsrv = (!empty($srvkeys)) ? $srvkeys[0] : '';
 
+$proxyusers = SmartSieve::getConf('proxy_authz_users', array());
+$proxyall = false;
+if (isset($proxyusers[0]) && $proxyusers[0] == 'all') {
+    $proxyusers = array();
+    $proxyall = true;
+}
+
 include $default->include_dir . '/common-head.inc';
 include $default->include_dir . '/login.inc';
 

@@ -1,6 +1,9 @@
 Smartsieve - Changes file
 -------------------------
 
+04 Aug 2004 S Grier
+* Display authz box on login page to proxy_authz_users only.
+
 30 July 2004 S Grier
 * Fixed document.scripts clash (bug #994671).
 

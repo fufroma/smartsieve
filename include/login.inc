@@ -23,11 +23,11 @@
     <TD ALIGN="right"> <?php echo SmartSieve::text("Sieve Username");?>:
     </TD>
     <TD ALIGN="left">
-      <INPUT TYPE="text" TABINDEX="<?php echo $tabindex++;?>" NAME="auth">
+      <INPUT TYPE="text" TABINDEX="<?php echo $tabindex++;?>" NAME="auth"<?php if (!empty($proxyusers)) echo " onBlur='checkUser();'";?>>
     </TD>
   </TR>
-<?php if (SmartSieve::getConf('allow_proxy_authz')): ?>
-  <TR CLASS="menu">
+<?php if (!empty($proxyusers) || $proxyall): ?>
+  <TR CLASS="menu" ID="authztr"<?php if (!$proxyall) echo ' STYLE="display: none;"';?>>
     <TD ALIGN="right"> <?php echo SmartSieve::text("Proxy user");?>:
     </TD>
     <TD ALIGN="left">
