@@ -135,3 +135,6 @@ if ($script->vacation){
 
 </FORM>
 
+</BODY>
+</HTML>
+

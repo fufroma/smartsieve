@@ -243,6 +243,3 @@ function setMatchType (&$matchstr, $regex = false)
 
 ?>
 
-</BODY>
-</HTML>
-
