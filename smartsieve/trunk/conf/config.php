@@ -156,7 +156,7 @@ $default->socket_timeout = 5;
 
 // SmartSieve will select a cryptography library to use for encryption. You 
 // can override the one it chooses by setting this option. Choices are 
-// 'MCRYPT', 'RC5', 'HCEMD5', and ''.
+// 'MCRYPT', 'RC4', 'HCEMD5', and ''.
 $default->crypt_lib = '';
 
 // an array containing any values needed by the Crypt object.
