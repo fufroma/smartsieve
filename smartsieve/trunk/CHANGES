@@ -1,6 +1,9 @@
 Smartsieve - Changes file
 -------------------------
 
+04 Jan 2003 S Grier
+* fixed bug in sieve.lib's activatescript: no longer need to read extra newline.
+
 03 Jan 2003 S Grier
 * main.php: first stab at drop-down script list for changing scripts.
 
