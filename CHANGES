@@ -1,6 +1,9 @@
 Smartsieve - Changes file
 -------------------------
 
+25 Nov 2004 S Grier
+* Use transliterations when converting from UTF-8 using iconv.
+
 11 Nov 2004 S Grier
 * Make custom rule interface more intuitive.
 * Fix unconditional custom rules (Bug #1000050).
