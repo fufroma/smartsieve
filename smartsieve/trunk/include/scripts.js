@@ -23,7 +23,7 @@ function deactivate()
     document.scripts.submit();
 }
 
-function setActive()
+function setScriptActive()
 {
     if (numSelected() == 0){
         alert('Please select a script to activate');
