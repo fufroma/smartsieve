@@ -15,7 +15,9 @@
 // if this is false, the first entry in servers.php will be used.
 $default->user_select_server = true;
 
-$default->scriptfile = "default";
+/* default script filename. note that timsieved will add a .script 
+ * extension when saving on the server. */
+$default->scriptfile = 'smartsieve';
 
 // should we allow the user to choose a script filename other than
 // the one above?
@@ -39,6 +41,11 @@ $default->image_dir = './images';
 // this should be the same as $default->baseurl.
 $default->cookie_domain = $GLOBALS['HTTP_SERVER_VARS']['SERVER_NAME'];
 
+/* only scripts under this path will be able to access cookie data 
+ * set during a SmartSieve session. unless this is set to the SmartSieve 
+ * directory under the web root, cookie data will be accessible by all 
+ * scripts at $default->cookie_domain. */
+//$default->cookie_path = '/smartsieve';
 $default->cookie_path = '/';
 
 // title of each page
@@ -75,7 +82,7 @@ $default->return_after_update = false;
 // logging
 
 // should we log messages?
-$default->logging = true;
+$default->logging = false;
 
 // at what level should we log? Can be LOG_EMERG, LOG_ALERT, LOG_CRIT, LOG_ERR, 
 // LOG_WARNING, LOG_NOTICE, LOG_INFO, and LOG_DEBUG.
@@ -86,7 +93,7 @@ $default->logging_method = 'file';
 
 // this should either be a filename if logging_method = 'file', or 
 // a syslog facility (eg. LOCAL4) if logging_method = 'syslog'
-$default->logging_facility = "/home/httpd/smartsieve.log";
+$default->logging_facility = "/var/log/smartsieve.log";
 
 // what identifier should we use to identify log messages in the log?
 $default->logging_ident = 'smartsieve';
