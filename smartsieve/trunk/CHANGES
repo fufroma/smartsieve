@@ -1,6 +1,9 @@
 Smartsieve - Changes file
 -------------------------
 
+02 Oct 2002 S Grier
+* modified to cope with register_globals=off.
+
 30 Sept 2002 S Grier
 * removed tmp print statements from main.php.
 * changed all occurrences of <? to <?php to eradicate dependency on 

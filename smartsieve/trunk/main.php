@@ -16,8 +16,8 @@ session_name('SIEVE_SESSION');
 @session_start();
 $errstr = '';
 
-$sieve = $GLOBALS['HTTP_SESSION_VARS']['sieve'];
-$script = $GLOBALS['HTTP_SESSION_VARS']['script'];
+$sieve = &$GLOBALS['HTTP_SESSION_VARS']['sieve'];
+$script = &$GLOBALS['HTTP_SESSION_VARS']['script'];
 
 // if a session does not exist, go to login page
 if (!is_object($sieve) || !$sieve->authenticate()) {

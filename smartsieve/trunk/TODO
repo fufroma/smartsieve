@@ -34,7 +34,6 @@ TODO:
 	   list of mboxes which the proxy user has write access to.
 	   note: this will allow admin access to users scripts.
 	-  help info.
-	-  convert for register_globals = Off.
 	-  perhaps allow access to different scripts. could have drop down list of 
 	   users scripts, allowing user to view each one.
 	-  sieve.lib - ssl imap connections.
