@@ -8,9 +8,9 @@
     <TR CLASS="heading">
       <TD>
     <?php if ($script->vacation) {
-         print "Edit Vacation Auto-respond settings";
+         echo SmartSieve::text("Edit Vacation Auto-respond settings");
        }
-       else print "Create New Vacation Auto-respond settings:";
+       else echo SmartSieve::text("Create New Vacation Auto-respond settings").":";
     ?>
       </TD>
     </TR>
@@ -26,8 +26,8 @@
       <TD CLASS="<?php echo ($vacation['status'] == 'on') ? 'enabled' : 'disabled';?>">
         <?php if ($script->vacation){
                   if ($vacation['status'] == 'on')
-                      echo 'ENABLED';
-                  else echo 'DISABLED';
+                      echo SmartSieve::text('ENABLED');
+                  else echo SmartSieve::text('DISABLED');
               }
               else echo '&nbsp;'; ?>
       </TD>
@@ -42,13 +42,13 @@
     <TABLE WIDTH="100%" CELLPADDING="5" BORDER="0" CELLSPACING="0">
     <TR>
       <TD CLASS="heading">
-Vacation:
+<?php echo SmartSieve::text('Vacation');?>:
       </TD>
       <TD CLASS="heading">&nbsp;</TD>
     </TR>
     <TR>
       <TD NOWRAP="nowrap">
-Auto-respond text:
+<?php echo SmartSieve::text('Auto-respond text');?>:
       </TD>
       <TD NOWRAP="nowrap">
         <TEXTAREA NAME="text" ROWS="3" COLS="40" WRAP="hard" TABINDEX="1">
@@ -58,7 +58,7 @@ Auto-respond text:
     </TR>
     <TR>
       <TD>
-Days:
+<?php echo SmartSieve::text('Days');?>:
       </TD>
       <TD>
         <SELECT NAME="days">
@@ -74,7 +74,7 @@ for ($i = 1; $i <= $max_days; $i++){
     </TR>
     <TR>
       <TD>
-Addresses:
+<?php echo SmartSieve::text('Addresses');?>:
       </TD>
       <TD>
         <INPUT TYPE="text" NAME="addresses" <?php
@@ -102,12 +102,12 @@ if (is_array($vacation['addresses'])) {
     <TR>
       <TD CLASS="options" COLSPAN="2">
         <BR>
-        <A CLASS="option" HREF="" onclick="Submit('save'); return false;" onmouseover="window.status='Save Changes'; return true;" onmouseout="window.status='';">Save Changes</a>
+        <A CLASS="option" HREF="" onclick="Submit('save'); return false;" onmouseover="window.status='<?php echo SmartSieve::text('Save Changes');?>'; return true;" onmouseout="window.status='';"><?php echo SmartSieve::text('Save Changes');?></a>
 <?php if ($script->vacation) { ?>
          |
-        <A CLASS="option" HREF="" onclick="Submit('enable'); return false;" onmouseover="window.status='Enable'; return true;" onmouseout="window.status='';">Enable</a>
+        <A CLASS="option" HREF="" onclick="Submit('enable'); return false;" onmouseover="window.status='<?php echo SmartSieve::text('Enable');?>'; return true;" onmouseout="window.status='';"><?php echo SmartSieve::text('Enable');?></a>
          |
-        <A CLASS="option" HREF="" onclick="Submit('disable'); return false;" onmouseover="window.status='Disable'; return true;" onmouseout="window.status='';">Disable</a>
+        <A CLASS="option" HREF="" onclick="Submit('disable'); return false;" onmouseover="window.status='<?php echo SmartSieve::text('Disable');?>'; return true;" onmouseout="window.status='';"><?php echo SmartSieve::text('Disable');?></a>
 <?php } ?>
       </TD>
     </TR>

@@ -10,6 +10,17 @@
  * $Id$
  */
 
+// set following as default language. would be taken, if user set nothing
+// else
+$default->language = "en_GB";
+
+// set following as default character set.
+$default->charset = "ISO-8859-15";
+
+// should we allow the user to select which language they wish to view 
+// SmartSieve in? If false $default->language will always be used.
+$default->user_select_lang = true;
+
 // should we allow the user to choose from a list of servers?
 // the list itself is in servers.php.
 // if this is false, the first entry in servers.php will be used.
@@ -52,6 +63,9 @@ $default->include_dir = './include';
 
 // location of config files
 $default->config_dir = './conf';
+
+// location of language files
+$default->lang_dir = $default->config_dir.'/locale';
 
 // location of library files
 $default->lib_dir = './lib';

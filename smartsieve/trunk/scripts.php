@@ -33,7 +33,7 @@ if (!is_object($sieve) || !$sieve->authenticate()) {
 
 // open sieve connection
 if (!$sieve->openSieveSession()) {
-    print "ERROR: " . $sieve->errstr . "<BR>\n";
+    echo SmartSieve::text("ERROR: ") . $sieve->errstr . "<BR>\n";
     $sieve->writeToLog('ERROR: openSieveSession failed for ' . $sieve->user . 
         ': ' . $sieve->errstr, LOG_ERR);
     exit;
@@ -54,11 +54,11 @@ if ($action == 'setactive')
         if ($s){
             $sieve->connection->activatescript($s);
             if ($sieve->connection->errstr)
-                array_push($errors,'activatescript failed: ' . $sieve->connection->errstr);
+                array_push($errors,SmartSieve::text('activatescript failed').': ' . $sieve->connection->errstr);
             else
-                array_push($msgs,"script '$s' successfully activated");
+                array_push($msgs,SmartSieve::text("Script \"%s\" successfully activated.", array($s)));
             if (!AppSession::doListScripts())
-                array_push($errors,'AppSession::doListScripts failed: ' . AppSession::getError());
+                array_push($errors,'AppSession::doListScripts '.SmartSieve::text('failed: ') . AppSession::getError());
         }
     }
 }
@@ -69,11 +69,11 @@ if ($action == 'deactivate')
     // as the active script, so we don't care about the scriptID array.
     $sieve->connection->activatescript("");
     if ($sieve->connection->errstr)
-        array_push($errors,'activatescript failed: ' . $sieve->connection->errstr);
+        array_push($errors,SmartSieve::text('activatescript failed').': ' . $sieve->connection->errstr);
     else
-        array_push($msgs,"successfully deactivated all scripts");
+        array_push($msgs,SmartSieve::text("Successfully deactivated all scripts."));
     if (!AppSession::doListScripts())
-        array_push($errors,'AppSession::doListScripts failed: ' . AppSession::getError());
+        array_push($errors,'AppSession::doListScripts '.SmartSieve::text('failed: ') . AppSession::getError());
 }
 
 if ($action == 'createscript')
@@ -81,22 +81,22 @@ if ($action == 'createscript')
     $newscript = AppSession::getFormValue('newscript');
     if ($newscript){
         if (AppSession::scriptExists($newscript)){
-            array_push($errors,'script ' . $newscript . ' already exists');
+            array_push($errors,SmartSieve::text("Script \"%s\" already exists.", array($newscript)));
         }
         else {
             if (!isset($scripts[$newscript]))
                 $scripts[$newscript] = new Script($newscript);
             if (is_object($scripts[$newscript])){
                 if (!$scripts[$newscript]->updateScript($sieve->connection)) {
-                    array_push($errors, 'updateScript failed: ' . $scripts[$newscript]->errstr);
+                    array_push($errors, 'updateScript '.SmartSieve::text('failed: ') . $scripts[$newscript]->errstr);
                     $sieve->writeToLog('scripts.php: updateScript failed for ' . $sieve->user
                         . ': ' . $scripts[$newscript]->errstr, LOG_ERR);
                 }
             }
             if (AppSession::scriptExists($newscript))
-                array_push($msgs,"successfully created script '$newscript'");
+                array_push($msgs,SmartSieve::text("Successfully created script \"%s\".", array($newscript)));
             else
-                array_push($errors,"could not create script '$newscript'");
+                array_push($errors,SmartSieve::text("Could not create script \"%s\".", array($newscript)));
         }
     }
 }
@@ -112,16 +112,16 @@ if ($action == 'delete')
             if ($sname){
                 $sieve->connection->deletescript($sname);
                 if ($sieve->connection->errstr)
-                    array_push($errors,'deletescript failed: ' . $sieve->connection->errstr);
+                    array_push($errors,'deletescript '.SmartSieve::text('failed: ') . $sieve->connection->errstr);
                 else {
-                    array_push($msgs,"script '$sname' successfully deleted");
+                    array_push($msgs,SmartSieve::text("Script \"%s\" successfully deleted.", array($sname)));
                     if (isset($scripts[$sname]))
                         unset($scripts[$sname]);
                 }
             }
         }
         if (!AppSession::doListScripts())
-            array_push($errors,'AppSession::doListScripts failed: ' . AppSession::getError());
+            array_push($errors,'AppSession::doListScripts '.SmartSieve::text('failed: ') . AppSession::getError());
     }
 }
 
@@ -137,17 +137,17 @@ if ($action == 'rename')
     }
     if ($newscript && $oldscript){
         if (AppSession::scriptExists($newscript)){
-            array_push($errors,'script ' . $newscript . ' already exists');
+            array_push($errors,SmartSieve::text("Script \"%s\" already exists.", array($newscript)));
         }
         else {
             if (!AppSession::scriptExists($oldscript)){
-                array_push($errors,'script ' . $oldscript . ' does not exist');
+                array_push($errors,SmartSieve::text("Script \"%s\" does not exist.", array($oldscript)));
             }
             else {
                 if (!isset($scripts[$oldscript]))
                     $scripts[$oldscript] = new Script($oldscript);
                 if (!$scripts[$oldscript]->retrieveRules($sieve->connection)){
-                    array_push($errors, "retrieveRules failed for script $oldscript: " . $scripts[$oldscript]->errstr);
+                    array_push($errors, SmartSieve::text("retrieveRules failed for script \"%s\": ", array($oldscript)) . $scripts[$oldscript]->errstr);
                 }
                 else {
                   if ($scripts[$oldscript]->so){
@@ -156,7 +156,7 @@ if ($action == 'rename')
                     if (is_object($scripts[$newscript])){
                         $scripts[$newscript]->name = $newscript;
                         if (!$scripts[$newscript]->updateScript($sieve->connection)) {
-                            array_push($errors, 'updateScript failed: ' . $scripts[$newscript]->errstr);
+                            array_push($errors, 'updateScript '.SmartSieve::text('failed: ') . $scripts[$newscript]->errstr);
                             $sieve->writeToLog('scripts.php: updateScript failed for ' . $sieve->user
                                 . ': ' . $scripts[$newscript]->errstr, LOG_ERR);
                             unset($scripts[$newscript]);
@@ -164,9 +164,9 @@ if ($action == 'rename')
                         else {
                             $sieve->connection->deletescript($oldscript);
                             if ($sieve->connection->errstr)
-                                array_push($errors,'deletescript failed: ' . $sieve->connection->errstr);
+                                array_push($errors,'deletescript '.SmartSieve::text('failed: ') . $sieve->connection->errstr);
                             else {
-                                array_push($msgs,"successfully renamed '$oldscript' as '$newscript'");
+                                array_push($msgs,SmartSieve::text("Successfully renamed \"%s\" as \"%s\".", array($oldscript,$newscript)));
                                 unset($scripts[$oldscript]);
                             }
                         }

@@ -28,21 +28,21 @@
     <TABLE WIDTH="100%" CELLPADDING="2" BORDER="0" CELLSPACING="0">
       <TR CLASS="status">
         <TD>
-          &nbsp;User: <?php print $sieve->user; ?> 
+          &nbsp;<?php echo SmartSieve::text('User');?>: <?php print $sieve->user; ?> 
         </TD>
         <TD>
-          &nbsp;Server: <?php print $sieve->server; ?> 
+          &nbsp;<?php echo SmartSieve::text('Server');?>: <?php print $sieve->server; ?> 
         </TD>
         <TD>
-          &nbsp;Script: <?php print $sieve->workingscript; ?> 
+          &nbsp;<?php echo SmartSieve::text('Script');?>: <?php print $sieve->workingscript; ?> 
         </TD>
 <?php if (AppSession::isActiveScript($sieve->workingscript)) { ?>
         <TD CLASS="active">
-          ACTIVE
+          <?php echo SmartSieve::text('ACTIVE');?>
         </TD>
 <?php } else { ?>
         <TD CLASS="inactive">
-          NOT ACTIVE
+          <?php echo SmartSieve::text('NOT ACTIVE');?>
         </TD>
 <?php } ?>
       </TR>

@@ -6,7 +6,7 @@
 
     <TABLE WIDTH="100%" BORDER="0" CELLPADDING="2" CELLSPACING="0">
     <TR>
-      <TD CLASS="heading">Sieve Scripts:</TD>
+      <TD CLASS="heading">Sieve <?php echo SmartSieve::text("Scripts");?>:</TD>
     </TR>
     </TABLE>
 
@@ -21,9 +21,9 @@
 if ($sieve->scriptlist){ ?>
       <TR>
         <TH WIDTH="10%">&nbsp;</TH>
-        <TH WIDTH="70%">Script</TH>
-        <TH WIDTH="10%">Status</TH>
-        <TH WIDTH="10%">Size</TH>
+        <TH WIDTH="70%"><?php echo SmartSieve::text("Script");?></TH>
+        <TH WIDTH="10%"><?php echo SmartSieve::text("Status");?></TH>
+        <TH WIDTH="10%"><?php echo SmartSieve::text("Size");?></TH>
       </TR>
 <?php
 
@@ -31,22 +31,22 @@ if ($sieve->scriptlist){ ?>
     foreach ($sieve->scriptlist as $script){
         $class = 'inactivescript';
         $eclass = 'inactive';
-        $status='NOT ACTIVE';
+        $status = SmartSieve::text('NOT ACTIVE');
         if (AppSession::isActiveScript($script)) {
             $class = 'activescript';
             $eclass = 'active';
-            $status = 'ACTIVE';
+            $status = SmartSieve::text('ACTIVE');
         }
         $size = '';
         if (isset($scripts[$script]))
-            $size = $scripts[$script]->size . 'bytes';
+            $size = $scripts[$script]->size . SmartSieve::text('bytes');
 ?>
     <TR CLASS="<?php echo $class;?>">
       <TD>
         <INPUT TYPE="checkbox" NAME="scriptID[]" VALUE="<?php print $i; ?>">
       </TD>
       <TD>
-        <A CLASS="rule" HREF="" onclick="viewScript('<?php echo $script; ?>'); return false;" onmouseover="window.status='View This Script'; return true;" onmouseout="window.status='';"><?php echo $script; ?></A>
+        <A CLASS="rule" HREF="" onclick="viewScript('<?php echo $script; ?>'); return false;" onmouseover="window.status='<?php echo SmartSieve::text('View This Script');?>'; return true;" onmouseout="window.status='';"><?php echo $script; ?></A>
       </TD>
       <TD CLASS="<?php echo $eclass; ?>">
         <?php echo $status; ?>
@@ -61,7 +61,7 @@ if ($sieve->scriptlist){ ?>
 }
 else { ?>
     <TR CLASS="enabledrule">
-      <TD COLSPAN="4">[No existing scripts]</TD>
+      <TD COLSPAN="4">[<?php echo SmartSieve::text("No existing scripts");?>]</TD>
     </TR>
 <?php
 }
@@ -76,15 +76,15 @@ else { ?>
     <TABLE WIDTH="100%" BORDER="0" CELLPADDING="2" CELLSPACING="1">
     <BR>
       <TD CLASS="options">
-        <A CLASS="option" HREF="" onclick="setScriptActive(); return false;" onmouseover="window.status='Activate Script'; return true;" onmouseout="window.status='';">Activate</a>
+        <A CLASS="option" HREF="" onclick="setScriptActive(); return false;" onmouseover="window.status='<?php echo SmartSieve::text('Activate script');?>'; return true;" onmouseout="window.status='';"><?php echo SmartSieve::text("Activate");?></a>
          |
-        <A CLASS="option" HREF="" onclick="deactivate(); return false;" onmouseover="window.status='Deactivate All'; return true;" onmouseout="window.status='';">Deactivate</a>
+        <A CLASS="option" HREF="" onclick="deactivate(); return false;" onmouseover="window.status='<?php echo SmartSieve::text('Deactivate all');?>'; return true;" onmouseout="window.status='';"><?php echo SmartSieve::text("Deactivate");?></a>
          |
-        <A CLASS="option" HREF="" onclick="createScript(); return false;" onmouseover="window.status='Create New Script'; return true;" onmouseout="window.status='';">Create</a>
+        <A CLASS="option" HREF="" onclick="createScript(); return false;" onmouseover="window.status='<?php echo SmartSieve::text('Create new script');?>'; return true;" onmouseout="window.status='';"><?php echo SmartSieve::text("Create");?></a>
          |
-        <A CLASS="option" HREF="" onclick="deleteScript(); return false;" onmouseover="window.status='Delete Script'; return true;" onmouseout="window.status='';">Delete</a>
+        <A CLASS="option" HREF="" onclick="deleteScript(); return false;" onmouseover="window.status='<?php echo SmartSieve::text('Delete script');?>'; return true;" onmouseout="window.status='';"><?php echo SmartSieve::text("Delete");?></a>
          |
-        <A CLASS="option" HREF="" onclick="renameScript(); return false;" onmouseover="window.status='Rename Script'; return true;" onmouseout="window.status='';">Rename</A>
+        <A CLASS="option" HREF="" onclick="renameScript(); return false;" onmouseover="window.status='<?php echo SmartSieve::text('Rename script');?>'; return true;" onmouseout="window.status='';"><?php echo SmartSieve::text("Rename");?></A>
       </TD>
     </BR>
     </TABLE>

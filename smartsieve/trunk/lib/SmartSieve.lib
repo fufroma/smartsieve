@@ -19,8 +19,8 @@ class SmartSieve {
      * return correct mailbox name. apply alternative namespacing if 
      * necessary.
      */
-    function getMailboxName ($mbox) {
-
+    function getMailboxName($mbox)
+    {
         if ($GLOBALS['sieve']->alt_namespace){
             if (preg_match("/^INBOX$/i", $mbox)){
                 # do nothing.
@@ -39,6 +39,159 @@ class SmartSieve {
         }
         return $mbox;
     }
+
+   /*
+    * This function takes a string $string and returns it, translated 
+    * into the language set for this session if possible. When calling 
+    * this function the $string argument should always be a raw string 
+    * and not a variable, ie. ::text('string') not ::text($string).
+    */
+    function text($string = '', $args = array())
+    {
+        global $default;
+        static $lang;
+
+        if (!isset($lang)) {
+            $lang = SmartSieve::getLang();
+        }
+
+        @include "$default->lang_dir/$lang/strings.php";
+
+        if (!empty($phrase[$string])) {
+            $string = $phrase[$string];
+        }
+        return vsprintf($string, $args);
+    }
+
+   /*
+    * Return the charset to use to display each page. Different 
+    * languages might use different charsets.
+    */
+    function getCharset()
+    {
+        global $default;
+        static $lang;
+
+        if (!isset($lang))
+            $lang = SmartSieve::getLang();
+
+        @include "$default->lang_dir/$lang/strings.php";
+
+        if (isset($charset)){
+            return $charset;
+        }
+
+        return $default->charset;
+    }
+
+   /*
+    * Return the language to use for this SmartSieve session.
+    */
+    function getLang()
+    {
+        global $HTTP_SESSION_VARS;
+        global $HTTP_POST_VARS, $HTTP_GET_VARS;
+        global $default;
+
+        /* get lang if login form submitted. */
+        if (isset($HTTP_POST_VARS['lang']))
+            return AppSession::getFormValue('lang');
+
+        /* check if user has changed language on login page. */
+        if (isset($HTTP_GET_VARS['login_lang']))
+            return AppSession::getFormValue('login_lang');
+
+        /* check if language is set in the session. */
+        if (isset($HTTP_SESSION_VARS['smartsieve_lang']))
+            return $HTTP_SESSION_VARS['smartsieve_lang'];
+
+        /* if none of the above, use the default. */
+        return $default->language;
+    }
+
+   /*
+    * Convert a modified UTF-7 encoded mailbox name (RFC-2060) into the 
+    * charset for the current language.
+    */
+    function mutf7Decode($string)
+    {
+        $charset = SmartSieve::getCharset();
+
+        /* if we're using the ISO-8859-1 charset, we can just use imap_utf7_decode(). */
+        if (strtolower($charset) == 'iso-8859-1' || strtolower($charset) == 'us-ascii') {
+            if (extension_loaded('imap')) {
+                return imap_utf7_decode($string);
+            }
+        }
+
+        /* try mbstring if available. */
+        if (extension_loaded('mbstring')) {
+            $decoded = @mb_convert_encoding($string, $charset, 'UTF7-IMAP');
+            if ($decoded) {
+                return $decoded;
+            }
+        }
+
+        /* try iconv if available. use transliterations to avoid warnings about 
+         * incompatible characters. also, add extra ascii char to avoid iconv bug. */
+        if (extension_loaded('iconv')) {
+            /* convert the modified UTF-7 string to UTF-7. */
+            $utf7 = SmartSieve::modifiedToPlainUTF7($string);
+            $decoded = @iconv('UTF-7', $charset . '//TRANSLIT', $utf7 . "\0");
+            if ($decoded) {
+                return $decoded;
+            }
+        }
+
+        /* if all else fails, use imap_utf7_decode(). If mailbox name includes 
+         * non-ISO-8859-1 characters, they will not be decoded correctly. */
+        if (extension_loaded('imap')) {
+            return imap_utf7_decode($string);
+        }
+
+        return $string;
+    }
+
+   /*
+    * Convert a modified UTF-7 encoded string to unmodified UTF-7.
+    * See: RFC-2060.
+    */
+    function modifiedToPlainUTF7($string)
+    {
+        $utf7 = '';
+        $base64 = false;
+        for ($i = 0; $i < strlen($string); $i++) {
+            if ($string[$i] == "&") {
+                /* Convert the shift char '&' to '+'.
+                   Literal '&' will be encoded as '&-'. */
+                if ($string[$i+1] == "-") {
+                    $utf7 .= "&"; // '&-' -> '&'
+                    $i++;
+                }
+                else {
+                    $utf7 .= "+"; // '&' -> '+'
+                    $base64 = true;
+                }
+            }
+            elseif ($string[$i] == "-" && $base64) {
+                /* shift back to us-ascii. */
+                $base64 = false;
+            }
+            else {
+                if ($base64 && $string[$i] == ",") {
+                    $utf7 .= "/"; // ',' -> '/'
+                }
+                elseif (!$base64 && $string[$i] == "+") {
+                    $utf7 .= "+-"; // '+' -> '+-'
+                }
+                else {
+                    $utf7 .= $string[$i];
+                }
+            }
+        }
+        return $utf7;
+    }
+
 
 }
 
@@ -263,7 +416,7 @@ class AppSession {
 
     reset($mboxes);
     foreach ($mboxes as $mbox){
-	$mbox = @imap_utf7_decode($mbox);
+        $mbox = SmartSieve::mutf7Decode($mbox);
 	$label = str_replace('{' . "$this->server:$this->imapport" . '}', '', $mbox);
 	array_push($mboxlist,$label);
     }
