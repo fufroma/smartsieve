@@ -1,6 +1,9 @@
 Smartsieve - Changes file
 -------------------------
 
+31 Jan 2003 S Grier
+* scripts.php: can now change active script.
+
 30 Jan 2003 S Grier
 * Log class:
   - added var declarations.

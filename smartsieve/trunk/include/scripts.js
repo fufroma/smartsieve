@@ -21,23 +21,13 @@ function Submit(a)
     document.thisRule.submit();
 }
 
-function Activate()
+function setActive(scriptID)
 {
-    var n=0;
-    n = NumSelected();
-    alert(document.scripts.elements.length);
-    document.scripts.action.value = 'activate';
+    document.scripts.action.value = 'setactive';
+    document.scripts.scriptID.value = scriptID;
     document.scripts.submit();
 }
 
-function NumSelected()
-{
-    var n = 0;
-    for (i = 0; i < document.scripts.elements.length; i++) {
-        if (document.scripts.elements[i].checked) n++;
-    }
-    return n;
-}
 
 //-->
 </script>

@@ -57,12 +57,18 @@ if (!$sieve->openSieveSession()) {
 
 $action = AppSession::getFormValue('action');
 
-if ($action == 'activate')
+if ($action == 'setactive')
 {
-    $s = AppSession::getFormValue('scriptID');
-    $sieve->connection->activatescript($s[0]);
+    $s = $sieve->scriptlist[AppSession::getFormValue('scriptID')];
+    $sieve->connection->activatescript($s);
     if ($sieve->connection->errstr)
         array_push($errors,$sieve->connection->errstr);
+    /* prompt AppSession object to update its script list and active
+     * script data in the light of any changes we may have made. */
+    if (!AppSession::doListScripts()) {
+        $this->errstr = 'updateScript: AppSession::doListScripts failed: ' . AppSession::getError();
+        return false;
+    }
 }
 
 if ($action == 'enable') 
@@ -220,10 +226,11 @@ Rules</a> |
 
 if ($sieve->scriptlist){ ?>
       <TR>
-        <TH CLASS="heading">&nbsp;</TH>
-        <TH CLASS="heading">Script</TH>
-        <TH CLASS="heading">Active</TH>
-        <TH CLASS="heading">No of Rules</TH>
+        <TH CLASS="heading" WIDTH="10%">&nbsp;</TH>
+        <TH CLASS="heading" WIDTH="60%">Script</TH>
+        <TH CLASS="heading" WIDTH="10%">Active</TH>
+        <TH CLASS="heading" WIDTH="10%">No of Rules</TH>
+        <TH CLASS="heading" WIDTH="10%">Activate</TH>
       </TR>
 <?php
 
@@ -235,6 +242,9 @@ if ($sieve->scriptlist){ ?>
       <TD CLASS="rules"><A CLASS="rule" HREF="" onclick="Submit('<?php echo $script; ?>'); return false;" onmouseover="status='Edit This Script'; return true;" onmouseout="status='';"><?php echo $script; ?></A></TD>
       <TD CLASS="<?php if (AppSession::isActiveScript($script)) echo "enabled"; else echo "disabled"; ?>">Active</TD>
       <TD CLASS="rules">&nbsp;</TD>
+      <TD CLASS="rules">
+        <A HREF="" onclick="setActive(<?php echo $i ?>); return false;" onmouseover="status='Set script <?php echo $script; ?> as the active script'; return true;" onmouseout="status='';">Set Active</A>
+      </TD>
     </TR>
 <?php
         $i++;
@@ -242,7 +252,7 @@ if ($sieve->scriptlist){ ?>
 }
 else { ?>
     <TR>
-      <TD CLASS="rules" COLSPAN="4">[No existing scripts]</TD>
+      <TD CLASS="rules" COLSPAN="5">[No existing scripts]</TD>
     </TR>
 <?php
 }
@@ -273,6 +283,7 @@ else { ?>
 </TABLE>
 
 <INPUT TYPE="hidden" NAME="action" VALUE="" >
+<INPUT TYPE="hidden" NAME="scriptID" VALUE="">
 
 </FORM>
 
