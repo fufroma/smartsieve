@@ -389,7 +389,7 @@ class Managesieve {
         // match {123}\r\n.........\r\n
         elseif (preg_match("/^\{(\d+)\+?\}\r\n$/", $line, $m)){
             $str = '';
-            while (strlen($str) < $m[1]) {
+            while (strlen($str) <= $m[1]) {
                 $str .= $this->read();
                 if ($this->_sock_timed_out === true) {
                     $this->resp['data'] = $str;
