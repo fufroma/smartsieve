@@ -13,7 +13,6 @@ TODO for 0.6
 * move functions to SmartSieve class: rule.php:checkRule(),vacation.php:checkRule(), 
 * make use of sieve redirect, reject, etc configurable
 * make it possible to supply other server options from login.php
-* decide what to do with vacation rule checkbox on main.php
 * call getMailboxName from retrieveMailboxList
 * write a getScriptLine function to do rtrim, stripslashes, etc. to read script safely
 * add checks to make sure no HTML/javascript is written to a sieve script (htmlspecialchars strip_tags())
