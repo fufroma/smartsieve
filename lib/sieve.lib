@@ -169,14 +169,14 @@ class SieveSession {
             return $buffer;
 
         socket_set_timeout($this->socket,$this->socket_timeout);
+        socket_set_blocking($this->socket,true);
 
         /* read one character at a time and add to $buffer. */
 	while (!feof($this->socket)) {
 	    $char = fread($this->socket,1);
 
             $status = socket_get_status($this->socket);
-            if ($status['timed_out'] == true ||
-                $status["unread_bytes"] <= 0)
+            if ($status['timed_out'])
                 return $buffer;
 
             /* return $buffer if we've reached end on line.
