@@ -254,7 +254,7 @@ function buildRule($rule) {
 	$complete .= "'" . $rule['field'] . "' " . $match . " '" . $rule['field_val'] . "'";
 	$started = 1;
     }
-    if ($rule['size']) {
+    if (isset($rule['size']) && $rule['size'] !== '') {
 	$xthan = SmartSieve::text('less than');
 	if ($rule['gthan']) $xthan = SmartSieve::text('greater than');
 	if ($started) $complete .= $andor;
