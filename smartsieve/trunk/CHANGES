@@ -2,6 +2,7 @@ Smartsieve - Changes file
 -------------------------
 
 11 August 2003 S Grier
+* Fixed DIGEST-MD5 for SASL v1.x.
 * sieve.lib: getscript() now returns array $resp containing raw script and script size.
 
 17 July 2003 S Grier
