@@ -671,16 +671,13 @@ class Managesieve {
             $this->_errstr = 'logout: no server connection';
             return false;
         }
-        if ($this->_state == S_AUTHENTICATED){
-            fputs($this->_socket,"LOGOUT\r\n");
-            if ($this->getResponse() == F_OK) {
-                $this->_state = S_CONNECTED;
-                return true;
-            }
-            $this->_errstr = 'logout: failed to logout: ' . $this->responseToString();
-            return false;
+        fputs($this->_socket,"LOGOUT\r\n");
+        if ($this->getResponse() == F_OK) {
+            $this->_state = S_CONNECTED;
+            return true;
         }
-        return true;
+        $this->_errstr = 'logout: failed to logout: ' . $this->responseToString();
+        return false;
     }
 
 
@@ -695,9 +692,7 @@ class Managesieve {
         $this->_errstr = '';
 
         if (is_resource($this->_socket)) {
-            if ($this->_state == S_AUTHENTICATED){
-                $this->logout();
-            }
+            $this->logout();
             if (!fclose($this->_socket)){
                 $this->_errstr = "close: failed closing socket to $this->server";
                 return false; 
