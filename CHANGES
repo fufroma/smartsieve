@@ -1,6 +1,9 @@
 Smartsieve - Changes file
 -------------------------
 
+27 July 2004 S Grier
+* Added French translation. Contributed by Alain Richard.
+
 19 July 2004 S Grier
 * Don't treat ruleID=0 as new rule.
 
