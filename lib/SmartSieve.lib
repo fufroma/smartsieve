@@ -192,6 +192,20 @@ class SmartSieve {
         return $utf7;
     }
 
+   /*
+    * Get the value of a config option. Returns the value of the setting 
+    * or null if not set, thereby avoiding Undefined variable warnings.
+    */
+    function getConf($option)
+    {
+        require_once "conf/config.php";
+        global $default;
+        if (isset($default->$option)) {
+            return $default->$option;
+        }
+        return null;
+    }
+
 
 }
 

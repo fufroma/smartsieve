@@ -1,6 +1,9 @@
 Smartsieve - Changes file
 -------------------------
 
+07 April 2004 S Grier
+* Added SmartSieve::getConf function to avoid Undefined variable warnings.
+
 26 Mar 2004 S Grier
 * Added conf/locales.php. The language select widget on the login page is now 
   generated from this file.
