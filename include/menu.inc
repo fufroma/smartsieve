@@ -1,5 +1,5 @@
 
-<FORM ACTION="<?php print AppSession::setUrl('main.php');?>" METHOD="post" NAME="menu">
+<FORM ACTION="<?php print SmartSieve::setUrl('main.php');?>" METHOD="post" NAME="menu">
 
 <TABLE WIDTH="100%" CELLPADDING="2" BORDER="0" CELLSPACING="0">
 <TR>
@@ -8,17 +8,17 @@
       <TR>
         <TD CLASS="menu">
           &nbsp;
-          <a href="<?php print AppSession::setUrl('login.php?reason=logout');?>"><?php echo SmartSieve::text('Logout');?></a>
-        | <a href="<?php print AppSession::setUrl('main.php');?>"><?php echo SmartSieve::text('View All Rules');?></a>
+          <a href="<?php print SmartSieve::setUrl('login.php?reason=logout');?>"><?php echo SmartSieve::text('Logout');?></a>
+        | <a href="<?php print SmartSieve::setUrl('main.php');?>"><?php echo SmartSieve::text('View All Rules');?></a>
 <?php if ($_SESSION['scripts'][$_SESSION['smartsieve']['workingScript']]->mode != 'advanced'): ?>
 <?php     if (SmartSieve::getConf('use_forward_mail_interface')): ?>
-        | <A HREF="<?php print AppSession::setUrl('forward.php');?>"><?php echo SmartSieve::text('Forward Mail');?></A>
+        | <A HREF="<?php print SmartSieve::setUrl('forward.php');?>"><?php echo SmartSieve::text('Forward Mail');?></A>
 <?php     endif; //use_forward_mail_interface ?>
-        | <a href="<?php print AppSession::setUrl('vacation.php');?>"><?php echo SmartSieve::text('Vacation Settings');?></a>
-        | <a href="<?php print AppSession::setUrl('rule.php');?>"><?php echo SmartSieve::text('New Filter Rule');?></a>
+        | <a href="<?php print SmartSieve::setUrl('vacation.php');?>"><?php echo SmartSieve::text('Vacation Settings');?></a>
+        | <a href="<?php print SmartSieve::setUrl('rule.php');?>"><?php echo SmartSieve::text('New Filter Rule');?></a>
 <?php endif; //$script->mode = 'advanced' ?>
 <?php if (SmartSieve::getConf('allow_multi_scripts') !== false): ?>
-        | <A HREF="<?php print AppSession::setUrl('scripts.php');?>"><?php echo SmartSieve::text('Manage Scripts');?></A>
+        | <A HREF="<?php print SmartSieve::setUrl('scripts.php');?>"><?php echo SmartSieve::text('Manage Scripts');?></A>
 <?php endif; //$default->allow_multi_scripts ?>
 <?php if (!empty($help_url)): ?>
         | <a href="<?php echo $help_url; ?>"><?php echo SmartSieve::text('Help');?></a>

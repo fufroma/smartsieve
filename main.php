@@ -22,7 +22,7 @@ $smartsieve = &$_SESSION['smartsieve'];
 
 // If a session does not exist, redirect to login page.
 if (SmartSieve::authenticate() !== true) {
-    header('Location: ' . AppSession::setUrl('login.php'),true);
+    header('Location: ' . SmartSieve::setUrl('login.php'),true);
     exit;
 }
 

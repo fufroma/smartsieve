@@ -20,11 +20,11 @@ session_start();
 // if session already exists, redirect to initial page.
 // if not, redirect to login page.
 if (isset($_SESSION['smartsieve']) && is_array($_SESSION['smartsieve'])) {
-    header('Location: ' . AppSession::setUrl('main.php'));
+    header('Location: ' . SmartSieve::setUrl('main.php'));
     exit;
 }
 else {
-    header('Location: ' . AppSession::setUrl('login.php'));
+    header('Location: ' . SmartSieve::setUrl('login.php'));
     exit;
 }
 

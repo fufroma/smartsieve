@@ -1,4 +1,4 @@
-<FORM ACTION="<?php print AppSession::setUrl('forward.php');?>" METHOD="post" NAME="thisForward">
+<FORM ACTION="<?php print SmartSieve::setUrl('forward.php');?>" METHOD="post" NAME="thisForward">
 
 <TABLE WIDTH="100%" CELLPADDING="0" BORDER="0" CELLSPACING="1">
 <TR>

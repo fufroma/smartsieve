@@ -22,7 +22,7 @@ $script = &$_SESSION['scripts'][$_SESSION['smartsieve']['workingScript']];
 
 // If a session does not exist, redirect to login page.
 if (SmartSieve::authenticate() !== true) {
-    header('Location: ' . AppSession::setUrl('login.php'),true);
+    header('Location: ' . SmartSieve::setUrl('login.php'),true);
     exit;
 }
 
@@ -75,7 +75,7 @@ if ($action == 'enable')
 	} else {
             SmartSieve::setNotice(SmartSieve::text('rule successfully enabled.'));
             if (SmartSieve::getConf('return_after_update') === true) {
-                header('Location: ' . AppSession::setUrl('main.php'),true);
+                header('Location: ' . SmartSieve::setUrl('main.php'),true);
                 exit;
             }
             $rule['status'] = 'ENABLED';
@@ -96,7 +96,7 @@ if ($action == 'disable')
 	} else {
             SmartSieve::setNotice(SmartSieve::text('rule successfully disabled.'));
             if (SmartSieve::getConf('return_after_update') === true) {
-                header('Location: ' . AppSession::setUrl('main.php'),true);
+                header('Location: ' . SmartSieve::setUrl('main.php'),true);
                 exit;
             }
             $rule['status'] = 'DISABLED';
@@ -116,7 +116,7 @@ if ($action == 'delete')
                 $script->name, $_SESSION['smartsieve']['authz'], $script->errstr), LOG_ERR);
 	} else {
             SmartSieve::setNotice(SmartSieve::text('Rule successfully deleted.'));
-	    header('Location: ' . AppSession::setUrl('main.php'),true);
+	    header('Location: ' . SmartSieve::setUrl('main.php'),true);
 	    exit;
 	}
     } else {
@@ -142,7 +142,7 @@ if ($action == 'save')
 	} else {
             SmartSieve::setNotice(SmartSieve::text('your changes have been successfully saved.'));
             if (SmartSieve::getConf('return_after_update') === true) {
-	        header('Location: ' . AppSession::setUrl('main.php'),true);
+	        header('Location: ' . SmartSieve::setUrl('main.php'),true);
 	        exit;
             }
 	}
