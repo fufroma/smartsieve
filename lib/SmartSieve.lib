@@ -18,7 +18,7 @@ class SmartSieve {
     /*
      * return correct mailbox name. apply alternative namespacing if 
      * necessary.
-     * /
+     */
     function getMailboxName ($mbox) {
 
         if ($GLOBALS['sieve']->alt_namespace){
