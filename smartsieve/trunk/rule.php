@@ -554,6 +554,9 @@ function checkRule(&$rule) {
 
     if ($rule['field'] && !$rule['field_val'])
         return "you must supply a value for the field " . $rule['field'];
+    /* remove colon from end of header field. */
+    if ($rule['field'] && preg_match("/:$/",$rule['field']))
+        $rule['field'] = rtrim($rule['field'], ":");
     if (!$rule['action'])
         return "please supply an action";
     if ($rule['action'] != 'discard' && !$rule['action_arg'])

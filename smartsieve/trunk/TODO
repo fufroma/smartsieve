@@ -55,6 +55,7 @@ TODO:
   timed out or no bytes found at the socket.
 - internationalization ?
 - support other backends. eg. postgresql, BerkeleyDB, etc.
+- drop down list for rule position on create rule page.
 
 
 $Id$
