@@ -64,13 +64,21 @@ REQUIREMENTS
    ftp://ftp.cac.washington.edu/imap/
 
 4. SmartSieve will only work in conjunction with a sieve enabled 
-   email server. It is currently only known to work with the 
-   Cyrus imap server (http://asg.web.cmu.edu/cyrus/imapd).
+   email server which uses the managesieve protocol for remote 
+   management of sieve scripts. It is currently only known to work 
+   with the Cyrus imap server (http://asg.web.cmu.edu/cyrus/imapd).
 
    You will need to configure Cyrus to run the timsieved daemon to 
    handle sieve requests. The master daemon's configuration file 
    is usually /etc/cyrus.conf. You will need to refer to the 
    cyrus-imapd documentation for this.
+
+   SmartSieve currently only supports the PLAIN SASL authentication 
+   mechanism. Therefore, timsieved must be able to authenticate users 
+   using the PLAIN authentication mechanism. You can see what 
+   mechanisms timsieved supports by telneting to port 2000 of your 
+   mail server and observing the "SASL" capabilities line. See the 
+   Cyrus-sasl documentation for more on this.
 
    Some sieve actions involve sending mail; vacation messaging and 
    mail redirection, for example. For these actions to work, Cyrus 
