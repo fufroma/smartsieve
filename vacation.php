@@ -18,7 +18,8 @@ $errors = array();
 $msgs = array();
 
 $sieve = &$GLOBALS['HTTP_SESSION_VARS']['sieve'];
-$script = &$GLOBALS['HTTP_SESSION_VARS']['script'];
+$scripts = &$GLOBALS['HTTP_SESSION_VARS']['scripts'];
+$script = $scripts[$sieve->workingscript];
 
 // if a session does not exist, go to login page
 if (!is_object($sieve) || !$sieve->authenticate()) {
@@ -27,6 +28,13 @@ if (!is_object($sieve) || !$sieve->authenticate()) {
 }
 
 // should have a valid session at this point
+
+// change working script if requested.
+if (isset($GLOBALS['HTTP_POST_VARS']['script'])) {
+    $sieve->workingscript = AppSession::getFormValue('script');
+    header('Location:' . AppSession::setUrl('main.php'),true);
+    exit;
+}
 
 // open sieve connection
 if (!$sieve->openSieveSession()) {
@@ -145,7 +153,7 @@ require "$default->include_dir/vacation.js";
 
 <BODY>
 
-<FORM ACTION="<?php print AppSession::setUrl('vacation.php');?>" METHOD="post" NAME="thisVacation">
+<FORM ACTION="<?php print AppSession::setUrl('vacation.php');?>" METHOD="post" NAME="changescript">
 
 <TABLE WIDTH="100%" CELLPADDING="2" BORDER="0" CELLSPACING="0">
 <TR>
@@ -162,11 +170,27 @@ Rules</a> |
           <a href="<?php print $default->vacation_help_url; ?>">Help</a> <?php } /* endif. */ ?>
 
         </TD>
+<?php if ($default->allow_multi_scripts) { ?>
+        <TD CLASS="menu" ALIGN="right">
+          &nbsp;
+          <SELECT NAME="script" onchange="document.changescript.submit();">
+<?php     foreach ($sieve->scriptlist as $s){
+              $str = "\t\t<OPTION VALUE=\"$s\"";
+              if ($s == $sieve->workingscript)
+                  $str .= " SELECTED=\"selected\"";
+              $str .= ">$s</OPTION>\n";
+              print $str;
+          } ?>
+          </SELECT>
+        </TD>
+<?php } //end if ?>
       </TR>
     </TABLE>
   </TD>
 </TR>
 </TABLE>
+
+</FORM>
  
 <BR>
 <?php if ($errors || $msgs) {  ?>
@@ -206,6 +230,8 @@ Rules</a> |
 </TABLE>
 
 <BR>
+
+<FORM ACTION="<?php print AppSession::setUrl('vacation.php');?>" METHOD="post" NAME="thisVacation">
 
 <TABLE WIDTH="100%" CELLPADDING="0" BORDER="0" CELLSPACING="1">
 <TR>
