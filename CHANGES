@@ -6,6 +6,7 @@ Smartsieve - Changes file
    strip colons from end of mail header field.
 * Crypt.php:
    only use libmcrypt if function mcrypt_module_open exists (libmcrypt >= 2.4.x).
+* now supports libmcrypt for encryption.
 
 30 April 2003 S Grier
 * login.php:
