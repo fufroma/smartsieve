@@ -87,11 +87,25 @@ REQUIREMENTS
    for more on this.
 
 5. SmartSieve requires a cryptography library to do encryption. 
-   SmartSieve currently supports the PHP Extension and Application 
-   Repository (PEAR) Crypt_Rc4 and Crypt_HCEMD5 libraries for this 
-   purpose. The Crypt_Rc4 library is not included in any PHP 
-   distrobutions, but is available from the PEAR repository. You can 
-   install it with something like:
+   SmartSieve supports PHP's interface to the libmcrypt library. To 
+   have SmartSieve use this you will need to install libmcrypt version 
+   2.4.x or above. You can get this from:
+
+     http://mcrypt.hellug.gr/
+
+   Remember to build libmcrypt with the --disable-posix-threads option.
+   If you are installing a version newer than 2.5.4 you will need the 
+   --enable-dynamic-loading configure option.
+
+   You will then need to build PHP with the configure option:
+
+     --with-mcrypt=/libmcrypt/install/dir
+   
+   SmartSieve also supports the PHP Extension and Application Repository 
+   (PEAR) Crypt_Rc4 and Crypt_HCEMD5 libraries for encryption purposees. 
+   The Crypt_Rc4 library is not included in any PHP distrobutions, but 
+   is available from the PEAR repository. You can install it with 
+   something like:
 
      /usr/local/php/bin/pear install Crypt_Rc4
 
