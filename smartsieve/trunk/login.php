@@ -54,7 +54,7 @@ if (isset($HTTP_POST_VARS['sieveuid']) && isset($HTTP_POST_VARS['passwd'])) {
 
     if (!$sieve->writeToLog("FAILED LOGIN: " . $sieve->user . ' [' .
 	$GLOBALS['HTTP_SERVER_VARS']['REMOTE_ADDR'] . '] {' .
-	$sieve->server . ':' . $sieve->sieveport . '}', LOG_ERR))
+	$sieve->server . ':' . $sieve->sieveport . '}: ' . $sieve->connection->errstr, LOG_ERR))
       print "ERROR: " . $sieve->errstr . "<BR>";
     header('Location: ' . AppSession::setUrl('login.php?reason=failure'),true);
     exit;

@@ -2,6 +2,7 @@ Smartsieve - Changes file
 -------------------------
 
 27 Nov 2002 S Grier
+* login.php: include returned error in log message for failed login.
 * numerous changes to lib/sieve.lib: 
   - added class var declarations.
   - renamed $capabilities as $extensions.
