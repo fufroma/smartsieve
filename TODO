@@ -2,6 +2,7 @@ SmartSieve - TODO
 
 
 Re-do custom rule to make it clearer, and don't set other conditions.
+Fix non-ascii mailbox names. These should go as mUTF7 to the script.
 
 TODO for 0.6
 
@@ -21,7 +22,6 @@ TODO for 0.6
 * make checkRule() checkVacation() more generic and call from updateScript()
 * include file/line number to log messages
 * make sure unixhierarchysep is handled properly
-* Convert script data from UTF-8 into charset of current locale and visa-versa
 
 TODO for 0.7.0
 

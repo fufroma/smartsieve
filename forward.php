@@ -171,13 +171,16 @@ function getRulePOSTValues ($ruleID)
     $rule = array();
     $rule['priority'] = SmartSieve::getFormValue('priority');
     $rule['status'] = SmartSieve::getFormValue('status');
-    $rule['from'] = SmartSieve::getFormValue('from');
-    $rule['to'] = SmartSieve::getFormValue('to');
-    $rule['subject'] = SmartSieve::getFormValue('subject');
+    $rule['from'] = SmartSieve::utf8Encode(SmartSieve::getFormValue('from'));
+    $rule['to'] = SmartSieve::utf8Encode(SmartSieve::getFormValue('to'));
+    $rule['subject'] = SmartSieve::utf8Encode(SmartSieve::getFormValue('subject'));
     $rule['action'] = SmartSieve::getFormValue('action');
     $rule['action_arg'] = SmartSieve::getFormValue($rule['action']);
-    $rule['field'] = SmartSieve::getFormValue('field');
-    $rule['field_val'] = SmartSieve::getFormValue('field_val');
+    if ($rule['action'] != 'folder') {
+        $rule['action_arg'] = SmartSieve::utf8Encode($rule['action_arg']);
+    }
+    $rule['field'] = SmartSieve::utf8Encode(SmartSieve::getFormValue('field'));
+    $rule['field_val'] = SmartSieve::utf8Encode(SmartSieve::getFormValue('field_val'));
     $rule['size'] = SmartSieve::getFormValue('size');
     $rule['continue'] = 0;
     if (SmartSieve::getFormValue('continue')) $rule['continue'] = 1;

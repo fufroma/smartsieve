@@ -33,11 +33,11 @@ $vacation = array();   /* $script->vacation. */
  * the vacation values from POST data. if not, use $script->vacation.
  */
 if (isset($_POST['submitted'])) {
-    $address = SmartSieve::getFormValue('addresses');
+    $address = SmartSieve::utf8Encode(SmartSieve::getFormValue('addresses'));
     $address = preg_replace("/\"|\\\/","",$address);
     $addresses = array();
     $addresses = preg_split("/\s*,\s*|\s+/",$address);
-    $vacation['text'] = SmartSieve::getFormValue('text');
+    $vacation['text'] = SmartSieve::utf8Encode(SmartSieve::getFormValue('text'));
     $vacation['days'] = SmartSieve::getFormValue('days');
     $vacation['addresses'] = $addresses;
     $vacation['status'] = SmartSieve::getFormValue('status');

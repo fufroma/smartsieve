@@ -33,7 +33,7 @@
         <?php echo SmartSieve::text('Forwarding Address:');?> 
       </TD>
       <TD>
-        <INPUT TYPE="text" NAME="address" VALUE="<?php echo (isset($rule['action_arg']) && $rule['action'] == 'address') ? $rule['action_arg'] : '';?>" SIZE="40">
+        <INPUT TYPE="text" NAME="address" VALUE="<?php echo (isset($rule['action_arg']) && $rule['action'] == 'address') ? SmartSieve::utf8Decode($rule['action_arg']) : '';?>" SIZE="40">
       </TD>
     </TR>
     <TR>

@@ -122,7 +122,7 @@ switch ($action) {
         break;
 
     case ('save'):
-        $script->script = SmartSieve::getFormValue('text');
+        $script->script = SmartSieve::utf8Encode(SmartSieve::getFormValue('text'));
         if (!$script->updateScript()) {
             SmartSieve::setError(SmartSieve::text('ERROR: ') . $script->errstr);
             $logmsg = sprintf('failed writing script "%s" for %s: %s',
@@ -190,7 +190,7 @@ if ($ret === false) {
 if (isset($_POST['text'])) {
     $stext = SmartSieve::getFormValue('text');
 } else {
-    $stext = Script::removeEncoding();
+    $stext = SmartSieve::utf8Decode(Script::removeEncoding());
 }
 
 if ($script->mode == 'advanced'){
@@ -225,7 +225,7 @@ function buildRule($rule) {
     if ($rule['anyof']) $andor = ' ' . SmartSieve::text('OR') . ' ';
 
     if (preg_match("/custom/i",$rule['action'])){
-        return '[' . SmartSieve::text('Custom Rule') . '] ' . $rule['action_arg'];
+        return '[' . SmartSieve::text('Custom Rule') . '] ' . SmartSieve::utf8Decode($rule['action_arg']);
     }
 
     $complete = SmartSieve::text('IF') . ' ';
@@ -233,25 +233,25 @@ function buildRule($rule) {
 
     if ($rule['from']) {
         $match = setMatchType($rule['from'],$rule['regexp']);
-	$complete .= "'From:' " . $match . " '" . $rule['from'] . "'";
+	$complete .= "'From:' " . $match . " '" . SmartSieve::utf8Decode($rule['from']) . "'";
 	$started = 1;
     }
     if ($rule['to']) {
 	if ($started) $complete .= $andor;
         $match = setMatchType($rule['to'],$rule['regexp']);
-	$complete .= "'To:' " . $match . " '" . $rule['to'] . "'";
+	$complete .= "'To:' " . $match . " '" . SmartSieve::utf8Decode($rule['to']) . "'";
 	$started = 1;
     }
     if ($rule['subject']) {
 	if ($started) $complete .= $andor;
         $match = setMatchType($rule['subject'],$rule['regexp']);
-	$complete .= "'Subject:' " . $match . " '" . $rule['subject'] . "'";
+	$complete .= "'Subject:' " . $match . " '" . SmartSieve::utf8Decode($rule['subject']) . "'";
 	$started = 1;
     }
     if ($rule['field'] && $rule['field_val']) {
 	if ($started) $complete .= $andor;
         $match = setMatchType($rule['field_val'],$rule['regexp']);
-	$complete .= "'" . $rule['field'] . "' " . $match . " '" . $rule['field_val'] . "'";
+	$complete .= "'" . SmartSieve::utf8Decode($rule['field']) . "' " . $match . " '" . SmartSieve::utf8Decode($rule['field_val']) . "'";
 	$started = 1;
     }
     if (isset($rule['size']) && $rule['size'] !== '') {
@@ -265,9 +265,9 @@ function buildRule($rule) {
     if (preg_match("/folder/i",$rule['action']))
 	$complete .= SmartSieve::text("file into '%s';",array($rule['action_arg']));
     if (preg_match("/reject/i",$rule['action']))
-	$complete .= SmartSieve::text("reject '%s';",array($rule['action_arg']));
+	$complete .= SmartSieve::text("reject '%s';",array(SmartSieve::utf8Decode($rule['action_arg'])));
     if (preg_match("/address/i",$rule['action']))
-        $complete .= SmartSieve::text("forward to '%s';",array($rule['action_arg']));
+        $complete .= SmartSieve::text("forward to '%s';",array(SmartSieve::utf8Decode($rule['action_arg'])));
     if (preg_match("/discard/i",$rule['action']))
         $complete .= SmartSieve::text("discard;");
     if ($rule['continue']) $complete .= " [".SmartSieve::text('Continue')."]";
@@ -288,14 +288,14 @@ function buildVacationString()
         $first = true;
         foreach ($vacation['addresses'] as $addr){
             if (!$first) $vacation_str .= ', ';
-            $vacation_str .= $addr;
+            $vacation_str .= SmartSieve::utf8Decode($addr);
             $first = false;
         }
     }
     if (!empty($vacation['days'])){
         $vacation_str .= ' ' . SmartSieve::text("every %s days",array($vacation['days']));
     }
-    $vacation_str .= ' ' . SmartSieve::text('with message "%s"',array($vacation['text']));
+    $vacation_str .= ' ' . SmartSieve::text('with message "%s"',array(SmartSieve::utf8Decode($vacation['text'])));
     return htmlspecialchars($vacation_str);
 }
 
