@@ -28,6 +28,7 @@ TODO:
   strip_tags().
 - config options for other sieve rule options (forward, reject etc).
 - improve sieve.lib:
+    - fix socket hangs and timeouts in read().
     - do something with 'NO' responses, pehaps getError function.
     - add support for other sasl mechanisms.
     - add ssl socket support, either with the sieve starttls command, 

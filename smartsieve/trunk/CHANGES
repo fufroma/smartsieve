@@ -1,6 +1,12 @@
 Smartsieve - Changes file
 -------------------------
 
+16 April 2003 S Grier
+* sieve.lib:
+ - fixed bug in read(). no longer returns $buffer if socket_get_status() 
+   reports no bytes left in the read buffer, as read() may read them faster 
+   than they arrive. was causing lines to be broken, and rules to be lost.
+
 10 April 2003 S Grier
 * vacation.php:
  - make $script a reference, to fix bug similar to bug #717615 in rule.php.
