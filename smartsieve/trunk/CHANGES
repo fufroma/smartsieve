@@ -1,6 +1,11 @@
 Smartsieve - Changes file
 -------------------------
 
+04 July 2003 S Grier
+* added support for the DIGEST-MD5 sasl auth mechanism. based on Scott 
+  Russell's patch for sieve-php.lib, and RFC 2831.
+  Note: this is completely untested.
+
 20 June 2003 S Grier
 * sieve.lib:
   - abstracted SASL authenticate command into new _authenticate() function. 
