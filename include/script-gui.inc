@@ -1,3 +1,5 @@
+<FORM ACTION="<?php print AppSession::setUrl('main.php');?>" METHOD="post" NAME="rules">
+
 <TABLE WIDTH="100%" CELLPADDING="0" BORDER="0" CELLSPACING="0">
 <TR>
   <TD CLASS="main">
@@ -130,4 +132,6 @@ if ($script->vacation){
 
 <INPUT TYPE="hidden" NAME="action" VALUE="" >
 <INPUT TYPE="hidden" NAME="rindex" VALUE="" >
+
+</FORM>
 
