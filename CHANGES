@@ -1,6 +1,19 @@
 Smartsieve - Changes file
 -------------------------
 
+04 June 2004 S Grier
+* Replace long predefined arrays (HTTP_*_VARS) with superglobals. Requires php > 4.1.
+* Replace $errors and $msgs arrays with $_SESSION['errors'] and $_SESSION['notoces'].
+  Added SmartSieve::setError() and SmartSieve::setNotice() for using these arrays.
+* Use register_shutdown_function to make sure we always logout cleanly.
+* Use new Managesieve class instead of SieveSession. We make the managesieve object 
+  global rather than owned by the $sieve object.
+* Drop AppSession class. Move getScriptList(), getActiveScript(), getMailboxList(), 
+  scriptExists() to class SmartSieve.  We should now only login once per page click.
+* Added SmartSieve::handleReferrals() to cope with managesieve referrals.
+* Added SmartSieve::setWorkingScript(). Can now set working script from anywhere.
+* Call setWorkingScript when renaming or deleting the working script.
+
 01 June 2004 S Grier
 * Move writeToLog to SmartSieve class.
 * Added setSession, authenticate and close functions to SmartSieve class to replace 

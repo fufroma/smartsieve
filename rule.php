@@ -9,7 +9,7 @@
 
 
 require './conf/config.php';
-require "$default->lib_dir/sieve.lib";
+require "$default->lib_dir/Managesieve.php";
 require "$default->lib_dir/SmartSieve.lib";
 
 ini_set('session.use_trans_sid', 0);
@@ -17,38 +17,28 @@ session_set_cookie_params(0, $default->cookie_path, $default->cookie_domain);
 session_name($default->session_name);
 @session_start();
 
-$errors = array();
-$msgs = array();
+$smartsieve = &$_SESSION['smartsieve'];
+$script = &$_SESSION['scripts'][$_SESSION['smartsieve']['workingScript']];
 
-$sieve = &$GLOBALS['HTTP_SESSION_VARS']['sieve'];
-$scripts = &$GLOBALS['HTTP_SESSION_VARS']['scripts'];
-$script = &$scripts[$sieve->workingscript];
-
-// if a session does not exist, go to login page
-if (!is_object($sieve) || !$sieve->authenticate()) {
-	header('Location: ' . AppSession::setUrl('login.php'),true);
-	exit;
-}
-
-// should have a valid session at this point
-
-// get the list of mailboxes for this user.
-// we will need it below for file into: select box.
-if (!$sieve->mboxlist){
-  if (!$sieve->retrieveMailboxList()){
-    array_push($errors, SmartSieve::text('ERROR: ') . $sieve->errstr);
-    $sieve->writeToLog("ERROR: " . $sieve->errstr, LOG_ERR);
-  }
-}
-
-// open sieve connection
-if (!$sieve->openSieveSession()) {
-    echo SmartSieve::text("ERROR: ") . $sieve->errstr . "<BR>\n";
-    $sieve->writeToLog('ERROR: openSieveSession failed for ' . $sieve->authz . 
-        ': ' . $sieve->errstr, LOG_ERR);
+// If a session does not exist, redirect to login page.
+if (SmartSieve::authenticate() !== true) {
+    header('Location: ' . AppSession::setUrl('login.php'),true);
     exit;
 }
 
+// Get the list of mailboxes for this user.
+// Set it in the session so we only do this once per login.
+if (!isset($_SESSION['smartsieve']['mailboxes'])) {
+    $_SESSION['smartsieve']['mailboxes'] = array();
+    $mboxes = SmartSieve::getMailboxList();
+    if (is_array($mboxes)) {
+        $_SESSION['smartsieve']['mailboxes'] = $mboxes;
+    } else {
+        SmartSieve::setError(SmartSieve::text('ERROR: ') . $mboxes);
+        SmartSieve::writeToLog(sprintf('failed getting mailbox list for %s from %s: %s', 
+            $_SESSION['smartsieve']['auth'], $_SESSION['smartsieve']['server'], $mboxes), LOG_ERR);
+    }
+}
 
 $ruleID = null;   /* rule number. */
 $rule = null;     /* sieve rule $script->rules[$ruleID]. */
@@ -58,14 +48,15 @@ $rule = null;     /* sieve rule $script->rules[$ruleID]. */
  * $ruleID will be set in GET data. if $ruleID not set in POST or GET, or 
  * if $script->rules[$ruleID] does not exist, this will be a new rule page.
  */
-if (isset($GLOBALS['HTTP_POST_VARS']['ruleID'])) {
+if (isset($_POST['ruleID'])) {
     $ruleID = AppSession::getFormValue('ruleID');
     $rule = getRulePOSTValues($ruleID);
 }
-elseif (isset($GLOBALS['HTTP_GET_VARS']['ruleID'])) {
+elseif (isset($_GET['ruleID'])) {
     $ruleID = AppSession::getFormValue('ruleID');
-    if (isset($script->rules[$ruleID]))
+    if (isset($script->rules[$ruleID])) {
         $rule = $script->rules[$ruleID];
+    }
 }
 
 /* save rule changes if requested. */
@@ -77,22 +68,20 @@ if ($action == 'enable')
     if (isset($script->rules[$ruleID])){
         $script->rules[$ruleID]['status'] = 'ENABLED';
 	// write and save the new script.
-	if (!$script->updateScript($sieve->connection)) {
-	    array_push($errors, SmartSieve::text('ERROR: ') . $script->errstr);
-	    $sieve->writeToLog('ERROR: ' . $script->errstr, LOG_ERR);
-	}
-	else {
-	    array_push($msgs, SmartSieve::text('rule successfully enabled.'));
-            if ($default->return_after_update){
+	if (!$script->updateScript()) {
+            SmartSieve::setError(SmartSieve::text('ERROR: ') . $script->errstr);
+            SmartSieve::writeToLog(sprintf('failed writing script "%s" for %s: %s',
+                $script->name, $_SESSION['smartsieve']['authz'], $script->errstr), LOG_ERR);
+	} else {
+            SmartSieve::setNotice(SmartSieve::text('rule successfully enabled.'));
+            if (SmartSieve::getConf('return_after_update') === true) {
                 header('Location: ' . AppSession::setUrl('main.php'),true);
                 exit;
             }
             $rule['status'] = 'ENABLED';
 	}
-    }
-    else {
-        array_push($errors, SmartSieve::text('ERROR: rule does not exist.'));
-        $sieve->writeToLog('ERROR: rule does not exist.', LOG_ERR);
+    } else {
+        SmartSieve::setError(SmartSieve::text('ERROR: rule does not exist.'));
     }
 }
 if ($action == 'disable') 
@@ -100,22 +89,20 @@ if ($action == 'disable')
     if (isset($script->rules[$ruleID])){
         $script->rules[$ruleID]['status'] = 'DISABLED';
 	// write and save the new script.
-	if (!$script->updateScript($sieve->connection)) {
-	    array_push($errors, SmartSieve::text('ERROR: ') . $script->errstr);
-	    $sieve->writeToLog('ERROR: ' . $script->errstr, LOG_ERR);
-	}
-	else {
-	    array_push($msgs, SmartSieve::text('rule successfully disabled.'));
-            if ($default->return_after_update){
+	if (!$script->updateScript()) {
+            SmartSieve::setError(SmartSieve::text('ERROR: ') . $script->errstr);
+            SmartSieve::writeToLog(sprintf('failed writing script "%s" for %s: %s',
+                $script->name, $_SESSION['smartsieve']['authz'], $script->errstr), LOG_ERR);
+	} else {
+            SmartSieve::setNotice(SmartSieve::text('rule successfully disabled.'));
+            if (SmartSieve::getConf('return_after_update') === true) {
                 header('Location: ' . AppSession::setUrl('main.php'),true);
                 exit;
             }
             $rule['status'] = 'DISABLED';
 	}
-    }
-    else {
-        array_push($errors, SmartSieve::text('ERROR: rule does not exist.'));
-        $sieve->writeToLog('ERROR: rule does not exist.', LOG_ERR);
+    } else {
+        SmartSieve::setError(SmartSieve::text('ERROR: rule does not exist.'));
     }
 }
 if ($action == 'delete') 
@@ -123,45 +110,46 @@ if ($action == 'delete')
     if (isset($script->rules[$ruleID])){
         $script->rules[$ruleID]['status'] = 'DELETED';
 	// write and save the new script.
-	if (!$script->updateScript($sieve->connection)) {
-	    array_push($errors, SmartSieve::text('ERROR: ') . $script->errstr);
-	    $sieve->writeToLog('ERROR: ' . $script->errstr, LOG_ERR);
-	}
-	else {
+	if (!$script->updateScript()) {
+            SmartSieve::setError(SmartSieve::text('ERROR: ') . $script->errstr);
+            SmartSieve::writeToLog(sprintf('failed writing script "%s" for %s: %s',
+                $script->name, $_SESSION['smartsieve']['authz'], $script->errstr), LOG_ERR);
+	} else {
+            SmartSieve::setNotice(SmartSieve::text('Rule successfully deleted.'));
 	    header('Location: ' . AppSession::setUrl('main.php'),true);
 	    exit;
 	}
+    } else {
+        SmartSieve::setError(SmartSieve::text('ERROR: rule does not exist.'));
     }
-    array_push($errors, SmartSieve::text('ERROR: rule does not exist.'));
-    $sieve->writeToLog('ERROR: rule does not exist.', LOG_ERR);
 }
 if ($action == 'save') 
 {
     $ret = checkRule($rule);
-    if ($ret == 'OK'){    /* rule passed sanity checks */
+    if ($ret === true){    /* rule passed sanity checks */
 
         // if existing rule, update. add new if not.
 	if (isset($script->rules[$ruleID])){
 	    $script->rules[$ruleID] = $rule;
-	}
-	else $ruleID = array_push($script->rules, $rule) - 1;
-
+	} else {
+	    $ruleID = array_push($script->rules, $rule) - 1;
+        }
 	// write and save the new script.
-	if (!$script->updateScript($sieve->connection)) {
-	    array_push($errors, SmartSieve::text('ERROR: ') . $script->errstr);
-	    $sieve->writeToLog('ERROR: ' . $script->errstr, LOG_ERR);
-	}
-	else {
-            array_push($msgs, SmartSieve::text('your changes have been successfully saved.'));
-            if ($default->return_after_update){
+	if (!$script->updateScript()) {
+            SmartSieve::setError(SmartSieve::text('ERROR: ') . $script->errstr);
+            SmartSieve::writeToLog(sprintf('failed writing script "%s" for %s: %s',
+                $script->name, $_SESSION['smartsieve']['authz'], $script->errstr), LOG_ERR);
+	} else {
+            SmartSieve::setNotice(SmartSieve::text('your changes have been successfully saved.'));
+            if (SmartSieve::getConf('return_after_update') === true) {
 	        header('Location: ' . AppSession::setUrl('main.php'),true);
 	        exit;
             }
 	}
 
-    } # if checkRule()
-    else
-        array_push($errors, SmartSieve::text('ERROR: ') . $ret);
+    } else {
+        SmartSieve::setError(SmartSieve::text('ERROR: ') . $ret);
+    }
 }
 
 
@@ -179,7 +167,7 @@ include $default->include_dir . '/menu.inc';
 include $default->include_dir . '/common_status.inc';
 include $default->include_dir . '/rule.inc';
 
-$sieve->closeSieveSession();
+SmartSieve::close();
 
 
 /* if rule values supplied from form on rule.php, get rule values 
@@ -220,24 +208,23 @@ function getRulePOSTValues ($ruleID)
 }
 
 
-/* basic sanity checks on rule.
- * any value returned will be an error msg.
- */
-function checkRule(&$rule) {
-    global $default;
-
+function checkRule(&$rule)
+{
     /* check values do not exceed acceptible sizes. */
     $conds = array('from','to','subject','field','field_val');
     foreach ($conds as $cond) {
-        if (strlen($rule[$cond]) > $default->max_field_chars)
-	    return SmartSieve::text('the condition value you supplied is too long. it should not exceed %d characters.', array($default->max_field_chars));
+        if (strlen($rule[$cond]) > SmartSieve::getConf('max_field_chars', 50)) {
+	    return SmartSieve::text('the condition value you supplied is too long. it should not exceed %d characters.', array(SmartSieve::getConf('max_field_chars', 50)));
+        }
     }
     if ($rule['action'] == 'address' &&
-        strlen($rule['action_arg']) > $default->max_field_chars)
-	    return SmartSieve::text('the forward address you supplied is too long. it should not exceed %d characters.', array($default->max_field_chars));
+        strlen($rule['action_arg']) > SmartSieve::getConf('max_field_chars', 50)) {
+	return SmartSieve::text('the forward address you supplied is too long. it should not exceed %d characters.', array(SmartSieve::getConf('max_field_chars', 50)));
+    }
     if ($rule['action'] == 'reject' &&
-        strlen($rule['action_arg']) > $default->max_textbox_chars)
-	    return SmartSieve::text('your reject message is too long. it should not exceed %d characters.', array($default->max_textbox_chars));
+        strlen($rule['action_arg']) > SmartSieve::getConf('max_textbox_chars', 500)) {
+        return SmartSieve::text('your reject message is too long. it should not exceed %d characters.', array(SmartSieve::getConf('max_textbox_chars', 500)));
+    }
 
     if ($rule['field'] && !$rule['field_val'])
         return SmartSieve::text("you must supply a value for the field \"%s\".", array($rule['field']));
@@ -259,7 +246,7 @@ function checkRule(&$rule) {
     if ($rule['action'] == 'folder')
         $rule['action_arg'] = SmartSieve::getMailboxName($rule['action_arg']);
 
-    return 'OK';
+    return true;
 }
 
 

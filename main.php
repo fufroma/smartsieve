@@ -9,7 +9,7 @@
 
 
 require './conf/config.php';
-require "$default->lib_dir/sieve.lib";
+require "$default->lib_dir/Managesieve.php";
 require "$default->lib_dir/SmartSieve.lib";
 require "$default->config_dir/style.php";
 
@@ -18,57 +18,25 @@ session_set_cookie_params(0, $default->cookie_path, $default->cookie_domain);
 session_name($default->session_name);
 @session_start();
 
-$errors = array();
-$msgs = array();
+$smartsieve = &$_SESSION['smartsieve'];
 
-$sieve = &$GLOBALS['HTTP_SESSION_VARS']['sieve'];
-$scripts = &$GLOBALS['HTTP_SESSION_VARS']['scripts'];
-
-// if a session does not exist, go to login page
-if (!is_object($sieve) || !$sieve->authenticate()) {
-	header('Location: ' . AppSession::setUrl('login.php'),true);
-	exit;
-}
-
-// should have a valid session at this point
-
-// start sieve session, and get the rules via the script object
-if (!$sieve->openSieveSession()) {
-    echo SmartSieve::text("ERROR: ") . $sieve->errstr . "<BR>\n";
-    $sieve->writeToLog("ERROR: openSieveSession failed for " . $sieve->authz .
-	': ' . $sieve->errstr, LOG_ERR);
+// If a session does not exist, redirect to login page.
+if (SmartSieve::authenticate() !== true) {
+    header('Location: ' . AppSession::setUrl('login.php'),true);
     exit;
 }
 
-// if user has just logged in select which script to open.
-if (!$sieve->workingscript){
-    if (!$sieve->initialWorkingScript()){
-        $sieve->writeToLog('ERROR: ' . $sieve->errstr);
-        array_push($errors, SmartSieve::text('ERROR: ') . $sieve->errstr);
-    }
+// Change working script if requested.
+if (isset($_POST['script'])) {
+    SmartSieve::setWorkingScript(AppSession::getFormValue('script'));
 }
 
-// change working script if requested.
-if (isset($GLOBALS['HTTP_POST_VARS']['script'])) {
-    $sieve->workingscript = AppSession::getFormValue('script');
-}
+$script = &$_SESSION['scripts'][$_SESSION['smartsieve']['workingScript']];
 
-// create script object if doesn't already exist.
-if (!isset($scripts[$sieve->workingscript]) || 
-    !is_object($scripts[$sieve->workingscript])){
-    $scripts[$sieve->workingscript] = new Script($sieve->workingscript);
-    if (!is_object($scripts[$sieve->workingscript])){
-        writeToLog('main.php: failed to create script object ' . $sieve->workingscript);
-        array_push($errors, SmartSieve::text("failed to create script object %s",array($sieve->workingscript)));
-    }
-}
-
-$script = &$scripts[$sieve->workingscript];
-
-if (!$script->retrieveRules($sieve->connection)) {
-    array_push($errors, SmartSieve::text('ERROR: ') . $script->errstr);
-    $sieve->writeToLog("ERROR: retrieveRules failed for " . $sieve->authz .
-	": " . $script->errstr, LOG_ERR);
+if (!$script->retrieveRules()) {
+    SmartSieve::setError(SmartSieve::text('ERROR: ') . $script->errstr);
+    SmartSieve::writeToLog(sprintf('failed reading rules from script "%s" for %s: %s', 
+        $script->name, $_SESSION['smartsieve']['authz'], $script->errstr), LOG_ERR);
 }
 
 /* do rule status change if requested. */
@@ -126,17 +94,17 @@ if ($action) {
         }
     }
     /* write these changes. */
-    if (!$script->updateScript($sieve->connection)) {
-	array_push($errors, SmartSieve::text('ERROR: ') . $script->errstr);
-	$sieve->writeToLog('ERROR: updateScript failed for ' . $sieve->authz
-	    . ': ' . $script->errstr, LOG_ERR);
+    if (!$script->updateScript()) {
+        SmartSieve::setError(SmartSieve::text('ERROR: ') . $script->errstr);
+        SmartSieve::writeToLog(sprintf('failed writing script "%s" for %s: %s', 
+            $script->name, $_SESSION['smartsieve']['authz'], $script->errstr), LOG_ERR);
     }
     /* get the rules from the saved script again. */
     else {
-	if (!$script->retrieveRules($sieve->connection)) {
-	    array_push($errors, SmartSieve::text('ERROR: ') . $script->errstr);
-	    $sieve->writeToLog('ERROR: retrieveRules failed for ' . $sieve->authz
-	    	. ': ' . $script->errstr, LOG_ERR);
+	if (!$script->retrieveRules()) {
+            SmartSieve::setError(SmartSieve::text('ERROR: ') . $script->errstr);
+            SmartSieve::writeToLog(sprintf('failed reading rules from script "%s" for %s: %s',
+                $script->name, $_SESSION['smartsieve']['authz'], $script->errstr), LOG_ERR);
 	}
     }
 }
@@ -165,7 +133,7 @@ else {
     include $default->include_dir . '/script-gui.inc';
 }
 
-$sieve->closeSieveSession();
+SmartSieve::close();
 
 
 function buildRule($rule) {

@@ -25,10 +25,9 @@ class SmartSieve {
     * @param passwd string authentication password
     * @param authz string authorization user
     * @param server string server
-    * @param script string Sieve script to open
     * @return mixed boolean true on success, string error if not
     */
-    function setSession($auth, $passwd, $authz='', $server, $script=null)
+    function setSession($auth, $passwd, $authz='', $server)
     {
         global $default, $servers;
         if (empty($auth)) {
@@ -73,11 +72,8 @@ class SmartSieve {
         $key = Encrypt::generateKey();
         $smartsieve['passwd'] = Encrypt::encrypt($passwd, $key);
 
-        $smartsieve['lscript'] = $script;
-
         $_SESSION['smartsieve'] = $smartsieve;
 
-        register_shutdown_function(array('SmartSieve', 'close'));
         return true;
     }
 
@@ -99,16 +95,21 @@ class SmartSieve {
         $key = Encrypt::retrieveKey();
         $passwd = Encrypt::decrypt($smartsieve['passwd'], $key);
 
-        global $managesieve;
         $managesieve = new Managesieve();
         $ret = $managesieve->open($smartsieve['server'], $smartsieve['sieveport']);
         if ($ret !== true) {
-            return $managesieve->getError();
+            $err = $managesieve->getError();
+            $managesieve->close();
+            return $err;
         }
         $ret = $managesieve->authenticate($smartsieve['auth'], $passwd, $smartsieve['authz'], SmartSieve::getConf('sasl_mech'));
         if ($ret !== true) {
-            return $managesieve->getError();
+            $err = $managesieve->getError();
+            $managesieve->close();
+            return $err;
         }
+        $GLOBALS['managesieve'] = $managesieve;
+        register_shutdown_function(array('SmartSieve', 'close'));
         return true;
     }
 
@@ -132,7 +133,7 @@ class SmartSieve {
      */
     function getMailboxName($mbox)
     {
-        if ($GLOBALS['sieve']->alt_namespace){
+        if ($_SESSION['smartsieve']['alt_namespace']){
             if (preg_match("/^INBOX$/i", $mbox)){
                 # do nothing.
             }
@@ -141,11 +142,11 @@ class SmartSieve {
             }
             elseif (preg_match("/^user\./i", $mbox)){
                 $tmp = substr($mbox, 4);
-                $mbox = $GLOBALS['sieve']->namespace_user_prefix . $tmp;
+                $mbox = $_SESSION['smartsieve']['namespace_user_prefix'] . $tmp;
             }
             elseif (preg_match("/^shared\./i", $mbox)){
                 $tmp = substr($mbox, 6);
-                $mbox = $GLOBALS['sieve']->namespace_shared_prefix . $tmp;
+                $mbox = $_SESSION['smartsieve']['namespace_shared_prefix'] . $tmp;
             }
         }
         return $mbox;
@@ -303,18 +304,22 @@ class SmartSieve {
         return $utf7;
     }
 
-   /*
+   /**
     * Get the value of a config option. Returns the value of the setting 
     * or null if not set, thereby avoiding Undefined variable warnings.
+    *
+    * @param option string config option to get
+    * @param def    string default value
+    * @return mixed config value, possibly null
     */
-    function getConf($option)
+    function getConf($option, $def=null)
     {
         require_once "conf/config.php";
         global $default;
         if (isset($default->$option)) {
             return $default->$option;
         }
-        return null;
+        return $def;
     }
 
    /**
@@ -373,6 +378,216 @@ class SmartSieve {
         }
 
         return ($log->writetoLog($msg, $level)) ? true : $log->errstr;
+    }
+
+   /**
+    * Set an error notice message. If called without the msg parameter 
+    * this will return the current set of error messages.
+    *
+    * @param msg string the error message to set
+    * @return mixed boolean true or array of string messages
+    */
+    function setError($msg=null)
+    {
+        if (!isset($_SESSION['errors']) || !is_array($_SESSION['errors'])) {
+            $_SESSION['errors'] = array();
+        }
+        if ($msg === null) {
+            $errors = $_SESSION['errors'];
+            unset($_SESSION['errors']);
+            return $errors;
+        }
+        $_SESSION['errors'][] = $msg;
+        return true;
+    }
+
+   /**
+    * Set a notice message. If called without the msg parameter
+    * this will return the current set of notices.
+    *
+    * @param msg string the message to set
+    * @return mixed boolean true or array of string messages
+    */
+    function setNotice($msg=null)
+    {
+        if (!isset($_SESSION['notices']) || !is_array($_SESSION['notices'])) {
+            $_SESSION['notices'] = array();
+        }
+        if ($msg === null) {
+            $notices = $_SESSION['notices'];
+            unset($_SESSION['notices']);
+            return $notices;
+        }
+        $_SESSION['notices'][] = $msg;
+        return true;
+    }
+
+   /**
+    * Get the list of Sieve scripts on the server for the current user.
+    *
+    * @return mixed array of scripts if success, or string error if not
+    */
+    function getScriptList()
+    {
+        if (!isset($GLOBALS['managesieve']) || !is_object($GLOBALS['managesieve'])) {
+            $ret = SmartSieve::authenticate();
+            if ($ret !== true) {
+                return $ret;
+            }
+        }
+        global $managesieve;
+        $slist = $managesieve->listScripts();
+        if ($slist === false) {
+            $resp = $managesieve->getLastResponse();
+            if ($resp['state'] === F_BYE) {
+                SmartSieve::handleReferral();
+                return Smartsieve::getScriptList();
+            }
+            return $managesieve->getError();
+        }
+        return $slist;
+    }
+
+   /**
+    * Get the name of the active script.
+    *
+    * @return mixed string name of active script, or null if none active
+    */
+    function getActiveScript()
+    {
+        $slist = SmartSieve::getScriptList();
+        if (!is_array($slist)) {
+            return "getActiveScript: $slist";
+        }
+        return array_search(true, $slist, true);
+    }
+
+   /**
+    * Check if script exists on the server.
+    *
+    * @param name string name of script
+    * @return boolean true if script exists on server, false if not
+    */
+    function scriptExists($name)
+    {
+        $slist = array_keys(SmartSieve::getScriptList());
+        return in_array($name, $slist, true);
+    }
+
+   /**
+    * Handle managesieve referrals.
+    *
+    * @return boolean true on success, or void redirect if not
+    */
+    function handleReferral()
+    {
+        global $managesieve;
+        $resp = $managesieve->getLastResponse();
+        if ($resp['state'] === F_BYE && $resp['code'] === RC_REFERRAL) {
+            $rserver = substr($resp['code_args'], 8);
+            $managesieve->close();
+            $ret = $managesieve->open($rserver, $_SESSION['smartsieve']['sieveport']);
+            if ($ret === true) {
+                require_once SmartSieve::getConf('lib_dir') . "/Crypt.php";
+                $key = Encrypt::retrieveKey();
+                $passwd = Encrypt::decrypt($_SESSION['smartsieve']['passwd'], $key);
+                $ret = $managesieve->authenticate($_SESSION['smartsieve']['auth'], $passwd, 
+                    $_SESSION['smartsieve']['authz'], SmartSieve::getConf('sasl_mech'));
+                if ($ret === true) {
+                    SmartSieve::setNotice(SmartSieve::text('Referred to server "%s"', $rserver));
+                    $_SESSION['smartsieve']['server'] = $rserver;
+                    return true;
+                }
+            }
+            SmartSieve::writeToLog('handleReferral: ' . $managesieve->getError(), LOG_ERR);
+            SmartSieve::close();
+            header('Location: ' . AppSession::setUrl('login.php?reason=failure'),true);
+            exit;
+        }
+        return true;
+    }
+
+   /**
+    * Set the script to edit. Select a script and set the script object for it. 
+    * If allow_multi_scripts if false this will always set the default script. 
+    * Otherwise, if passed the script parameter this will set that as the working 
+    * script. If not, it will set the currently active script or the first from the 
+    * current script list, or the default script name if none exist on the server.
+    *
+    * @param script string the script to edit
+    * @return void
+    */
+    function setWorkingScript($script=null)
+    {
+        // If not allowing multiple scripts select the default.
+        if (SmartSieve::getConf('allow_multi_scripts') === false) {
+            $script = SmartSieve::getConf('scriptfile', 'smartsieve');
+        }
+
+        if (empty($script)) {
+            $slist = SmartSieve::getScriptList();
+            if (is_array($slist)) {
+                $active = array_search(true, $slist, true);
+                $slist = array_keys($slist);
+                // If a script is active, select that.
+                if ($active !== null && $active !== false) {
+                    $script = $active;
+                } elseif (count($slist) > 0) {
+                    // Select the first from the list.
+                    $script = $slist[0];
+                }
+            } else {
+                SmartSieve::setError(SmartSieve::text('Failed reading script list: %s', $slist));
+                SmartSieve::writeToLog("setWorkingScript: failed reading script list: $slist", LOG_ERR);
+            }
+        }
+        // If all else fails, select the default.
+        if (empty($script)) {
+            $script = SmartSieve::getConf('scriptfile', 'smartsieve');
+        }
+        $_SESSION['smartsieve']['workingScript'] = $script;
+
+        // Set the script object if not already set.
+        if (!isset($_SESSION['scripts'][$script]) || !is_object($_SESSION['scripts'][$script])) {
+            $_SESSION['scripts'][$script] = new Script($script);
+        }
+    }
+
+   /**
+    * Get the list of mailboxes for the current user.
+    *
+    * @return array of mailbox names, or string error on failure
+    */
+    function getMailboxList()
+    {
+        require_once SmartSieve::getConf('lib_dir') . "/Crypt.php";
+
+        $connstr = sprintf('{%s:%s}INBOX', $_SESSION['smartsieve']['server'], $_SESSION['smartsieve']['imapport']);
+        // get encrypted passwd.
+        $key = Encrypt::retrieveKey();
+        $passwd = Encrypt::decrypt($_SESSION['smartsieve']['passwd'], $key);
+        $conn = imap_open($connstr, $_SESSION['smartsieve']['auth'], $passwd, OP_HALFOPEN);
+        if (!$conn){
+            return 'getMailboxList: imap_open failed: ' . imap_last_error();
+        }
+
+        $mboxlist = array();
+        $mboxes = array();
+        $connstr = sprintf('{%s:%s}', $_SESSION['smartsieve']['server'], $_SESSION['smartsieve']['imapport']);
+        $mboxes = imap_listmailbox($conn,$connstr,"*");
+
+        if (!is_array($mboxes) || count($mboxes) == 0) {
+            return 'getMailboxList: imap_listmailbox failed: ' . imap_last_error();
+        }
+
+        foreach ($mboxes as $mbox) {
+            $mbox = SmartSieve::mutf7Decode($mbox);
+            $label = str_replace($connstr, '', $mbox);
+            $mboxlist[] = $label;
+        }
+
+        imap_close($conn);
+        return $mboxlist;
     }
 
 
@@ -662,10 +877,12 @@ class AppSession {
     function scriptExists ($script) {
         $exists = false;
 
-        if (!AppSession::doListScripts())
+        $slist = SmartSieve::getScriptList();
+        if (!is_array($slist)) {
             return false;
+        }
 
-        foreach ($GLOBALS['HTTP_SESSION_VARS']['sieve']->scriptlist as $s){
+        foreach (array_keys($slist) as $s) {
             if ($s == $script)
                 $exists = true;
         }
@@ -690,7 +907,7 @@ class AppSession {
     * Update script list in response to a kick.
     */
     function doListScripts () {
-        return count($GLOBALS['HTTP_SESSION_VARS']['sieve']->listScripts());
+        return count(SmartSieve::getScriptList());
     }
 
 
@@ -869,8 +1086,9 @@ class Script {
 
 
   // get sieve script rules for this user
-  function retrieveRules ($connection) {
+  function retrieveRules () {
     global $HTTP_SESSION_VARS;
+    global $managesieve;
     $continuebit = 1;
     $sizebit = 2;
     $anyofbit = 4;
@@ -881,7 +1099,7 @@ class Script {
         $this->errstr = 'retrieveRules: no script name specified';
         return false;
     }
-    if (!is_object($connection)) {
+    if (!is_object($managesieve)) {
 	$this->errstr = "retrieveRules: no sieve session open";
 	return false;
     }
@@ -893,10 +1111,10 @@ class Script {
         return true;
     }
  
-    $resp = $connection->getscript($this->name);
+    $resp = $managesieve->getscript($this->name);
  
-    if ($connection->errstr) {
-	$this->errstr = 'retrieveRules: failed getting script: ' . $connection->errstr;
+    if ($resp === false) {
+	$this->errstr = 'retrieveRules: failed getting script: ' . $managesieve->getError();
         return false;
     }
 
@@ -989,8 +1207,9 @@ class Script {
  
  
   // update and save sieve script
-  function updateScript ($connection) {
-    global $HTTP_SESSION_VARS,$default,$sieve;
+  function updateScript () {
+    global $HTTP_SESSION_VARS,$default;
+    global $managesieve;
  
     $activerules = 0;
     $regexused = 0;
@@ -999,7 +1218,7 @@ class Script {
  
     include "$default->lib_dir/version.php";
  
-    if (!is_object($connection)) {
+    if (!is_object($managesieve)) {
 	$this->errstr = "updateScript: no sieve session open";
         return false;
     }
@@ -1188,16 +1407,16 @@ class Script {
 
 	if ((!is_array($vacation['addresses']) || empty($vacation['addresses'][0])) 
             && !empty($default->require_vacation_addresses)) {
-            // If $sieve->authz is fully-qualified, use that.
-            if (strpos($sieve->authz,'@') !== false) {
-                array_push($vacation['addresses'],$sieve->authz);
+            // If $smartsieve->authz is fully-qualified, use that.
+            if (strpos($_SESSION['smartsieve']['authz'],'@') !== false) {
+                $vacation['addresses'][] = $_SESSION['smartsieve']['authz'];
             } else {
-                if (empty($sieve->maildomain)){
+                if (empty($_SESSION['smartsieve']['maildomain'])){
                     $this->errstr = 'updateScript: no valid vacation addresses supplied';
                     return false;
                 }
-                $defaultaddr = $sieve->authz . '@' . $sieve->maildomain;
-                array_push($vacation['addresses'],$defaultaddr);
+                $defaultaddr = $_SESSION['smartsieve']['authz'] . '@' . $_SESSION['smartsieve']['maildomain'];
+                $vacation['addresses'][] = $defaultaddr;
             }
 	}
 
@@ -1225,8 +1444,8 @@ class Script {
     // generate the script head
  
     $newscripthead = "";
-    $newscripthead .= "#Mail filter rules for " . $sieve->authz . "\n";
-    $newscripthead .= '#Generated by ' . $sieve->auth . ' using SmartSieve ' . VERSION . ' ' . date($default->script_date_format);
+    $newscripthead .= "#Mail filter rules for " . $_SESSION['smartsieve']['authz'] . "\n";
+    $newscripthead .= '#Generated by ' . $_SESSION['smartsieve']['auth'] . ' using SmartSieve ' . VERSION . ' ' . date($default->script_date_format);
     $newscripthead .= "\n";
  
     $newrequire = '';
@@ -1283,29 +1502,21 @@ class Script {
     $this->script = $newscript;
  
     $scriptfile = $this->name;
-    if (!$connection->putscript($scriptfile,$newscript))
-    {
-	$this->errstr = 'updateScript: putscript failed: ' . $connection->errstr;
+    if (!$managesieve->putScript($scriptfile, $newscript)) {
+	$this->errstr = 'updateScript: putscript failed: ' . $managesieve->getError();
         return false;
     }
 
-    if (!AppSession::isActiveScript($this->name) &&
-        ($default->update_activate_script || 
-         !$default->allow_multi_scripts ||
-         AppSession::getNumScripts() == 0)) {
-	if (!$connection->activatescript($this->name)) {
-	    $this->errstr = 'updateScript: activatescript failed: ' . $connection->errstr;
+    if ($this->name === SmartSieve::getActiveScript() &&
+        (SmartSieve::getConf('update_activate_script') === true ||
+         SmartSieve::getConf('allow_multi_scripts') === false ||
+         count(SmartSieve::getScriptList()) === 0)) {
+	if (!$managesieve->setActive($this->name)) {
+	    $this->errstr = 'updateScript: activatescript failed: ' . $managesieve->getError();
 	    return false;
 	}
     }
 
-    /* prompt AppSession object to update its script list and active 
-     * script data in the light of any changes we may have made. */
-    if (!AppSession::doListScripts()) {
-        $this->errstr = 'updateScript: AppSession::doListScripts failed: ' . AppSession::getError();
-        return false;
-    }
- 
     return true;
   }
 
