@@ -3,6 +3,7 @@ Smartsieve - Changes file
 
 21 April 2004 S Grier
 * Don't add extra newline to end of script in SieveSession::getscript().
+* Rewrite rename action on scripts.php.
 
 16 April 2004 S Grier
 * Support proxy authorization. We now authenticate as $sieve->auth, and authorize 

@@ -1,7 +1,6 @@
 SmartSieve - TODO
 
 
-FIX serious bug in scripts.php rename function.
 Move charset value for each locale to conf/locales.php.
 
 TODO for 0.6
