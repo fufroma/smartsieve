@@ -19,7 +19,7 @@ $msgs = array();
 
 $sieve = &$GLOBALS['HTTP_SESSION_VARS']['sieve'];
 $scripts = &$GLOBALS['HTTP_SESSION_VARS']['scripts'];
-$script = $scripts[$sieve->workingscript];
+$script = &$scripts[$sieve->workingscript];
 
 // if a session does not exist, go to login page
 if (!is_object($sieve) || !$sieve->authenticate()) {
@@ -78,7 +78,7 @@ $action = AppSession::getFormValue('thisAction');
 
 if ($action == 'enable') 
 {
-    if ($script->rules[$ruleID]){
+    if (isset($script->rules[$ruleID])){
         $script->rules[$ruleID]['status'] = 'ENABLED';
 	// write and save the new script.
 	if (!$script->updateScript($sieve->connection)) {
@@ -101,7 +101,7 @@ if ($action == 'enable')
 }
 if ($action == 'disable') 
 {
-    if ($script->rules[$ruleID]){
+    if (isset($script->rules[$ruleID])){
         $script->rules[$ruleID]['status'] = 'DISABLED';
 	// write and save the new script.
 	if (!$script->updateScript($sieve->connection)) {
@@ -124,7 +124,7 @@ if ($action == 'disable')
 }
 if ($action == 'delete') 
 {
-    if ($script->rules[$ruleID]){
+    if (isset($script->rules[$ruleID])){
         $script->rules[$ruleID]['status'] = 'DELETED';
 	// write and save the new script.
 	if (!$script->updateScript($sieve->connection)) {
@@ -148,7 +148,7 @@ if ($action == 'save')
 	if (isset($script->rules[$ruleID])){
 	    $script->rules[$ruleID] = $rule;
 	}
-	else array_push($script->rules, $rule);
+	else $ruleID = array_push($script->rules, $rule) - 1;
 
 	// write and save the new script.
 	if (!$script->updateScript($sieve->connection)) {

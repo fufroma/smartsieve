@@ -1,6 +1,14 @@
 Smartsieve - Changes file
 -------------------------
 
+09 April 2003 S Grier
+* rule.php:
+ - fixed undefined index warnings when rule doesn't exist.
+ - fixed bug where a new rule would be lost if you select 'Create New Rule' 
+   from the create new rule page (bug #717615).
+ - fixed problems caused by hidden ruleID value not being set correctly on 
+   saving a new rule.
+
 17 March 2003 S Grier
 * release_0_5_0devel.
 
