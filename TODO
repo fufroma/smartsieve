@@ -14,7 +14,6 @@ TODO for 0.6
 * do HAVESPACE before doing a PUTSCRIPT as the spec demands. HAVESPACE is broken up to 
   cyrus-2.0.16, so will need to handle this according to timsieved version
 * move functions to SmartSieve class: rule.php:checkRule(),vacation.php:checkRule(), 
-  getFormValue(), setUrl()
 * make use of sieve redirect, reject, etc configurable
 * make it possible to supply other server options from login.php
 * decide what to do with vacation rule checkbox on main.php

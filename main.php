@@ -28,7 +28,7 @@ if (SmartSieve::authenticate() !== true) {
 
 // Change working script if requested.
 if (isset($_POST['script'])) {
-    SmartSieve::setWorkingScript(AppSession::getFormValue('script'));
+    SmartSieve::setWorkingScript(SmartSieve::getFormValue('script'));
 }
 
 $script = &$_SESSION['scripts'][$_SESSION['smartsieve']['workingScript']];
@@ -41,39 +41,39 @@ if (!$script->retrieveRules()) {
 
 /* do rule status change if requested. */
 
-$action = AppSession::getFormValue('action');
+$action = SmartSieve::getFormValue('action');
 
 if ($action) {
 
     if ($action == 'enable') {
-        $rules = AppSession::getFormValue('ruleID');
+        $rules = SmartSieve::getFormValue('ruleID');
         foreach ($rules as $ruleID) {
             $script->rules[$ruleID]['status'] = 'ENABLED';
         }
     }
 
     if ($action == 'disable') {
-        $rules = AppSession::getFormValue('ruleID');
+        $rules = SmartSieve::getFormValue('ruleID');
         foreach ($rules as $ruleID) {
             $script->rules[$ruleID]['status'] = 'DISABLED';
         }
     }
 
     if ($action == 'delete') {
-        $rules = AppSession::getFormValue('ruleID');
+        $rules = SmartSieve::getFormValue('ruleID');
         foreach ($rules as $ruleID) {
             $script->rules[$ruleID]['status'] = 'DELETED';
         }
     }
 
     if ($action == 'save') {
-        $script->script = AppSession::getFormValue('text');
+        $script->script = SmartSieve::getFormValue('text');
         $script->script .= "\n\n";
     }
 
     /* increase rule priority. */
     if ($action == 'increase') {
-        $rindex = AppSession::getFormValue('rindex');
+        $rindex = SmartSieve::getFormValue('rindex');
         /* if this rule and one before it exists, switch them. */
         if ($script->rules[$rindex] &&
 		$script->rules[$rindex-1]) {
@@ -84,7 +84,7 @@ if ($action) {
     }
     /* decrease rule priority. */
     if ($action == 'decrease') {
-        $rindex = AppSession::getFormValue('rindex');
+        $rindex = SmartSieve::getFormValue('rindex');
         /* if this rule and one after it exists, switch them. */
         if ($script->rules[$rindex] &&
             $script->rules[$rindex+1]) {

@@ -30,11 +30,11 @@ $managesieve = &$GLOBALS['managesieve'];
 
 /* do script actions if necessary. */
 
-$action = AppSession::getFormValue('action');
+$action = SmartSieve::getFormValue('action');
 
 if ($action == 'setactive')
 {
-    $sids = AppSession::getFormValue('scriptID');
+    $sids = SmartSieve::getFormValue('scriptID');
     if (is_array($sids)){
         // might have been more than one checkbox selected.
         // set only the first one active.
@@ -65,7 +65,7 @@ if ($action == 'deactivate')
 
 if ($action == 'createscript')
 {
-    $newscript = AppSession::getFormValue('newscript');
+    $newscript = SmartSieve::getFormValue('newscript');
     if ($newscript){
         if (SmartSieve::scriptExists($newscript)) {
             SmartSieve::setError(SmartSieve::text("Script \"%s\" already exists.", array($newscript)));
@@ -89,7 +89,7 @@ if ($action == 'createscript')
 
 if ($action == 'delete')
 {
-    $sids = AppSession::getFormValue('scriptID');
+    $sids = SmartSieve::getFormValue('scriptID');
     if (is_array($sids)){
         // might have been more than one checkbox selected.
         // try to delete each one in turn.
@@ -117,8 +117,8 @@ if ($action == 'delete')
 if ($action == 'rename')
 {
     $oldscript = '';
-    $newscript = AppSession::getFormValue('newscript');
-    $sids = AppSession::getFormValue('scriptID');
+    $newscript = SmartSieve::getFormValue('newscript');
+    $sids = SmartSieve::getFormValue('scriptID');
     if (is_array($sids)){
         // might have been more than one checkbox selected.
         // rename the first one only.
@@ -173,7 +173,7 @@ if ($action == 'rename')
 
 if ($action == 'viewscript') 
 {
-    $s = AppSession::getFormValue('viewscript');
+    $s = SmartSieve::getFormValue('viewscript');
     if ($s){
         SmartSieve::setWorkingScript($s);
         header('Location: ' . SmartSieve::setUrl('main.php'),true);
