@@ -26,6 +26,7 @@ TODO:
 	-  config options for other sieve rule options (forward, reject etc).
 	-  improve sieve.lib:
 		- function args.
+		- auth mechanisms. test the server supports one we want to use.
 		- undef $this->errstr.
 		- return codes.
 	-  vacation rule checkbox on main page.
@@ -44,6 +45,7 @@ TODO:
 	-  sieve.lib - ssl imap connections.
 		- could use fsockopen('ssl://server...
 		  or do something with the sieve STARTTLS command.
+		- support other sasl mechanisms.
 	-  need to think about interface for managing existing scripts.
 	-  add check on whether script was previously created using
            SmartSieve, Websieve or unknown if editing an existing script.
