@@ -8,10 +8,26 @@
  */
 
 
+/*
+ * class SieveSession provides an interface to a sieve server, such 
+ * as Cyrus timsieved, via the managesieve protocol.
+ *
+ */
 class SieveSession {
 
-  // class constructor
-  function SieveSession () {
+    var $server;  /* sieve server to open session to. */
+    var $port;    /* port to connect to. */
+    var $proxy;   /* proxy authorization user. */
+    var $uid;     /* authentication user. */
+    var $passwd;  /* authentication user's password. */
+    var $implentation;    /* server implementation and version. */
+    var $saslmethods;     /* array: SASL auth methods server supports. */
+    var $extensions;      /* array: sieve extensions server supports. */
+    var $starttls_avail;  /* boolean: will server do starttls? */
+    var $socket_timeout;  /* socket timeout in seconds. */
+
+    /* class constructor. */
+    function SieveSession () {
 
 	// some defaults to be overridden
 	$this->server = 'localhost';
@@ -22,16 +38,22 @@ class SieveSession {
 
 	$this->implementation = array('unknown');
 	$this->saslmethods = array('unknown');
-	$this->capabilities = array('unknown');
+	$this->extensions = array('unknown');
 	$this->starttls_avail = false;
+        $this->socket_timeout = 2;
 
-  }
-  // end constructor
+    }
+    // end constructor
 
 
-  // class methods
+    // class methods
 
-  function start () {
+    /*
+     * start a sieve session. open a socket to $this->server, read and 
+     * note server capabilities, and then attempt to authenticate the 
+     * user.
+     */
+    function start () {
 
 	if(!isset($this->socket)){
 	    $this->socket = fsockopen($this->server, $this->port, $this->errnum, $this->errstr, "60");
@@ -60,8 +82,8 @@ class SieveSession {
 		$this->saslmethods = split(" ", $auth_types);
 	    }
 	    elseif (preg_match("/^\"SIEVE\" +\"(.*)\"/",$said,$bits)) {
-		$capabilities = $bits[1];
-		$this->capabilities = split(" ", $capabilities);
+		$extensions = $bits[1];
+		$this->extensions = split(" ", $extensions);
 	    }
             elseif (preg_match("/^\"STARTTLS\"/",$said))
                 $this->starttls_avail = true;
@@ -86,7 +108,7 @@ class SieveSession {
 	    }
 	}
 
-	$said = $this->read(); // retrieve blank line following OK
+//	$said = $this->read();   /* retrieve \n following OK. */
 
 	$authstr = $this->proxy . "\x00" . $this->uid . "\x00" . $this->passwd;
 	$encoded = base64_encode($authstr);
@@ -107,9 +129,12 @@ class SieveSession {
 	}
 
 	return true;
-  }
+    }
 
-  function close () {
+    /*
+     * end the session. logout and close the socket.
+     */
+    function close () {
 
 	if (!$this->socket) {
 	    return true;
@@ -121,23 +146,49 @@ class SieveSession {
 	    return false; 
 	}
 	return true;
+    }
 
-  }
+    /*
+     * read a line from socket.
+     * line might end in either a newline, or a CRLF, in which case 
+     * we will need to retrieve the newline also.
+     */
+    function read () {
 
-  function read () {
+        $buffer = '';
 
-	while (!feof ($this->socket)) {
-	    $char = fgets($this->socket,1);
+        if (!$this->socket)
+            return $buffer;
+
+        socket_set_timeout($this->socket,$this->socket_timeout);
+
+        /* read one character at a time and add to $buffer. */
+	while (!feof($this->socket)) {
+	    $char = fread($this->socket,1);
+
+            $status = socket_get_status($this->socket);
+            if ($status['timed_out'] == true ||
+                $status["unread_bytes"] <= 0)
+                return $buffer;
+
+            /* return $buffer if we've reached end on line.
+             * if line ends with CRLF, fetch the \n also. */
 	    if (($char == "\n") || ($char == "\r")) {
+                if ($char == "\r")
+                    fread($this->socket,1);
 		return $buffer;
 	    }
 	    $buffer .= $char;
 	}
 	return $buffer;
-  }
+    }
 
 
-  function listscripts () {
+    /*
+     * return an array containing the list of sieve scripts on the 
+     * server belonging to the current user.
+     */
+    function listscripts () {
 	if (!$this->socket) {
             $this->errstr = "listscripts: no connection open to $this->server";
             return false;
@@ -173,10 +224,14 @@ class SieveSession {
  
         $this->errstr = "listscripts: could not get list of scripts: $said";
         return false;
-  }
+    }
 
 
-  function getscript ($scriptfile) {
+    /*
+     * return the contents of the sieve script $scriptfile, retrieved 
+     * from the server, or false if the script does not exist.
+     */
+    function getscript ($scriptfile) {
 	if (!isset($scriptfile)) {
 	    $this->errstr = "getscript: no script file specified";
 	    return false;
@@ -206,10 +261,13 @@ class SieveSession {
 
 	$this->errstr = "getscript: could not get script $scriptfile: $said";
 	return false;
-  }
+    }
 
 
-  function activatescript ($scriptfile) {
+    /*
+     * set $scriptfile as the active sieve script.
+     */
+    function activatescript ($scriptfile) {
 	if (!isset($scriptfile)) {
             $this->errstr = "activatescript: no script file specified";
             return false;
@@ -231,10 +289,14 @@ class SieveSession {
 
 	$this->errstr = "activatescript: could not activate script $scriptfile: $said";
         return false;
-  }
+    }
 
 
-  function putscript ($scriptfile,$script) {
+    /*
+     * upload the script $script to the server. save it as $scriptfile.
+     * the script will not be active. call activatescript() to do this.
+     */
+    function putscript ($scriptfile,$script) {
 	if (!isset($scriptfile)) {
             $this->errstr = "putscript: no script file specified";
             return false;
@@ -263,7 +325,7 @@ class SieveSession {
 
         $this->errstr = "putscript: could not put script $scriptfile: $said";
         return false;
-  }
+    }
 
 
 

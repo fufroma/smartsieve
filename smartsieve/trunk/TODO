@@ -12,6 +12,7 @@ required:
 10. magic_quotes_runtime must be Off.
 
 TODO:
+- write a getScriptLine function to do rtrim, stripslashes, etc.
 - move functions to SmartSieve class: rule.php:checkRule(), 
   vacation.php:checkRule(), writeToLog(), getFormValue(), setUrl().
 - move Script::listScripts() to AppSession class (?).
@@ -36,6 +37,7 @@ TODO:
 - add $servers->imapflags value to conf/servers.php (?).
 
 
+- issue HAVESPACE call before doing PUTSCRIPT as the spec suggests.
 - modify to handle magic_quotes_runtime = On (?)
 - add support for sasl proxy authentication. will need to do something 
   with imap_open() on rule.php, perhaps write function which will return 
@@ -52,6 +54,9 @@ TODO:
 - add check on whether script was previously created using
   SmartSieve, Websieve or unknown if editing an existing script.
   We should warn user if script not created using SmartSieve.
+- sieve.lib: read() should put read chars into $this->read_buf or similar.
+  then read() can return true or false, and set $this->socket_err if socket 
+  timed out or no bytes found at the socket.
 
 
 $Id$
