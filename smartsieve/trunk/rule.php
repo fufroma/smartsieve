@@ -14,7 +14,8 @@ require "$default->lib_dir/SmartSieve.lib";
 
 session_name('SIEVE_SESSION');
 @session_start();
-$errstr = '';
+$errors = array();
+$msgs = array();
 
 $sieve = &$GLOBALS['HTTP_SESSION_VARS']['sieve'];
 $script = &$GLOBALS['HTTP_SESSION_VARS']['script'];
@@ -31,7 +32,7 @@ if (!is_object($sieve) || !$sieve->authenticate()) {
 // we will need it below for file into: select box.
 if (!$sieve->mboxlist){
   if (!$sieve->retrieveMailboxList())
-    $errstr .= "ERROR: " . $sieve->errstr . "<BR>";
+    array_push($errors, 'ERROR: ' . $sieve->errstr);
     $sieve->writeToLog("ERROR: " . $sieve->errstr, LOG_ERROR);
 }
 
@@ -71,16 +72,22 @@ if ($action == 'enable')
         $script->rules[$ruleID]['status'] = 'ENABLED';
 	// write and save the new script.
 	if (!$script->updateScript($sieve->connection)) {
-	    $errstr .= "ERROR: " . $script->errstr . "<BR>\n";
+	    array_push($errors, 'ERROR: ' . $script->errstr);
 	    $sieve->writeToLog('ERROR: ' . $script->errstr, LOG_ERROR);
 	}
 	else {
-	    header('Location: ' . $baseurl . 'main.php',true);
-	    exit;
+	    array_push($msgs, 'rule successfully enabled.');
+            if ($default->return_after_update){
+                header('Location: ' . $baseurl . 'main.php',true);
+                exit;
+            }
+            $rule['status'] = 'ENABLED';
 	}
     }
-    $errstr .= "ERROR: rule does not exist.<BR>\n";
-    $sieve->writeToLog('ERROR: rule does not exist.', LOG_ERROR);
+    else {
+        array_push($errors, 'ERROR: rule does not exist.');
+        $sieve->writeToLog('ERROR: rule does not exist.', LOG_ERROR);
+    }
 }
 if ($action == 'disable') 
 {
@@ -88,16 +95,22 @@ if ($action == 'disable')
         $script->rules[$ruleID]['status'] = 'DISABLED';
 	// write and save the new script.
 	if (!$script->updateScript($sieve->connection)) {
-	    $errstr .= "ERROR: " . $script->errstr . "<BR>\n";
+	    array_push($errors, 'ERROR: ' . $script->errstr);
 	    $sieve->writeToLog('ERROR: ' . $script->errstr, LOG_ERROR);
 	}
 	else {
-	    header('Location: ' . $baseurl . 'main.php',true);
-	    exit;
+	    array_push($msgs, 'rule successfully disabled.');
+            if ($default->return_after_update){
+                header('Location: ' . $baseurl . 'main.php',true);
+                exit;
+            }
+            $rule['status'] = 'DISABLED';
 	}
     }
-    $errstr .= "ERROR: rule does not exist.<BR>\n";
-    $sieve->writeToLog('ERROR: rule does not exist.', LOG_ERROR);
+    else {
+        array_push($errors, 'ERROR: rule does not exist.');
+        $sieve->writeToLog('ERROR: rule does not exist.', LOG_ERROR);
+    }
 }
 if ($action == 'delete') 
 {
@@ -105,7 +118,7 @@ if ($action == 'delete')
         $script->rules[$ruleID]['status'] = 'DELETED';
 	// write and save the new script.
 	if (!$script->updateScript($sieve->connection)) {
-	    $errstr .= "ERROR: " . $script->errstr . "<BR>\n";
+	    array_push($errors, 'ERROR: ' . $script->errstr);
 	    $sieve->writeToLog('ERROR: ' . $script->errstr, LOG_ERROR);
 	}
 	else {
@@ -113,7 +126,7 @@ if ($action == 'delete')
 	    exit;
 	}
     }
-    $errstr .= "ERROR: rule does not exist";
+    array_push($errors, 'ERROR: rule does not exist');
     $sieve->writeToLog('ERROR: rule does not exist.', LOG_ERROR);
 }
 if ($action == 'save') 
@@ -128,17 +141,20 @@ if ($action == 'save')
 
 	// write and save the new script.
 	if (!$script->updateScript($sieve->connection)) {
-	    $errstr .= "ERROR: " . $script->errstr . "<BR>\n";
+	    array_push($errors, 'ERROR: ' . $script->errstr);
 	    $sieve->writeToLog('ERROR: ' . $script->errstr, LOG_ERROR);
 	}
 	else {
-	    header('Location: ' . $baseurl . 'main.php',true);
-	    exit;
+            array_push($msgs, 'your changes have been successfully saved.');
+            if ($default->return_after_update){
+	        header('Location: ' . $baseurl . 'main.php',true);
+	        exit;
+            }
 	}
 
     } # if checkRule()
     else
-        $errstr .= "ERROR: " . $ret . "<BR>\n";
+        array_push($errors, 'ERROR: ' . $ret);
 }
 
 ?>
@@ -180,18 +196,27 @@ Rules</a> |
 </TABLE>
  
 <BR>
-<?php if ($errstr) {  ?>
+<?php if ($errors || $msgs) {  ?>
 
 <TABLE WIDTH="100%" CELLPADDING="5" BORDER="0" CELLSPACING="0">
+<?php foreach ($errors as $err){ ?>
   <TR>
     <TD CLASS="errors">
-      <?php print $errstr; ?>
+      <?php print "$err\n"; ?>
     </TD>
   </TR>
+<?php } ?>
+<?php foreach ($msgs as $msg){ ?>
+  <TR>
+    <TD CLASS="messages">
+      <?php echo "$msg\n"; ?>
+    </TD>
+  </TR>
+<?php } ?>
 </TABLE>
 
 <BR>
-<?php } //end if $errstr ?>
+<?php } //end if $errors ?>
 
 <TABLE WIDTH="100%" CELLPADDING="1" BORDER="0" CELLSPACING="0">
 <TR>
