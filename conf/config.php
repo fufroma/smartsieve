@@ -84,7 +84,7 @@ $default->max_field_chars = 50;
 $default->max_textbox_chars = 500;
 
 // should we set the working script as the active script when saving?
-$default->update_activate_script = true;
+$default->update_activate_script = false;
 
 // should we allow regular expression matching in sieve rules?
 $default->allow_regex = true;
