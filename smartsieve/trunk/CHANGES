@@ -2,6 +2,7 @@ Smartsieve - Changes file
 -------------------------
 
 02 Dec 2002 S Grier
+* correct help urls in rule.php and vacation.php.
 * small changes to INSTALL.
 
 28 Nov 2002 S Grier
