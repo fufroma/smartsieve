@@ -1,6 +1,9 @@
 Smartsieve - Changes file
 -------------------------
 
+27 Jan 2004 S Grier
+* Fix getForwardRule() return 0 bug in forward.php.
+
 26 Jan 2004 S Grier
 * Updated Copyright for 2004.
 * Merged i18n branch into HEAD.
