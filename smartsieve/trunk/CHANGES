@@ -2,6 +2,7 @@ Smartsieve - Changes file
 -------------------------
 
 09 July 2004 S Grier
+* Call retrieveRules() from setWorkingScript.
 * include_once version.php
 
 07 July 2004 S Grier
