@@ -39,7 +39,7 @@ $servers['example'] = array(
     'server' => '127.0.0.1',
     'sieveport' => '2000',
     'imapport' => '143/imap/notls',
-    'alt_namespace' => 'false',
+    'alt_namespace' => false,
     'maildomain' => 'localhost'
 );
 
@@ -48,7 +48,7 @@ $servers['example2'] = array(
     'server' => 'imap.example.co.uk',
     'sieveport' => '2000',
     'imapport' => '143',
-    'alt_namespace' => 'true',
+    'alt_namespace' => true,
     'namespace_user_prefix' => 'user',
     'namespace_shared_prefix' => 'shared',
     'maildomain' => ''

@@ -1,6 +1,9 @@
 Smartsieve - Changes file
 -------------------------
 
+11 Dec 2002 S Grier
+* alt_namespace should be boolean not a string in servers.php.
+
 02 Dec 2002 S Grier
 * release_0_3_2devel.
 * correct help urls in rule.php and vacation.php.
