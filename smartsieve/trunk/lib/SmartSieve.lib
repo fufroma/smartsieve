@@ -379,6 +379,10 @@ class Script {
 
   var $scriptfile;   /* filename of script. */
   var $script;       /* full ascii text of script from server. */
+  var $size;         /* size of script in bytes. */
+  var $so;           /* boolean: is it safe to overwrite script?
+                      * only safe if we recognise encoding. */
+  var $mode;         /* basic or advanced. Smartsieve can only read/write basic. */
   var $rules;        /* array of sieve rules. */
   var $vacation;     /* vacation settings. */
   var $scriptlist;   /* list of user's scripts on server. */
@@ -389,6 +393,9 @@ class Script {
 
 	$this->scriptfile = $scriptfile;
 	$this->script = '';
+        $this->size = 0;
+        $this->so = false;
+        $this->mode = '';
 	$this->rules = array();
 	$this->vacation = array();
 	$this->scriptlist = array();
@@ -449,8 +456,10 @@ class Script {
             $exists = true;
     }
  
-    // if script doesn't yet exist, return true.
+    // if script doesn't yet exist, nothing to retrieve. 
+    // safe to write to this script file.
     if (!$exists) {
+        $this->so = true;
         return true;
     }
  
@@ -467,6 +476,24 @@ class Script {
     $rules = array();
     $vacation = array();
     $regexps = array('^ *##PSEUDO','^ *#rule','^ *#vacation','^ *#mode');
+
+    /* first line should be the script size. eg: {123}. */
+    $line = array_shift($lines);
+    if (!preg_match("/^\{(\d+)\}$/", $line, $bits)){
+        $this->errstr = 'retrieveRules: unexpected value: ' . $line;
+        return false;
+    }
+    $this->size = $bits[1];
+
+    /* next line should be the recognised encoded head. if not, the script 
+     * is of an unrecognised format, and we should not overwrite it. */
+    $line = array_shift($lines);
+    if (!preg_match("/^# ?Mail(.*)rules for/", $line)){
+        $this->errstr = 'retrieveRules: encoding not recognised';
+        $this->so = false;
+        return false;
+    }
+    $this->so = true;
  
     $line = array_shift($lines);
     while (isset($line)){
@@ -513,6 +540,14 @@ class Script {
 		    $vacation['text'] = preg_replace("/\\\\n/","\r\n",$vacation['text']);
                     $vacation['status'] = $bits[4];
                     $vacation['addresses'] = &$vaddresses;
+                }
+                if (preg_match("/^ *#mode&&(.*)/i",$line,$bits)){
+                    if ($bits[1] == 'basic')
+                        $this->mode = 'basic';
+                    elseif ($bits[1] == 'advanced')
+                        $this->mode = 'advanced';
+                    else
+                        $this->mode = 'unknown';
                 }
             }
         }
