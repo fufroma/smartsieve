@@ -88,7 +88,7 @@ if ($script->vacation){
     </TR>
     <TR CLASS="<?php echo $class; ?>" onmouseover="javascript:style.backgroundColor='<?php echo $onmouseover;?>'" onmouseout="javascript:style.backgroundColor='<?php echo $onmouseout; ?>'">
       <TD>
-        &nbsp;
+        <INPUT TYPE="checkbox" NAME="ruleID[]" VALUE="vacation">
       </TD>
       <TD CLASS="<?php echo $eclass; ?>">
         <?php echo $status;?> 

@@ -34,82 +34,152 @@ if (isset($_POST['script'])) {
 
 $script = &$_SESSION['scripts'][$_SESSION['smartsieve']['workingScript']];
 
-if (!$script->retrieveRules()) {
-    SmartSieve::setError(SmartSieve::text('ERROR: ') . $script->errstr);
-    SmartSieve::writeToLog(sprintf('failed reading rules from script "%s" for %s: %s', 
-        $script->name, $_SESSION['smartsieve']['authz'], $script->errstr), LOG_ERR);
-}
+
 
 /* do rule status change if requested. */
 
 $action = SmartSieve::getFormValue('action');
 
-if ($action) {
+switch ($action) {
 
-    if ($action == 'enable') {
-        $rules = SmartSieve::getFormValue('ruleID');
-        foreach ($rules as $ruleID) {
-            $script->rules[$ruleID]['status'] = 'ENABLED';
+    case ('enable'):
+        $changes = false;
+        $ruleIDs = SmartSieve::getFormValue('ruleID');
+        if (is_array($ruleIDs)) {
+            foreach ($ruleIDs as $ruleID) {
+                if ($ruleID == 'vacation' && isset($script->vacation)) {
+                    $script->vacation['status'] = 'on';
+                    $changes = true;
+                } elseif (isset($script->rules[$ruleID])) {
+                    $script->rules[$ruleID]['status'] = 'ENABLED';
+                    $changes = true;
+                }
+            }
         }
-    }
-
-    if ($action == 'disable') {
-        $rules = SmartSieve::getFormValue('ruleID');
-        foreach ($rules as $ruleID) {
-            $script->rules[$ruleID]['status'] = 'DISABLED';
+        if ($changes === true) {
+            if (!$script->updateScript()) {
+                SmartSieve::setError(SmartSieve::text('ERROR: ') . $script->errstr);
+                $logmsg = sprintf('failed writing script "%s" for %s: %s',
+                  $script->name, $_SESSION['smartsieve']['authz'], $script->errstr);
+                SmartSieve::writeToLog($logmsg, LOG_ERR);
+            } else {
+                SmartSieve::setNotice(SmartSieve::text('rule successfully enabled.'));
+            }
         }
-    }
+        break;
 
-    if ($action == 'delete') {
-        $rules = SmartSieve::getFormValue('ruleID');
-        foreach ($rules as $ruleID) {
-            $script->rules[$ruleID]['status'] = 'DELETED';
+    case ('disable'):
+        $changes = false;
+        $ruleIDs = SmartSieve::getFormValue('ruleID');
+        if (is_array($ruleIDs)) {
+            foreach ($ruleIDs as $ruleID) {
+                if ($ruleID == 'vacation' && isset($script->vacation)) {
+                    $script->vacation['status'] = 'off';
+                    $changes = true;
+                } elseif (isset($script->rules[$ruleID])) {
+                    $script->rules[$ruleID]['status'] = 'DISABLED';
+                    $changes = true;
+                }
+            }
         }
-    }
+        if ($changes === true) {
+            if (!$script->updateScript()) {
+                SmartSieve::setError(SmartSieve::text('ERROR: ') . $script->errstr);
+                $logmsg = sprintf('failed writing script "%s" for %s: %s',
+                  $script->name, $_SESSION['smartsieve']['authz'], $script->errstr);
+                SmartSieve::writeToLog($logmsg, LOG_ERR);
+            } else {
+                SmartSieve::setNotice(SmartSieve::text('rule successfully disabled.'));
+            }
+        }
+        break;
 
-    if ($action == 'save') {
+    case ('delete'):
+        $changes = false;
+        $ruleIDs = SmartSieve::getFormValue('ruleID');
+        if (is_array($ruleIDs)) {
+            foreach ($ruleIDs as $ruleID) {
+                if ($ruleID == 'vacation' && isset($script->vacation)) {
+                    unset($script->vacation);
+                    $script->vacation = array();
+                    $changes = true;
+                } elseif (isset($script->rules[$ruleID])) {
+                    $script->rules[$ruleID]['status'] = 'DELETED';
+                    $changes = true;
+                }
+            }
+        }
+        if ($changes === true) {
+            if (!$script->updateScript()) {
+                SmartSieve::setError(SmartSieve::text('ERROR: ') . $script->errstr);
+                $logmsg = sprintf('failed writing script "%s" for %s: %s',
+                  $script->name, $_SESSION['smartsieve']['authz'], $script->errstr);
+                SmartSieve::writeToLog($logmsg, LOG_ERR);
+            } else {
+                SmartSieve::setNotice(SmartSieve::text('Rule successfully deleted.'));
+            }
+        }
+        break;
+
+    case ('save'):
         $script->script = SmartSieve::getFormValue('text');
-        $script->script .= "\n\n";
-    }
+        if (!$script->updateScript()) {
+            SmartSieve::setError(SmartSieve::text('ERROR: ') . $script->errstr);
+            $logmsg = sprintf('failed writing script "%s" for %s: %s',
+              $script->name, $_SESSION['smartsieve']['authz'], $script->errstr);
+            SmartSieve::writeToLog($logmsg, LOG_ERR);
+        } else {
+            SmartSieve::setNotice(SmartSieve::text('your changes have been successfully saved.'));
+        }
+        break;
 
-    /* increase rule priority. */
-    if ($action == 'increase') {
+    case ('increase'):
         $rindex = SmartSieve::getFormValue('rindex');
         /* if this rule and one before it exists, switch them. */
-        if ($script->rules[$rindex] &&
-		$script->rules[$rindex-1]) {
-	    $tmp = $script->rules[$rindex-1];
-	    $script->rules[$rindex-1] = $script->rules[$rindex];
-	    $script->rules[$rindex] = $tmp;
+        if (isset($script->rules[$rindex]) &&
+                isset($script->rules[$rindex-1])) {
+            $tmp = $script->rules[$rindex-1];
+            $script->rules[$rindex-1] = $script->rules[$rindex];
+            $script->rules[$rindex] = $tmp;
+            if (!$script->updateScript()) {
+                SmartSieve::setError(SmartSieve::text('ERROR: ') . $script->errstr);
+                $logmsg = sprintf('failed writing script "%s" for %s: %s',
+                  $script->name, $_SESSION['smartsieve']['authz'], $script->errstr);
+                SmartSieve::writeToLog($logmsg, LOG_ERR);
+            }
         }
-    }
-    /* decrease rule priority. */
-    if ($action == 'decrease') {
+        break;
+
+    case ('decrease'):
         $rindex = SmartSieve::getFormValue('rindex');
         /* if this rule and one after it exists, switch them. */
-        if ($script->rules[$rindex] &&
-            $script->rules[$rindex+1]) {
-	    $tmp = $script->rules[$rindex+1];
-	    $script->rules[$rindex+1] = $script->rules[$rindex];
-	    $script->rules[$rindex] = $tmp;
+        if (isset($script->rules[$rindex]) &&
+                isset($script->rules[$rindex+1])) {
+            $tmp = $script->rules[$rindex+1];
+            $script->rules[$rindex+1] = $script->rules[$rindex];
+            $script->rules[$rindex] = $tmp;
+            if (!$script->updateScript()) {
+                SmartSieve::setError(SmartSieve::text('ERROR: ') . $script->errstr);
+                $logmsg = sprintf('failed writing script "%s" for %s: %s',
+                  $script->name, $_SESSION['smartsieve']['authz'], $script->errstr);
+                SmartSieve::writeToLog($logmsg, LOG_ERR);
+            }
         }
-    }
-    /* write these changes. */
-    if (!$script->updateScript()) {
-        SmartSieve::setError(SmartSieve::text('ERROR: ') . $script->errstr);
-        SmartSieve::writeToLog(sprintf('failed writing script "%s" for %s: %s', 
-            $script->name, $_SESSION['smartsieve']['authz'], $script->errstr), LOG_ERR);
-    }
-    /* get the rules from the saved script again. */
-    else {
-	if (!$script->retrieveRules()) {
-            SmartSieve::setError(SmartSieve::text('ERROR: ') . $script->errstr);
-            SmartSieve::writeToLog(sprintf('failed reading rules from script "%s" for %s: %s',
-                $script->name, $_SESSION['smartsieve']['authz'], $script->errstr), LOG_ERR);
-	}
-    }
+        break;
 }
 
+
+$ret = $script->retrieveRules();
+if ($ret === false) {
+    SmartSieve::setError(SmartSieve::text('ERROR: ') . $script->errstr);
+    SmartSieve::writeToLog(sprintf('failed reading rules from script "%s" for %s: %s',
+        $script->name, $_SESSION['smartsieve']['authz'], $script->errstr), LOG_ERR);
+}
+if (isset($_POST['text'])) {
+    $stext = SmartSieve::getFormValue('text');
+} else {
+    $stext = Script::removeEncoding();
+}
 
 if ($script->mode == 'advanced'){
     $jsfile = 'script-direct.js';

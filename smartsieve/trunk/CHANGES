@@ -2,6 +2,8 @@ Smartsieve - Changes file
 -------------------------
 
 09 July 2004 S Grier
+* Don't lose script modifications on parse error.
+* Vacation checkbox now works.
 * Reset rule changes on error.
 * Call retrieveRules() from setWorkingScript.
 * include_once version.php
