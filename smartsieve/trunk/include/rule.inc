@@ -114,13 +114,9 @@
   </TD>
   <TD>
     <SELECT NAME="folder">
-<?php foreach ($sieve->mboxlist as $mbox){
-      $opt =  "\t<OPTION ";
-      if ($rule['action_arg'] == $mbox) $opt .= "SELECTED ";
-      $opt .= "VALUE=\"$mbox\">$mbox</OPTION>\n";
-      print $opt;
-   }
-?>
+<?php foreach ($_SESSION['smartsieve']['mailboxes'] as $mbox): ?>
+      <OPTION VALUE="<?php echo $mbox;?>"<?php echo (($rule['action_arg'] == $mbox) ? ' SELECTED="selected"' : '');?>><?php echo $mbox;?></OPTION>
+<?php endforeach; ?>
     </SELECT>
   </TD>
 </TR>

@@ -11,7 +11,7 @@
 require './conf/config.php';
 require "$default->config_dir/servers.php";
 require "$default->config_dir/locales.php";
-require "$default->lib_dir/sieve.lib";
+require "$default->lib_dir/Managesieve.php";
 require "$default->lib_dir/SmartSieve.lib";
 
 ini_set('session.use_trans_sid', 0);
@@ -23,73 +23,70 @@ $reason = AppSession::getFormValue('reason');
 
 // if a session already exists, go to main page
 // unless failure or logout
-if (isset($HTTP_SESSION_VARS['sieve']) && is_object($HTTP_SESSION_VARS['sieve'])) {
+if (isset($_SESSION['smartsieve']) && is_array($_SESSION['smartsieve'])) {
+    $smartsieve = &$_SESSION['smartsieve'];
     if ($reason == 'logout') {
-	if (!$HTTP_SESSION_VARS['sieve']->writeToLog("logout: " . 
-				$HTTP_SESSION_VARS['sieve']->authz, LOG_INFO))
-	    echo SmartSieve::text('ERROR: ') . $HTTP_SESSION_VARS['sieve']->errstr . "<BR>";
-	unset($HTTP_SESSION_VARS['sieve']);
-	session_unregister('sieve');
-        unset($HTTP_SESSION_VARS['scripts']);
+        SmartSieve::writeToLog('logout: ' . $smartsieve['authz'], LOG_INFO);
+	unset($_SESSION['smartsieve']);
+	session_unregister('smartsieve');
+        unset($_SESSION['scripts']);
         session_unregister('scripts');
         session_destroy();
         session_start();
     }
     elseif ($reason == 'failure') {
-	unset($HTTP_SESSION_VARS['sieve']);
-	session_unregister('sieve');
-        unset($HTTP_SESSION_VARS['scripts']);
+	unset($_SESSION['smartsieve']);
+	session_unregister('smartsieve');
+        unset($_SESSION['scripts']);
     }
     else {
         // we have a session. if we can authenticate, redirect to main.php.
         // if not, we have a cookie problem.
-        if ($HTTP_SESSION_VARS['sieve']->authenticate()) {
+        if (SmartSieve::authenticate()) {
 	    header('Location: ' . AppSession::setUrl('main.php'));
 	    exit;
         }
-        else {
-            echo SmartSieve::text('ERROR: failed to authenticate. please check your SmartSieve cookie settings').'<BR>';
-            $HTTP_SESSION_VARS['sieve']->writeToLog('ERROR: login.php: cookie problem', LOG_ERR);
-            unset($HTTP_SESSION_VARS['sieve']);
-            session_unregister('sieve');
-            unset($HTTP_SESSION_VARS['scripts']);
-            session_unregister('scripts');
-        }
+        echo SmartSieve::text('ERROR: failed to authenticate. please check your SmartSieve cookie settings').'<BR>';
+        SmartSieve::writeToLog('ERROR: login.php: cookie problem', LOG_ERR);
+        unset($_SESSION['smartsieve']);
+        session_unregister('smartsieve');
+        unset($_SESSION['scripts']);
+        session_unregister('scripts');
     }
 }
 
 
 // create new session if login form submitted
-if (isset($HTTP_POST_VARS['auth']) && isset($HTTP_POST_VARS['passwd'])) {
-    $sieve = new AppSession();
-    if ($sieve->initialize() && $sieve->authenticate()) {
-	// must have created session, and authenticated ok
+if (isset($_POST['auth']) && isset($_POST['passwd'])) {
+    $auth = AppSession::getFormValue('auth');
+    $passwd = AppSession::getFormValue('passwd');
+    $authz = AppSession::getFormValue('authz');
+    $server = AppSession::getFormValue('server');
+    if (($ret = SmartSieve::setSession($auth, $passwd, $authz, $server)) === true &&
+        ($ret = SmartSieve::authenticate()) === true) {
+        // must have created session, and authenticated ok
+        $smartsieve = &$_SESSION['smartsieve'];
 
-	if (!$sieve->writeToLog("login: " . (($sieve->auth != $sieve->authz) ? "$sieve->auth as " : "") .  $sieve->authz . ' [' . 
-		$GLOBALS['HTTP_SERVER_VARS']['REMOTE_ADDR'] . '] {' . 
-		$sieve->server . ':' . $sieve->sieveport . '}', LOG_INFO))
-	    echo SmartSieve::text('ERROR: ') . $sieve->errstr . "<BR>";
-
-        /* set scripts array in session. */
-        $GLOBALS['HTTP_SESSION_VARS']['scripts'] = array();
-        session_register('scripts');
-        if (!is_array($GLOBALS['HTTP_SESSION_VARS']['scripts'])) {
-            $sieve->writeToLog('login.php: failed to set scripts array in session');
-            echo SmartSieve::text('ERROR: failed to set scripts array in session').'<BR>';
+        $ret = SmartSieve::writeToLog('login: ' . (($smartsieve['auth'] != $smartsieve['authz']) ? $smartsieve['auth'] . ' as ' : '') . $smartsieve['authz'] . ' [' . $_SERVER['REMOTE_ADDR'] . '] {' . $smartsieve['server'] . ':' . $smartsieve['sieveport'] . '}', LOG_INFO);
+        if ($ret !== true) {
+            SmartSieve::setError($ret);
         }
 
-	if (isset($HTTP_POST_VARS['lang']))
-	    $HTTP_SESSION_VARS['smartsieve_lang'] = AppSession::getFormValue('lang');
+        /* set scripts array in session. */
+        $_SESSION['scripts'] = array();
+        // Set which script to edit first.
+        SmartSieve::setWorkingScript(AppSession::getFormValue('scriptfile'));
 
-	header('Location: ' . AppSession::setUrl('main.php'));
-	exit;
+        if (isset($_POST['lang'])) {
+	    $_SESSION['smartsieve_lang'] = AppSession::getFormValue('lang');
+        }
+
+        header('Location: ' . AppSession::setUrl('main.php'));
+        exit;
     }
 
-    if (!$sieve->writeToLog("FAILED LOGIN: " . $sieve->authz . ' [' .
-	$GLOBALS['HTTP_SERVER_VARS']['REMOTE_ADDR'] . '] {' .
-	$sieve->server . ':' . $sieve->sieveport . '}: ' . $sieve->errstr, LOG_ERR)) {
-        echo SmartSieve::text('ERROR: ') . $sieve->errstr . "<BR>";
-    }
+    SmartSieve::writeToLog('FAILED LOGIN: ' . $auth . ((!empty($authz)) ? " as $authz" : '') . ' [' . $_SERVER['REMOTE_ADDR'] . '] {' . $server . '}: ' . $ret, LOG_ERR);
+
     header('Location: ' . AppSession::setUrl('login.php?reason=failure'),true);
     exit;
 }

@@ -1,26 +1,26 @@
 
 <BR>
-<?php if ($errors || $msgs) {  ?>
+<?php if (!empty($_SESSION['errors']) || !empty($_SESSION['notices'])): ?>
 
 <TABLE WIDTH="100%" CELLPADDING="5" BORDER="0" CELLSPACING="0">
-<?php foreach ($errors as $err){ ?>
+<?php foreach (SmartSieve::setError() as $err): ?>
   <TR>
     <TD CLASS="errors">
-      <?php print "$err\n"; ?>
+      <?php echo $err; ?> 
     </TD>
   </TR>
-<?php } ?>
-<?php foreach ($msgs as $msg){ ?>
+<?php endforeach; ?>
+<?php foreach (SmartSieve::setNotice() as $notice): ?>
   <TR>
     <TD CLASS="messages">
-      <?php echo "$msg\n"; ?>
+      <?php echo $notice; ?> 
     </TD>
   </TR>
-<?php } ?>
+<?php endforeach; ?>
 </TABLE>
 
 <BR>
-<?php } //end if $errors ?>
+<?php endif; ?>
 
 <TABLE WIDTH="100%" CELLPADDING="1" BORDER="0" CELLSPACING="0">
 <TR>
@@ -28,23 +28,23 @@
     <TABLE WIDTH="100%" CELLPADDING="2" BORDER="0" CELLSPACING="0">
       <TR CLASS="status">
         <TD>
-          &nbsp;<?php echo SmartSieve::text('User');?>: <?php print $sieve->authz; ?> 
+          &nbsp;<?php echo SmartSieve::text('User');?>: <?php echo $_SESSION['smartsieve']['authz']; ?> 
         </TD>
         <TD>
-          &nbsp;<?php echo SmartSieve::text('Server');?>: <?php print $sieve->server; ?> 
+          &nbsp;<?php echo SmartSieve::text('Server');?>: <?php echo $_SESSION['smartsieve']['server']; ?> 
         </TD>
         <TD>
-          &nbsp;<?php echo SmartSieve::text('Script');?>: <?php print $sieve->workingscript; ?> 
+          &nbsp;<?php echo SmartSieve::text('Script');?>: <?php echo $_SESSION['smartsieve']['workingScript']; ?> 
         </TD>
-<?php if (AppSession::isActiveScript($sieve->workingscript)) { ?>
+<?php if ($_SESSION['smartsieve']['workingScript'] === SmartSieve::getActiveScript()): ?>
         <TD CLASS="active">
           <?php echo SmartSieve::text('ACTIVE');?>
         </TD>
-<?php } else { ?>
+<?php else: ?>
         <TD CLASS="inactive">
           <?php echo SmartSieve::text('NOT ACTIVE');?>
         </TD>
-<?php } ?>
+<?php endif; ?>
       </TR>
     </TABLE>
   </TD>

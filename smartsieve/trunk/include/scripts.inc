@@ -16,56 +16,34 @@
   <TD CLASS="main">
 
     <TABLE WIDTH="100%" BORDER="0" CELLPADDING="2" CELLSPACING="1">
-<?php
-
-if ($sieve->scriptlist){ ?>
+<?php if (!empty($slist)): ?>
       <TR>
         <TH WIDTH="10%">&nbsp;</TH>
         <TH WIDTH="70%"><?php echo SmartSieve::text("Script");?></TH>
         <TH WIDTH="10%"><?php echo SmartSieve::text("Status");?></TH>
         <TH WIDTH="10%"><?php echo SmartSieve::text("Size");?></TH>
       </TR>
-<?php
-
-    $i = 0;
-    foreach ($sieve->scriptlist as $script){
-        $class = 'inactivescript';
-        $eclass = 'inactive';
-        $status = SmartSieve::text('NOT ACTIVE');
-        if (AppSession::isActiveScript($script)) {
-            $class = 'activescript';
-            $eclass = 'active';
-            $status = SmartSieve::text('ACTIVE');
-        }
-        $size = '';
-        if (isset($scripts[$script]))
-            $size = $scripts[$script]->size . SmartSieve::text('bytes');
-?>
-    <TR CLASS="<?php echo $class;?>">
+<?php foreach ($slist as $s => $active): ?>
+    <TR CLASS="<?php echo ($active===true) ? 'activescript' : 'inactivescript';?>">
       <TD>
-        <INPUT TYPE="checkbox" NAME="scriptID[]" VALUE="<?php print $i; ?>">
+        <INPUT TYPE="checkbox" NAME="scriptID[]" VALUE="<?php echo $i++;?>">
       </TD>
       <TD>
-        <A CLASS="rule" HREF="" onclick="viewScript('<?php echo $script; ?>'); return false;" onmouseover="window.status='<?php echo SmartSieve::text('View This Script');?>'; return true;" onmouseout="window.status='';"><?php echo $script; ?></A>
+        <A CLASS="rule" HREF="" onclick="viewScript('<?php echo $s;?>'); return false;" onmouseover="window.status='<?php echo SmartSieve::text('View This Script');?>'; return true;" onmouseout="window.status='';"><?php echo $s;?></A>
       </TD>
-      <TD CLASS="<?php echo $eclass; ?>">
-        <?php echo $status; ?>
+      <TD CLASS="<?php echo ($active===true) ? 'active' : 'inactive';?>">
+        <?php echo ($active===true) ? SmartSieve::text('ACTIVE') : SmartSieve::text('NOT ACTIVE');?> 
       </TD>
       <TD>
-        &nbsp;<?php echo $size; ?>
+        &nbsp;<?php echo (isset($scripts[$s])) ? $scripts[$s]->size . SmartSieve::text('bytes') : '';?> 
       </TD>
     </TR>
-<?php
-        $i++;
-    }
-}
-else { ?>
+<?php endforeach; ?>
+<?php else: ?>
     <TR CLASS="enabledrule">
       <TD COLSPAN="4">[<?php echo SmartSieve::text("No existing scripts");?>]</TD>
     </TR>
-<?php
-}
-?>
+<?php endif; ?>
     </TABLE>
 
   </TD>

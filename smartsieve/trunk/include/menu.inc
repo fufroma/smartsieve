@@ -10,35 +10,31 @@
           &nbsp;
           <a href="<?php print AppSession::setUrl('login.php?reason=logout');?>"><?php echo SmartSieve::text('Logout');?></a>
         | <a href="<?php print AppSession::setUrl('main.php');?>"><?php echo SmartSieve::text('View All Rules');?></a>
-<?php if ($scripts[$sieve->workingscript]->mode != 'advanced'){ ?>
-<?php     if (!empty($default->use_forward_mail_interface)){ ?>
+<?php if ($_SESSION['scripts'][$_SESSION['smartsieve']['workingScript']]->mode != 'advanced'): ?>
+<?php     if (SmartSieve::getConf('use_forward_mail_interface')): ?>
         | <A HREF="<?php print AppSession::setUrl('forward.php');?>"><?php echo SmartSieve::text('Forward Mail');?></A>
-<?php     } ?>
+<?php     endif; //use_forward_mail_interface ?>
         | <a href="<?php print AppSession::setUrl('vacation.php');?>"><?php echo SmartSieve::text('Vacation Settings');?></a>
         | <a href="<?php print AppSession::setUrl('rule.php');?>"><?php echo SmartSieve::text('New Filter Rule');?></a>
-<?php } //end if $script->mode = 'advanced'
-      if ($default->allow_multi_scripts) { ?>
+<?php endif; //$script->mode = 'advanced' ?>
+<?php if (SmartSieve::getConf('allow_multi_scripts') !== false): ?>
         | <A HREF="<?php print AppSession::setUrl('scripts.php');?>"><?php echo SmartSieve::text('Manage Scripts');?></A>
-<?php } //end if $default->allow_multi_scripts
-      if (!empty($help_url)){ ?>
+<?php endif; //$default->allow_multi_scripts ?>
+<?php if (!empty($help_url)): ?>
         | <a href="<?php echo $help_url; ?>"><?php echo SmartSieve::text('Help');?></a>
-<?php } //end if $help_url ?>
+<?php endif; //$help_url ?>
 
         </TD>
-<?php if ($default->allow_multi_scripts) { ?>
+<?php if (SmartSieve::getConf('allow_multi_scripts') !== false): ?>
         <TD CLASS="menu" ALIGN="right">
           &nbsp;
           <SELECT NAME="script" onchange="document.menu.submit();">
-<?php     foreach ($sieve->scriptlist as $s){
-              $str = "\t\t<OPTION VALUE=\"$s\"";
-              if ($s == $sieve->workingscript)
-                  $str .= " SELECTED=\"selected\"";
-              $str .= ">$s</OPTION>\n";
-              print $str;
-          } ?>
+<?php     foreach (SmartSieve::getScriptList() as $s => $active): ?>
+              <OPTION VALUE="<?php echo $s; ?>"<?php if ($s == $_SESSION['smartsieve']['workingScript']): ?> SELECTED="selected"<?php endif; ?>><?php echo $s;?></OPTION>
+<?php     endforeach; ?>
           </SELECT>
         </TD>
-<?php } //end if $default->allow_multi_scripts ?>
+<?php endif; //$default->allow_multi_scripts ?>
       </TR>
     </TABLE>
   </TD>
