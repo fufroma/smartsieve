@@ -493,7 +493,7 @@ class Script {
   var $script;       /* full ascii text of script from server. */
   var $size;         /* size of script in bytes. */
   var $so;           /* boolean: is encoding recognised? ie. not created by SmartSieve. */
-  var $mode;         /* basic or advanced. Smartsieve can only read/write basic. */
+  var $mode;         /* basic (GUI) or advanced (direct edit) modes. */
   var $rules;        /* array of sieve rules. */
   var $vacation;     /* vacation settings. */
   var $pcount;       /* highest priority value in ruleset. */
@@ -506,7 +506,7 @@ class Script {
 	$this->script = '';
         $this->size = 0;
         $this->so = true;
-        $this->mode = '';
+        $this->mode = 'basic';
 	$this->rules = array();
 	$this->vacation = array();
 	$this->pcount = 0;
@@ -561,8 +561,10 @@ class Script {
     /* first line should be the recognised encoded head. if not, the script 
      * is of an unrecognised format. We will view this in direct edit mode. */
     $line = array_shift($lines);
-    if (!preg_match("/^# ?Mail(.*)rules for/", $line))
+    if (!preg_match("/^# ?Mail(.*)rules for/", $line)){
         $this->so = false;
+        $this->mode = 'advanced';
+    }
     else
         $this->so = true;
  
@@ -622,7 +624,7 @@ class Script {
                     elseif ($bits[1] == 'advanced')
                         $this->mode = 'advanced';
                     else
-                        $this->mode = 'unknown';
+                        $this->mode = 'advanced';
                 }
             }
         }
@@ -875,17 +877,10 @@ class Script {
 	$vacation['text'] = preg_replace("/\r\n/","\\n",$vacation['text']);
         $newscriptfoot .= "&&" . $vacation['text'] . "&&" . $vacation['status'] . "\n";
     }
-    if ($this->mode){
-        $newscriptfoot .= "#mode&&" . $this->mode . "\n";
-    }
-    elseif (!$this->so){
-        $newscriptfoot .= "#mode&&advanced\n";
-    }
-    else
-        $newscriptfoot .= "#mode&&basic\n";
+    $newscriptfoot .= "#mode&&" . $this->mode . "\n";
  
     $newscript = $newscripthead . $newrequire . $newscriptbody . $newscriptfoot;
-    if ($this->mode == 'advanced' || $this->so == false)
+    if ($this->mode == 'advanced')
         $newscript = $newscripthead . $this->removeEncoding()  . $newscriptfoot;
     $this->script = $newscript;
  
