@@ -8,13 +8,13 @@
     <TR CLASS="heading">
       <TD>
     <?php if ($rule) {
-         print "Edit Forward Rule</TD><TD CLASS=";
+         echo SmartSieve::text("Edit Forward Rule") . "</TD><TD CLASS=";
          if ($rule['status'] == 'ENABLED'){
-            print "\"enabled\"> ENABLED ";
+            print "\"enabled\"> " . SmartSieve::text('ENABLED');
          }
-         else print "\"disabled\"> DISABLED ";
+         else print "\"disabled\"> " . SmartSieve::text('DISABLED');
        }
-       else print "Create Forward Rule</TD><TD>&nbsp;";
+       else echo SmartSieve::text('Create Forward Rule') . "</TD><TD>&nbsp;";
     ?>
       </TD>
     </TR>
@@ -28,7 +28,7 @@
     <TABLE WIDTH="100%" CELLPADDING="5" BORDER="0" CELLSPACING="0">
     <TR>
       <TD>
-Forwarding Address:
+        <?php echo SmartSieve::text('Forwarding Address:');?> 
       </TD>
       <TD>
         <INPUT TYPE="text" NAME="address" <?php if ($rule['action'] == 'address') print "VALUE=\"" . $rule['action_arg'] . "\" "; ?>SIZE="40">
@@ -36,7 +36,7 @@ Forwarding Address:
     </TR>
     <TR>
       <TD>
-Keep a copy in Inbox:
+        <?php echo SmartSieve::text('Keep a copy in Inbox:');?> 
       </TD>
       <TD>
         <INPUT TYPE="checkbox" NAME="keep" VALUE="keep" <?php if ($rule['keep']) print "CHECKED"; ?>>
@@ -53,15 +53,15 @@ Keep a copy in Inbox:
     <TR>
       <TD CLASS="options" COLSPAN="2">
         <BR>
-        <A CLASS="option" HREF="" onclick="Submit('save'); return false;" onmouseover="window.status='Save Changes'; return true;" onmouseout="window.status='';">Save Changes</a>
+        <A CLASS="option" HREF="" onclick="Submit('save'); return false;" onmouseover="window.status='<?php echo SmartSieve::text('Save Changes');?>'; return true;" onmouseout="window.status='';"><?php echo SmartSieve::text('Save Changes');?></a>
 <?php //if ($script->rules[$ruleID]) { ?>
 <?php if (isset($ruleID)){ ?>
           |
-        <A CLASS="option" HREF="" onclick="Submit('enable'); return false;" onmouseover="window.status='Enable'; return true;" onmouseout="window.status='';">Enable</a>
+        <A CLASS="option" HREF="" onclick="Submit('enable'); return false;" onmouseover="window.status='<?php echo SmartSieve::text('Enable');?>'; return true;" onmouseout="window.status='';"><?php echo SmartSieve::text('Enable');?></a>
           |
-        <A CLASS="option" HREF="" onclick="Submit('disable'); return false;" onmouseover="window.status='Disable'; return true;" onmouseout="window.status='';">Disable</a>
+        <A CLASS="option" HREF="" onclick="Submit('disable'); return false;" onmouseover="window.status='<?php echo SmartSieve::text('Disable');?>'; return true;" onmouseout="window.status='';"><?php echo SmartSieve::text('Disable');?></a>
           |
-        <A CLASS="option" HREF="" onclick="Submit('delete'); return false;" onmouseover="window.status='Delete'; return true;" onmouseout="window.status='';">Delete</a>
+        <A CLASS="option" HREF="" onclick="Submit('delete'); return false;" onmouseover="window.status='<?php echo SmartSieve::text('Delete');?>'; return true;" onmouseout="window.status='';"><?php echo SmartSieve::text('Delete');?></a>
 <?php } ?>
       </TD>
     </TR>

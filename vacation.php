@@ -34,7 +34,7 @@ if (!is_object($sieve) || !$sieve->authenticate()) {
 
 // open sieve connection
 if (!$sieve->openSieveSession()) {
-    print "ERROR: " . $sieve->errstr . "<BR>\n";
+    echo SmartSieve::text("ERROR: ") . $sieve->errstr . "<BR>\n";
     $sieve->writeToLog("ERROR: openSieveSession failed for " . $sieve->user .
         ': ' . $sieve->errstr, LOG_ERR);
     exit;
@@ -76,12 +76,12 @@ if ($action == 'enable') {
         $script->vacation['status'] = 'on';
         /* write and save the new script. */
         if (!$script->updateScript($sieve->connection)) {
-            array_push($errors, 'ERROR: ' . $script->errstr);
+            array_push($errors, SmartSieve::text('ERROR: ') . $script->errstr);
             $sieve->writeToLog("ERROR: vacation.php: can't update script: "
                 . $script->errstr, LOG_ERR);
         }
         else {
-            array_push($msgs, 'vacation settings successfully enabled.');
+            array_push($msgs, SmartSieve::text('vacation settings successfully enabled.'));
             if ($default->return_after_update){
                 header('Location: ' . AppSession::setUrl('main.php'),true);
                 exit;
@@ -90,8 +90,8 @@ if ($action == 'enable') {
         }
     }
     else {
-        array_push($errors, 'ERROR: vacation setting not yet saved.');
-        $sieve->writeToLog('ERROR: vacation setting not yet saved.', LOG_ERR);
+        array_push($errors, SmartSieve::text('ERROR: vacation settings not yet saved.'));
+        $sieve->writeToLog('ERROR: vacation settings not yet saved.', LOG_ERR);
     }
 }
 if ($action == 'disable') {
@@ -99,12 +99,12 @@ if ($action == 'disable') {
         $script->vacation['status'] = 'off';
         /* write and save the new script. */
         if (!$script->updateScript($sieve->connection)) {
-            array_push($errors, 'ERROR: ' . $script->errstr);
+            array_push($errors, SmartSieve::text('ERROR: ') . $script->errstr);
             $sieve->writeToLog("ERROR: vacation.php: can't update script: " 
                     . $script->errstr, LOG_ERR);
         }
         else {
-            array_push($msgs, 'vacation settings successfully disabled.');
+            array_push($msgs, SmartSieve::text('vacation settings successfully disabled.'));
             if ($default->return_after_update){
                 header('Location: ' . AppSession::setUrl('main.php'),true);
                 exit;
@@ -113,8 +113,8 @@ if ($action == 'disable') {
         }
     }
     else {
-        array_push($errors, 'ERROR: vacation setting not yet saved.');
-	$sieve->writeToLog('ERROR: vacation setting not yet saved.', LOG_ERR);
+        array_push($errors, SmartSieve::text('ERROR: vacation settings not yet saved.'));
+	$sieve->writeToLog('ERROR: vacation settings not yet saved.', LOG_ERR);
     }
 }
 if ($action == 'save') 
@@ -123,12 +123,12 @@ if ($action == 'save')
     if (!$ret = checkRule($vacation)){
         $script->vacation = $vacation;
         if (!$script->updateScript($sieve->connection)) {
-            array_push($errors, 'ERROR: ' . $script->errstr);
+            array_push($errors, SmartSieve::text('ERROR: ') . $script->errstr);
 	    $sieve->writeToLog("ERROR: vacation.php: can't update script: "
 		. $script->errstr, LOG_ERR);
         }
         else {
-            array_push($msgs, 'your changes have been successfully saved.');
+            array_push($msgs, SmartSieve::text('your changes have been successfully saved.'));
             if ($default->return_after_update){
 	        header('Location: ' . AppSession::setUrl('main.php'),true);
 	        exit;
@@ -136,7 +136,7 @@ if ($action == 'save')
         }
     }
     else
-	array_push($errors, 'ERROR: ' . $ret);
+	array_push($errors, SmartSieve::text('ERROR: ') . $ret);
 }
 
 
@@ -165,10 +165,10 @@ function checkRule($vacation)
     global $default,$sieve;
 
     if (!$vacation['text'] && !$default->vacation_text){
-	return "please supply the message to send with auto-responses";
+	return SmartSieve::text("please supply the message to send with auto-responses");
     }
     if (!$vacation['days'] && $default->require_vacation_days && !$default->vacation_days){
-	return "please select the number of days to wait between responses";
+        return SmartSieve::text("please select the number of days to wait between responses");
     }
     // does $vacation['addresses'] contain any valid addresses?
     $a = false;
@@ -179,22 +179,20 @@ function checkRule($vacation)
         }
     }
     if ($a == false && $default->require_vacation_addresses && !$sieve->maildomain){
-        return "please supply at least one valid vacation address";
+        return SmartSieve::text("please supply at least one valid vacation address");
     }
 
     /* check values don't exceed acceptible sizes. */
     foreach ($vacation['addresses'] as $addr){
         if (strlen($addr) > $default->max_field_chars)
-            return 'vacation address should not exceed ' . 
-		$default->max_field_chars . ' characters.';
+            return SmartSieve::text('vacation address should not exceed %d characters.', array($default->max_field_chars));
     }
     if (strlen($vacation['text']) > $default->max_textbox_chars)
-	return 'vacation message should not exceed ' . 
-	    $default->max_textbox_chars . ' characters.';
+	return SmartSieve::text('vacation message should not exceed %d characters.', array($default->max_textbox_chars));
 
     /* complain if vacation days contains non-digits. */
     if (preg_match("/\D/",$vacation['days']))
-	return 'vacation days must be a positive integer.';
+	return SmartSieve::text('vacation days must be a positive integer');
 
     return 0;
 }

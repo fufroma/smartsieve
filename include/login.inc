@@ -12,10 +12,10 @@
   <TR>
     <TD ALIGN="center" COLSPAN="2">&nbsp;
 <?php if ($reason == 'failure') { ?>
-      Login failed! Please try again.
+      <?php echo SmartSieve::text("Login failed! Please try again");?>.
 <?php }
       elseif ($reason == 'logout'){ ?>
-      You have been logged out.
+      <?php echo SmartSieve::text("You have been logged out");?>.
 <?php }
       $tabindex = 1;
 ?>
@@ -23,23 +23,38 @@
   </TR>
 
   <TR CLASS="menu">
-    <TD ALIGN="right"> Sieve Username:
+    <TD ALIGN="right"> <?php echo SmartSieve::text("Sieve Username");?>:
     </TD>
     <TD ALIGN="left">
       <INPUT TYPE="text" TABINDEX="<?php echo $tabindex++;?>" NAME="sieveuid">
     </TD>
   </TR>
   <TR CLASS="menu">
-    <TD ALIGN="right"> Password:
+    <TD ALIGN="right"> <?php echo SmartSieve::text("Password");?>:
     </TD>
     <TD ALIGN="left">
       <INPUT TYPE="password" TABINDEX="<?php echo $tabindex++;?>" NAME="passwd">
     </TD>
   </TR>
 
-<?php if ($default->user_select_server){ ?>
+<?php if ($default->user_select_lang) { ?>
   <TR CLASS="menu">
-    <TD ALIGN="right">Server:
+    <TD ALIGN="right"> <?php echo SmartSieve::text("Language");?>:
+    </TD>
+    <TD ALIGN="left">
+      <SELECT TABINDEX="<?php echo $tabindex++;?>" NAME="lang" onchange="changeLang();">
+        <OPTION VALUE="en_GB"<?php if (SmartSieve::getLang() == "en_GB") echo " SELECTED";?>><?php echo SmartSieve::text("English");?></OPTION>
+        <OPTION VALUE="de_DE"<?php if (SmartSieve::getLang() == "de_DE") echo " SELECTED";?>><?php echo SmartSieve::text("German");?></OPTION>
+      </SELECT>
+    </TD>
+  </TR>
+
+<?php } else { ?>
+    <INPUT TYPE="hidden" NAME="lang" VALUE="<?php echo $default->language; ?>">
+<?php }
+      if ($default->user_select_server){ ?>
+  <TR CLASS="menu">
+    <TD ALIGN="right"><?php echo SmartSieve::text("Server");?>:
     </TD>
     <TD ALIGN="left">
       <SELECT NAME="server" TABINDEX="<?php echo $tabindex++;?>">
@@ -63,7 +78,7 @@
 <?php } 
        if ($default->user_supply_scriptfile && $default->allow_multi_scripts) { ?>
   <TR CLASS="menu">
-    <TD ALIGN="right">Script name:
+    <TD ALIGN="right"><?php echo SmartSieve::text("Script name");?>:
     </TD>
     <TD ALIGN="left">
       <INPUT TYPE="text" TABINDEX="<?php echo $tabindex++;?>" NAME="scriptfile" VALUE="<?php echo $default->scriptfile;?>">
@@ -76,7 +91,7 @@
 
   <TR CLASS="menu">
     <TD ALIGN="center" COLSPAN="2">
-      <INPUT TYPE="submit" NAME="submit" TABINDEX="<?php echo $tabindex++;?>" VALUE="Log In">
+      <INPUT TYPE="submit" NAME="submit" TABINDEX="<?php echo $tabindex++;?>" VALUE="<?php echo SmartSieve::text("Log In");?>">
     </TD>
   <TR>
 </TABLE>

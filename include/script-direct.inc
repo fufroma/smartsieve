@@ -6,7 +6,7 @@
 
     <TABLE WIDTH="100%" BORDER="0" CELLPADDING="2" CELLSPACING="0">
     <TR>
-      <TD CLASS="heading">Mail Filter Rules:</TD>
+      <TD CLASS="heading"><?php echo SmartSieve::text('Mail Filter Rules');?>:</TD>
     </TR>
     </TABLE>
 
@@ -27,7 +27,7 @@
     <TABLE WIDTH="100%" BORDER="0" CELLPADDING="2" CELLSPACING="1">
     <BR>
       <TD CLASS="options">
-        <A CLASS="option" HREF="" onclick="Save(); return false;" onmouseover="window.status='Save Changes'; return true;" onmouseout="window.status='';">Save Changes</a>
+        <A CLASS="option" HREF="" onclick="Save(); return false;" onmouseover="window.status='<?php echo SmartSieve::text('Save Changes');?>'; return true;" onmouseout="window.status='';"><?php echo SmartSieve::text('Save Changes');?></a>
       </TD>
     </BR>
     </TABLE>

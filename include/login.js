@@ -15,5 +15,13 @@ function setFocus()
     document.login.sieveuid.focus();
 }
 
+function changeLang ()
+{
+    if (document.login.sieveuid.value == '' && document.login.passwd.value == ''){
+        var $url = 'login.php?login_lang=' + document.login.lang.value;
+        self.location = $url;
+    }
+}
+
 //-->
 </script>

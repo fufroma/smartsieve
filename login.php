@@ -26,7 +26,7 @@ if (isset($HTTP_SESSION_VARS['sieve']) && is_object($HTTP_SESSION_VARS['sieve'])
     if ($reason == 'logout') {
 	if (!$HTTP_SESSION_VARS['sieve']->writeToLog("logout: " . 
 				$HTTP_SESSION_VARS['sieve']->user, LOG_INFO))
-	    print "ERROR: " . $HTTP_SESSION_VARS['sieve']->errstr . "<BR>";
+	    echo SmartSieve::text('ERROR: ') . $HTTP_SESSION_VARS['sieve']->errstr . "<BR>";
 	unset($HTTP_SESSION_VARS['sieve']);
 	session_unregister('sieve');
         unset($HTTP_SESSION_VARS['scripts']);
@@ -47,7 +47,7 @@ if (isset($HTTP_SESSION_VARS['sieve']) && is_object($HTTP_SESSION_VARS['sieve'])
 	    exit;
         }
         else {
-            echo 'ERROR: failed to authenticate. please check your SmartSieve cookie settings<BR>';
+            echo SmartSieve::text('ERROR: failed to authenticate. please check your SmartSieve cookie settings').'<BR>';
             $HTTP_SESSION_VARS['sieve']->writeToLog('ERROR: login.php: cookie problem', LOG_ERR);
             unset($HTTP_SESSION_VARS['sieve']);
             session_unregister('sieve');
@@ -67,15 +67,18 @@ if (isset($HTTP_POST_VARS['sieveuid']) && isset($HTTP_POST_VARS['passwd'])) {
 	if (!$sieve->writeToLog("login: " . $sieve->user . ' [' . 
 		$GLOBALS['HTTP_SERVER_VARS']['REMOTE_ADDR'] . '] {' . 
 		$sieve->server . ':' . $sieve->sieveport . '}', LOG_INFO))
-	    print "ERROR: " . $sieve->errstr . "<BR>";
+	    echo SmartSieve::text('ERROR: ') . $sieve->errstr . "<BR>";
 
         /* set scripts array in session. */
         $GLOBALS['HTTP_SESSION_VARS']['scripts'] = array();
         session_register('scripts');
         if (!is_array($GLOBALS['HTTP_SESSION_VARS']['scripts'])) {
             $sieve->writeToLog('login.php: failed to set scripts array in session');
-            print 'ERROR: failed to set scripts array in session<BR>';
+            echo SmartSieve::text('ERROR: failed to set scripts array in session').'<BR>';
         }
+
+	if (isset($HTTP_POST_VARS['lang']))
+	    $HTTP_SESSION_VARS['smartsieve_lang'] = AppSession::getFormValue('lang');
 
 	header('Location: ' . AppSession::setUrl('main.php'));
 	exit;
@@ -83,8 +86,9 @@ if (isset($HTTP_POST_VARS['sieveuid']) && isset($HTTP_POST_VARS['passwd'])) {
 
     if (!$sieve->writeToLog("FAILED LOGIN: " . $sieve->user . ' [' .
 	$GLOBALS['HTTP_SERVER_VARS']['REMOTE_ADDR'] . '] {' .
-	$sieve->server . ':' . $sieve->sieveport . '}: ' . $sieve->errstr, LOG_ERR))
-      print "ERROR: " . $sieve->errstr . "<BR>";
+	$sieve->server . ':' . $sieve->sieveport . '}: ' . $sieve->errstr, LOG_ERR)) {
+        echo SmartSieve::text('ERROR: ') . $sieve->errstr . "<BR>";
+    }
     header('Location: ' . AppSession::setUrl('login.php?reason=failure'),true);
     exit;
 }

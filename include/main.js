@@ -22,14 +22,14 @@ function Submit(a)
 {
     if (AnySelected()) {
 	if (a == 'delete'){
-	    if (!confirm("Are you sure you want to delete this rule?")){
+	    if (!confirm("<?php echo SmartSieve::text('Are you sure you want to delete this rule?');?>")){
 		return true;
 	    }
 	}
 	document.rules.action.value = a;
         document.rules.submit();
     } else {
-        window.alert('You must select at least one rule to do this.');
+        window.alert('<?php echo SmartSieve::text('You must select at least one rule to do this.');?>');
     }
 }
 

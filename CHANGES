@@ -1,6 +1,33 @@
 Smartsieve - Changes file
 -------------------------
 
+26 Jan 2004 S Grier
+* Merged i18n branch into HEAD.
+* Added $default->user_select_lang config option.
+
+15 Jan 2004 S Grier
+* Send Content-Type http header with all responses to set the correct charset.
+* Make language select list on login page dependent on $default->user_select_lang.
+
+14 Jan 2004 S Grier
+* Added scripts/locales_update.pl script. This can be used to (re)generate 
+  the translation files for supported languages. It will extract all output 
+  strings passed via the SmartSieve::text() function, and reuse any existing 
+  translations from the old translation file.
+
+17 Dec 2003 S Grier
+* SmartSieve::Text() -> SmartSieve::text().
+* cleaned up some SmartSieve::text() calls.
+
+15 Dec 2003 S Grier
+* SmartSieve::GetCharset() -> SmartSieve::getCharset().
+
+11 Dec 2003 S Grier
+* SmartSieve::Text() now takes an $args array argument, which is passed to a 
+  vsprintf() call. This allows us to translate strings with variables in them.
+* isset($phrase[$string]) changed to !empty($phrase[$string]) in SmartSieve::Text().
+* merge changes in HEAD to i18n branch.
+
 14 Nov 2003 S Grier
 * set session.use_trans_sid off and call session_set_cookie_params() on each page.
 * use AppSession::getFormValue() to get reason value in login.php. and call 
@@ -9,10 +36,21 @@ Smartsieve - Changes file
 12 Nov 2003 S Grier
 * call session_name() and session_start() from index.php in order to redirect
   correctly, and call AppSession::setUrl() to work with cookieless sessions.
+* call SmartSieve::mutf7Decode() instead of imap_utf7_decode() in AppSession::retrieveMailboxList().
+
+11 Nov 2003 S Grier
+* don't use short_open_tags in conf/locale/*/strings.php.
 
 03 Nov 2003 S Grier
 * fixed small bug in custom rule handling. should not be deemed unconditional if action_arg starts
   with (els)if.
+
+31 Oct 2003 S Grier
+* added mutf7Decode() and modifiedToPlainUTF7() functions. We want to avoid using
+  the imap_utf7_decode() to decode mailbox names because it only converts modified
+  UTF-7 into ISO-8859-1. These functions convert mUTF-7 encoded mailbox names into
+  whatever character encoding is needed by the current locale. The modifiedToPlainUTF7()
+  code was contributed by Den aka Diesel.
 
 29 Oct 2003 S Grier
 * vacation rule changes:
@@ -95,6 +133,26 @@ Smartsieve - Changes file
   - new _selectsaslmech() function selects which of the supported SASL mechanisms 
     to use. Returns false if none of the supported mechanisms are available on 
     the server.
+
+29 May 2003 S Grier
+* set the language in the PHP session, rather than the AppSession object.
+  this will make the translation work for the login page.
+* include/login.js: added changeLang() function. The language on the login page
+  will change as the value of the language list box is changed, unless there is
+  a value in the username or password fields (so they don't get lost).
+* lib/SmartSieve.lib:
+  - added getLang() function. return $default->language if not set in session                                                                             
+    if not set in session, GET or POST.
+  - modified Text() and GetChar() to use getLang().
+                                                                             
+28 May 2003 S Grier
+* rule.php: 2 strings for which SmartSieve::Text() should not be used.
+                                                                             
+23 May 2003 S Grier
+* login.php: missing quotes on tabindex.
+
+22 May 2003 S Grier
+* added i18n multi-language support (patch contributed by Andreas Haase).
 
 15 May 2003 S Grier
 * release_0_5_1devel.

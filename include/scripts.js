@@ -26,7 +26,7 @@ function deactivate()
 function setScriptActive()
 {
     if (numSelected() == 0){
-        alert('Please select a script to activate');
+        alert('<?php echo SmartSieve::text('Please select a script to activate');?>');
         return false;
     }
     document.scripts.action.value = 'setactive';
@@ -35,7 +35,7 @@ function setScriptActive()
 
 function createScript()
 {
-    var newscript = prompt('Please supply a name for your new script','');
+    var newscript = prompt('<?php echo SmartSieve::text('Please supply a name for your new script');?>','');
     if (newscript){
         document.scripts.action.value = 'createscript';
         document.scripts.newscript.value = newscript;
@@ -46,10 +46,10 @@ function createScript()
 function deleteScript()
 {
     if (numSelected() == 0){
-        alert('Please select a script to delete');
+        alert('<?php echo SmartSieve::text('Please select a script to delete');?>');
         return false;
     }
-    if (!confirm("You are about to permanently remove the selected scripts.\nAre you sure you want to do this?")){
+    if (!confirm("<?php echo SmartSieve::text('You are about to permanently remove the selected scripts.\nAre you sure you want to do this?');?>")){
         return true;
     }
     document.scripts.action.value = 'delete';
@@ -59,10 +59,10 @@ function deleteScript()
 function renameScript()
 {
     if (numSelected() == 0){
-        alert('Please select the script to rename');
+        alert('<?php echo SmartSieve::text('Please select the script to rename');?>');
         return false;
     }
-    var newscript = prompt('Please supply the new name for this script','');
+    var newscript = prompt('<?php echo SmartSieve::text('Please supply the new name for this script');?>','');
     if (newscript){
         document.scripts.action.value = 'rename';
         document.scripts.newscript.value = newscript;

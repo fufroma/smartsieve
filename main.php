@@ -34,7 +34,7 @@ if (!is_object($sieve) || !$sieve->authenticate()) {
 
 // start sieve session, and get the rules via the script object
 if (!$sieve->openSieveSession()) {
-    print "ERROR: " . $sieve->errstr . "<BR>\n";
+    echo SmartSieve::text("ERROR: ") . $sieve->errstr . "<BR>\n";
     $sieve->writeToLog("ERROR: openSieveSession failed for " . $sieve->user .
 	': ' . $sieve->errstr, LOG_ERR);
     exit;
@@ -44,7 +44,7 @@ if (!$sieve->openSieveSession()) {
 if (!$sieve->workingscript){
     if (!$sieve->initialWorkingScript()){
         $sieve->writeToLog('ERROR: ' . $sieve->errstr);
-        array_push($errors, 'ERROR: ' . $sieve->errstr);
+        array_push($errors, SmartSieve::text('ERROR: ') . $sieve->errstr);
     }
 }
 
@@ -59,14 +59,14 @@ if (!isset($scripts[$sieve->workingscript]) ||
     $scripts[$sieve->workingscript] = new Script($sieve->workingscript);
     if (!is_object($scripts[$sieve->workingscript])){
         writeToLog('main.php: failed to create script object ' . $sieve->workingscript);
-        array_push($errors, 'failed to create script object ' . $sieve->workingscript);
+        array_push($errors, SmartSieve::text("failed to create script object %s",array($sieve->workingscript)));
     }
 }
 
 $script = &$scripts[$sieve->workingscript];
 
 if (!$script->retrieveRules($sieve->connection)) {
-    array_push($errors, 'ERROR: ' . $script->errstr);
+    array_push($errors, SmartSieve::text('ERROR: ') . $script->errstr);
     $sieve->writeToLog("ERROR: retrieveRules failed for " . $sieve->user .
 	": " . $script->errstr, LOG_ERR);
 }
@@ -127,14 +127,14 @@ if ($action) {
     }
     /* write these changes. */
     if (!$script->updateScript($sieve->connection)) {
-	array_push($errors, 'ERROR: ' . $script->errstr);
+	array_push($errors, SmartSieve::text('ERROR: ') . $script->errstr);
 	$sieve->writeToLog('ERROR: updateScript failed for ' . $sieve->user
 	    . ': ' . $script->errstr, LOG_ERR);
     }
     /* get the rules from the saved script again. */
     else {
 	if (!$script->retrieveRules($sieve->connection)) {
-	    array_push($errors, 'ERROR: ' . $script->errstr);
+	    array_push($errors, SmartSieve::text('ERROR: ') . $script->errstr);
 	    $sieve->writeToLog('ERROR: retrieveRules failed for ' . $sieve->user
 	    	. ': ' . $script->errstr, LOG_ERR);
 	}
@@ -169,16 +169,16 @@ $sieve->closeSieveSession();
 
 
 function buildRule($rule) {
-    $andor = " AND ";
+    $andor = ' ' . SmartSieve::text('AND') . ' ';
     $started = 0;
-    if ($rule['anyof']) $andor = " OR ";
+    if ($rule['anyof']) $andor = ' ' . SmartSieve::text('OR') . ' ';
 
     if (preg_match("/custom/i",$rule['action'])){
-        return '[Custom Rule] ' . $rule['action_arg'];
+        return '[' . SmartSieve::text('Custom Rule') . '] ' . $rule['action_arg'];
     }
 
-    $complete = "IF ";
-    if ($rule['unconditional']) $complete = "[Unconditional] ";
+    $complete = SmartSieve::text('IF') . ' ';
+    if ($rule['unconditional']) $complete = '[' . SmartSieve::text('Unconditional') . '] ';
 
     if ($rule['from']) {
         $match = setMatchType($rule['from'],$rule['regexp']);
@@ -204,23 +204,23 @@ function buildRule($rule) {
 	$started = 1;
     }
     if ($rule['size']) {
-	$xthan = " less than '";
-	if ($rule['gthan']) $xthan = " greater than '";
+	$xthan = SmartSieve::text('less than');
+	if ($rule['gthan']) $xthan = SmartSieve::text('greater than');
 	if ($started) $complete .= $andor;
-	$complete .= "message " . $xthan . $rule['size'] . "KB'";
+	$complete .= SmartSieve::text("message %s '%sKB'", array($xthan,$rule['size']));
 	$started = 1;
     }
-    if (!$rule['unconditional']) $complete .= " THEN ";
+    if (!$rule['unconditional']) $complete .= " ".SmartSieve::text('THEN')." ";
     if (preg_match("/folder/i",$rule['action']))
-	$complete .= "file into '" . $rule['action_arg'] . "';";
+	$complete .= SmartSieve::text("file into '%s';",array($rule['action_arg']));
     if (preg_match("/reject/i",$rule['action']))
-	$complete .= "reject '" . $rule['action_arg'] . "';";
+	$complete .= SmartSieve::text("reject '%s';",array($rule['action_arg']));
     if (preg_match("/address/i",$rule['action']))
-        $complete .= "forward to '" . $rule['action_arg'] . "';";
+        $complete .= SmartSieve::text("forward to '%s';",array($rule['action_arg']));
     if (preg_match("/discard/i",$rule['action']))
-        $complete .= "discard;";
-    if ($rule['continue']) $complete .= " [Continue]";
-    if ($rule['keep']) $complete .= " [Keep a copy]";
+        $complete .= SmartSieve::text("discard;");
+    if ($rule['continue']) $complete .= " [".SmartSieve::text('Continue')."]";
+    if ($rule['keep']) $complete .= " [".SmartSieve::text('Keep a copy')."]";
     return htmlspecialchars($complete);
 }
 
@@ -231,9 +231,9 @@ function buildVacationString()
     $vacation_str = '';
     if (!is_array($vacation)){ return htmlspecialchars($vacation_str); }
 
-    $vacation_str .= 'Respond';
+    $vacation_str .= SmartSieve::text('Respond');
     if (is_array($vacation['addresses']) && $vacation['addresses'][0]){
-        $vacation_str .= ' to mail sent to ';
+        $vacation_str .= ' ' . SmartSieve::text('to mail sent to') . ' ';
         $first = true;
         foreach ($vacation['addresses'] as $addr){
             if (!$first) $vacation_str .= ', ';
@@ -242,27 +242,27 @@ function buildVacationString()
         }
     }
     if (!empty($vacation['days'])){
-        $vacation_str .= ' every ' . $vacation['days'] . ' days';
+        $vacation_str .= ' ' . SmartSieve::text("every %s days",array($vacation['days']));
     }
-    $vacation_str .= ' with message "' . $vacation['text'] . '"';
+    $vacation_str .= ' ' . SmartSieve::text('with message "%s"',array($vacation['text']));
     return htmlspecialchars($vacation_str);
 }
 
 function setMatchType (&$matchstr, $regex = false)
 {
-    $match = 'contains';
+    $match = SmartSieve::text('contains');
     if (preg_match("/\s*!/", $matchstr)) 
-        $match = 'does not contain';
+        $match = SmartSieve::text('does not contain');
     if (preg_match("/\*|\?/", $matchstr) &&
         $GLOBALS['default']->websieve_auto_matches == true){
-        $match = 'matches';
+        $match = SmartSieve::text('matches');
         if (preg_match("/\s*!/", $matchstr))
-            $match = 'does not match';
+            $match = SmartSieve::text('does not match');
     }
     if ($regex){
-        $match = 'matches regexp';
+        $match = SmartSieve::text('matches regexp');
         if (preg_match("/\s*!/", $matchstr))
-            $match = 'does not match regexp';
+            $match = SmartSieve::text('does not match regexp');
     }
     $matchstr = preg_replace("/^\s*!/","",$matchstr);
     return $match;
