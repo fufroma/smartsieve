@@ -1,6 +1,9 @@
 Smartsieve - Changes file
 -------------------------
 
+18 August 2003 S Grier
+* don't display vacation or new rule links on the top menu in advanced mode.
+
 15 August 2003 S Grier
 * moved top menu html from main.php to new menu.inc include file.
 
