@@ -10,6 +10,7 @@
 
 require './conf/config.php';
 require "$default->config_dir/servers.php";
+require "$default->config_dir/locales.php";
 require "$default->lib_dir/sieve.lib";
 require "$default->lib_dir/SmartSieve.lib";
 
@@ -100,6 +101,10 @@ if (isset($HTTP_POST_VARS['sieveuid']) && isset($HTTP_POST_VARS['passwd'])) {
 
 $jsfile = 'login.js';
 $jsonload = 'setFocus()';
+
+// The first entry in $servers.
+$srvkeys = array_keys($servers);
+$fsrv = (!empty($srvkeys)) ? $srvkeys[0] : '';
 
 include $default->include_dir . '/common-head.inc';
 include $default->include_dir . '/login.inc';

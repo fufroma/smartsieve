@@ -1,6 +1,11 @@
 Smartsieve - Changes file
 -------------------------
 
+26 Mar 2004 S Grier
+* Added conf/locales.php. The language select widget on the login page is now 
+  generated from this file.
+* Cleanups to login page template.
+
 23 Mar 2004 S Grier
 * Added Spanish and Catalan translations. Contributed by Andreu Sánchez Costa.
 
