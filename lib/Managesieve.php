@@ -724,8 +724,14 @@ class Managesieve {
             return false;
         }
         fputs($this->_socket,"CAPABILITY\r\n");
-        return ($this->parseCapability()) ? $this->_capabilities : false;
-// FIXME: Extra NO response with Cyrus v2.0
+        if ($this->parseCapability()) {
+            // Work-around for extra NO response with Cyrus v2.0.
+            if (substr($this->_capabilities['implementation'], -6) == 'v1.0.0') {
+                $this->read();
+            }
+            return $this->_capabilities;
+        }
+        return false;
     }
 
 
