@@ -774,6 +774,14 @@ class Script {
         }
         if ($rule['keep']) $newruletext .= "\n\tkeep;";
         if (!$rule['unconditional']) $newruletext .= "\n}";
+
+        if (preg_match("/custom/i",$rule['action'])) {
+            $newruletext = $rule['action_arg'];
+            if (preg_match("/:regex/i",$rule['action_arg']))
+                $regexused = 1;
+            if (preg_match("/reject/i",$rule['action_arg']))
+                $rejectused = 1;
+        }
  
         $continue = 0;
         if ($rule['continue']) $continue = 1;

@@ -398,6 +398,11 @@ function buildRule($rule) {
     $andor = " AND ";
     $started = 0;
     if ($rule['anyof']) $andor = " OR ";
+
+    if (preg_match("/custom/i",$rule['action'])){
+        return '[Custom Rule] ' . $rule['action_arg'];
+    }
+
     $complete = "IF ";
     if ($rule['unconditional']) $complete = "[Unconditional] ";
 

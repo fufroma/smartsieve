@@ -1,6 +1,9 @@
 Smartsieve - Changes file
 -------------------------
 
+14 July 2003 S Grier
+* added support for Websieve's custom rules.
+
 04 July 2003 S Grier
 * added support for the DIGEST-MD5 sasl auth mechanism. based on Scott 
   Russell's patch for sieve-php.lib, and RFC 2831.

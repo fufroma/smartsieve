@@ -13,7 +13,6 @@ required:
 
 TODO:
 - write a getConfValue() function to get config values cleanly.
-- handle Websieve's 'custom' rules.
 - vacation and reject text abbreviation in rule summaries.
 - view raw script option.
 - should 'keep' be an action rather than an option?

@@ -97,6 +97,10 @@ $default->update_activate_script = false;
 // should we allow regular expression matching in sieve rules?
 $default->allow_regex = true;
 
+// should we allow users to create custom sieve rules?
+// Note: existing custom rules will always be handled.
+$default->allow_custom = true;
+
 /* should we return to view all rules page following updates? */
 $default->return_after_update = false;
 
