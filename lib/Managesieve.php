@@ -335,11 +335,14 @@ class Managesieve {
             return $this->resp['state'] = F_NO;
         }
         // match OK
-        elseif (substr($line, 0, 2) == 'OK') {
+        elseif (substr($line, 0, 2) == 'OK' ||
+                substr($line, 0, 2) == 'Ok') {
+            // match OK\r\n
             if ($line == "OK\r\n") {
             }
             // match OK "Logout Complete"
-            elseif (preg_match("/^OK \"(.+)\"\r\n$/", $line, $m)) {
+            // Cyrus v2.0 returns Ok "Logout Complete"
+            elseif (preg_match("/^O[Kk] \"(.+)\"\r\n$/", $line, $m)) {
                 $this->resp['errstr'][] = $m[1];
             }
             // match OK (SASL "cnNwYX1ZG...NzmY3MDN==")
