@@ -36,7 +36,8 @@ include_once 'Crypt/HCEMD5.php';
 
     function generateKey () {
 
-	if (isset($GLOBALS['HTTP_COOKIE_VARS'])) {
+	if (isset($GLOBALS['HTTP_COOKIE_VARS']) &&
+            isset($GLOBALS['HTTP_COOKIE_VARS'][session_name()])) {
 
 	    // here we use the Mersenne Twister randon number generator.
 	    // we should seed the generator only once.
@@ -45,7 +46,7 @@ include_once 'Crypt/HCEMD5.php';
 	    $key = md5(uniqid(mt_rand(),1));
 
 	    $GLOBALS['HTTP_COOKIE_VARS']['key'] = $key;
-	    setcookie('key',$key,null,$GLOBALS['default']->cookie_path,$GLOBALS['default']->cookie_domain);
+	    setcookie('key',$key,0,$GLOBALS['default']->cookie_path,$GLOBALS['default']->cookie_domain,0);
 
 	}
 	else {
