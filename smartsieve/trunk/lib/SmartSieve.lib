@@ -207,11 +207,11 @@ class SmartSieve {
 
         /* get lang if login form submitted. */
         if (isset($HTTP_POST_VARS['lang']))
-            return AppSession::getFormValue('lang');
+            return SmartSieve::getFormValue('lang');
 
         /* check if user has changed language on login page. */
         if (isset($HTTP_GET_VARS['login_lang']))
-            return AppSession::getFormValue('login_lang');
+            return SmartSieve::getFormValue('login_lang');
 
         /* check if language is set in the session. */
         if (isset($HTTP_SESSION_VARS['smartsieve_lang']))
@@ -619,6 +619,42 @@ class SmartSieve {
             $url .= urlencode(session_name()) . '=' . session_id();
         }
         return $url;
+    }
+
+   /**
+    * Get a POST or GET value. Strip backslashes if magic_quotes.gpc is on.
+    *
+    * @param var string value to get
+    * @param def string default
+    * @return mixed form value if set, or default if not
+    */
+    function getFormValue($var, $def=null)
+    {
+        if (isset($_POST[$var])) {
+            $val = $_POST[$var];
+        } elseif (isset($_GET[$var])) {
+            $val = $_GET[$var];
+        } else {
+            $val = $def;
+        }
+        static $magicquotes;
+        if (!isset($magicquotes)) {
+            $magicquotes = get_magic_quotes_gpc();
+        }
+        if ($val !== null) {
+            if ($magicquotes) {
+                if (is_array($val)) {
+                    $newval = array();
+                    foreach ($val as $v) {
+                        $newval[] = stripslashes($v);
+                    }
+                    $val = $newval;
+                } else {
+                    $val = stripslashes($val);
+                }
+            }
+        }
+        return $val;
     }
 
 

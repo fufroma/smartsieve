@@ -19,7 +19,7 @@ session_set_cookie_params(0, $default->cookie_path, $default->cookie_domain);
 session_name($default->session_name);
 @session_start();
 
-$reason = AppSession::getFormValue('reason');
+$reason = SmartSieve::getFormValue('reason');
 
 // if a session already exists, go to main page
 // unless failure or logout
@@ -58,10 +58,10 @@ if (isset($_SESSION['smartsieve']) && is_array($_SESSION['smartsieve'])) {
 
 // create new session if login form submitted
 if (isset($_POST['auth']) && isset($_POST['passwd'])) {
-    $auth = AppSession::getFormValue('auth');
-    $passwd = AppSession::getFormValue('passwd');
-    $authz = AppSession::getFormValue('authz');
-    $server = AppSession::getFormValue('server');
+    $auth = SmartSieve::getFormValue('auth');
+    $passwd = SmartSieve::getFormValue('passwd');
+    $authz = SmartSieve::getFormValue('authz');
+    $server = SmartSieve::getFormValue('server');
     if (($ret = SmartSieve::setSession($auth, $passwd, $authz, $server)) === true &&
         ($ret = SmartSieve::authenticate()) === true) {
         // must have created session, and authenticated ok
@@ -75,10 +75,10 @@ if (isset($_POST['auth']) && isset($_POST['passwd'])) {
         /* set scripts array in session. */
         $_SESSION['scripts'] = array();
         // Set which script to edit first.
-        SmartSieve::setWorkingScript(AppSession::getFormValue('scriptfile'));
+        SmartSieve::setWorkingScript(SmartSieve::getFormValue('scriptfile'));
 
         if (isset($_POST['lang'])) {
-	    $_SESSION['smartsieve_lang'] = AppSession::getFormValue('lang');
+	    $_SESSION['smartsieve_lang'] = SmartSieve::getFormValue('lang');
         }
 
         header('Location: ' . SmartSieve::setUrl('main.php'));

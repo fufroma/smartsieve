@@ -49,11 +49,11 @@ $rule = null;     /* sieve rule $script->rules[$ruleID]. */
  * if $script->rules[$ruleID] does not exist, this will be a new rule page.
  */
 if (isset($_POST['ruleID'])) {
-    $ruleID = AppSession::getFormValue('ruleID');
+    $ruleID = SmartSieve::getFormValue('ruleID');
     $rule = getRulePOSTValues($ruleID);
 }
 elseif (isset($_GET['ruleID'])) {
-    $ruleID = AppSession::getFormValue('ruleID');
+    $ruleID = SmartSieve::getFormValue('ruleID');
     if (isset($script->rules[$ruleID])) {
         $rule = $script->rules[$ruleID];
     }
@@ -61,7 +61,7 @@ elseif (isset($_GET['ruleID'])) {
 
 /* save rule changes if requested. */
 
-$action = AppSession::getFormValue('thisAction');
+$action = SmartSieve::getFormValue('thisAction');
 
 if ($action == 'enable') 
 {
@@ -176,26 +176,26 @@ SmartSieve::close();
 function getRulePOSTValues ($ruleID)
 {
     $rule = array();
-    $rule['priority'] = AppSession::getFormValue('priority');
-    $rule['status'] = AppSession::getFormValue('status');
-    $rule['from'] = AppSession::getFormValue('from');
-    $rule['to'] = AppSession::getFormValue('to');
-    $rule['subject'] = AppSession::getFormValue('subject');
-    $rule['action'] = AppSession::getFormValue('action');
-    $rule['action_arg'] = AppSession::getFormValue($rule['action']);
-    $rule['field'] = AppSession::getFormValue('field');
-    $rule['field_val'] = AppSession::getFormValue('field_val');
-    $rule['size'] = AppSession::getFormValue('size');
+    $rule['priority'] = SmartSieve::getFormValue('priority');
+    $rule['status'] = SmartSieve::getFormValue('status');
+    $rule['from'] = SmartSieve::getFormValue('from');
+    $rule['to'] = SmartSieve::getFormValue('to');
+    $rule['subject'] = SmartSieve::getFormValue('subject');
+    $rule['action'] = SmartSieve::getFormValue('action');
+    $rule['action_arg'] = SmartSieve::getFormValue($rule['action']);
+    $rule['field'] = SmartSieve::getFormValue('field');
+    $rule['field_val'] = SmartSieve::getFormValue('field_val');
+    $rule['size'] = SmartSieve::getFormValue('size');
     $rule['continue'] = 0;
-    if (AppSession::getFormValue('continue')) $rule['continue'] = 1;
+    if (SmartSieve::getFormValue('continue')) $rule['continue'] = 1;
     $rule['gthan'] = 0;
-    if (AppSession::getFormValue('gthan')) $rule['gthan'] = 2;
+    if (SmartSieve::getFormValue('gthan')) $rule['gthan'] = 2;
     $rule['anyof'] = 0;
-    if (AppSession::getFormValue('anyof')) $rule['anyof'] = 4;
+    if (SmartSieve::getFormValue('anyof')) $rule['anyof'] = 4;
     $rule['keep'] = 0;
-    if (AppSession::getFormValue('keep')) $rule['keep'] = 8;
+    if (SmartSieve::getFormValue('keep')) $rule['keep'] = 8;
     $rule['regexp'] = 0;
-    if (AppSession::getFormValue('regexp')) $rule['regexp'] = 128;
+    if (SmartSieve::getFormValue('regexp')) $rule['regexp'] = 128;
     $rule['unconditional'] = 0;
     if (!$rule['from'] && !$rule['to'] && !$rule['subject'] &&
        !$rule['field'] && !$rule['size'] && $rule['action'] &&

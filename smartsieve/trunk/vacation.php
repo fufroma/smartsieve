@@ -32,14 +32,14 @@ $vacation = array();   /* $script->vacation. */
  * the vacation values from POST data. if not, use $script->vacation.
  */
 if (isset($_POST['submitted'])) {
-    $address = AppSession::getFormValue('addresses');
+    $address = SmartSieve::getFormValue('addresses');
     $address = preg_replace("/\"|\\\/","",$address);
     $addresses = array();
     $addresses = preg_split("/\s*,\s*|\s+/",$address);
-    $vacation['text'] = AppSession::getFormValue('text');
-    $vacation['days'] = AppSession::getFormValue('days');
+    $vacation['text'] = SmartSieve::getFormValue('text');
+    $vacation['days'] = SmartSieve::getFormValue('days');
     $vacation['addresses'] = $addresses;
-    $vacation['status'] = AppSession::getFormValue('status');
+    $vacation['status'] = SmartSieve::getFormValue('status');
 } elseif ($script->vacation) {
     $vacation = $script->vacation;
 } else {
@@ -52,7 +52,7 @@ if (isset($_POST['submitted'])) {
 
 /* save vacation settings if requested. */
 
-$action = AppSession::getFormValue('thisAction');
+$action = SmartSieve::getFormValue('thisAction');
 
 if ($action == 'enable') {
     if ($script->vacation){

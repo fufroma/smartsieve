@@ -3,6 +3,8 @@ Smartsieve - Changes file
 
 09 June 2004 S Grier
 * Move setUrl to class SmartSieve.
+* Move getFormValue to class SmartSieve. This no longer does strip_tags or rtrim and 
+  may now return null. Also now takes a default value.
 
 04 June 2004 S Grier
 * Replace long predefined arrays (HTTP_*_VARS) with superglobals. Requires php > 4.1.
