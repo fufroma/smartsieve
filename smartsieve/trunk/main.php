@@ -226,7 +226,8 @@ function setMatchType (&$matchstr, $regex = false)
     $match = 'contains';
     if (preg_match("/\s*!/", $matchstr)) 
         $match = 'does not contain';
-    if (preg_match("/\*|\?/", $matchstr)){
+    if (preg_match("/\*|\?/", $matchstr) &&
+        $GLOBALS['default']->websieve_auto_matches == true){
         $match = 'matches';
         if (preg_match("/\s*!/", $matchstr))
             $match = 'does not match';
