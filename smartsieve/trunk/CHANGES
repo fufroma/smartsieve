@@ -1,6 +1,10 @@
 Smartsieve - Changes file
 -------------------------
 
+12 Nov 2003 S Grier
+* call session_name() and session_start() from index.php in order to redirect
+  correctly, and call AppSession::setUrl() to work with cookieless sessions.
+
 03 Nov 2003 S Grier
 * fixed small bug in custom rule handling. should not be deemed unconditional if action_arg starts
   with (els)if.
