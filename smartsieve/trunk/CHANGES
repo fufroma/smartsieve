@@ -1,6 +1,9 @@
 Smartsieve - Changes file
 -------------------------
 
+17 March 2003 S Grier
+* release_0_5_0devel.
+
 14 March 2003 S Grier
 * cleaned up scripts.php.
 * vacation status should default to 'on' when first set.
