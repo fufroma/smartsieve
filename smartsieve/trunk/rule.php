@@ -431,7 +431,19 @@ Match
     <INPUT TYPE="radio" NAME="action" VALUE="discard" <?php if ($rule['action'] == 'discard') print "CHECKED"; ?> > Discard the message.
   </TD>
   <TD>&nbsp;</TD>
-    </TR>
+</TR>
+<?php if ($default->allow_custom || $rule['action'] == 'custom'){ ?>
+<TR>
+  <TD>
+    <INPUT TYPE="radio" NAME="action" VALUE="custom" <?php if ($rule['action'] == 'custom') print "CHECKED"; ?> > Custom Rule:
+  </TD>
+  <TD>
+    <TEXTAREA NAME="custom" ROWS="3" COLS="40" WRAP="hard" TABINDEX="15">
+<?php if ($rule['action'] == 'custom') print $rule['action_arg']; ?>
+</TEXTAREA>
+  </TD>
+</TR>
+<?php } // end if $default->allow_custom. ?>
     </TABLE>
 
   </TD>
