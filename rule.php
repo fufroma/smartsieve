@@ -133,7 +133,7 @@ if ($action == 'delete')
 }
 if ($action == 'save') 
 {
-    $ret = checkRule(&$rule);
+    $ret = checkRule($rule);
     if ($ret == 'OK'){    /* rule passed sanity checks */
 
         // if existing rule, update. add new if not.
@@ -485,7 +485,7 @@ function getRulePOSTValues ($ruleID)
 /* basic sanity checks on rule.
  * any value returned will be an error msg.
  */
-function checkRule($rule) {
+function checkRule(&$rule) {
     global $default;
 
     /* check values do not exceed acceptible sizes. */
