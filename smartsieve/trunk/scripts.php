@@ -261,11 +261,11 @@ if ($sieve->scriptlist){ ?>
 ?>
     <TR CLASS="<?php echo $class;?>">
       <TD><INPUT TYPE="checkbox" NAME="scriptID[]" VALUE="<?php print $i; ?>"></TD>
-      <TD><A CLASS="rule" HREF="" onclick="viewScript('<?php echo $script; ?>'); return false;" onmouseover="status='View This Script'; return true;" onmouseout="status='';"><?php echo $script; ?></A></TD>
+      <TD><A CLASS="rule" HREF="" onclick="viewScript('<?php echo $script; ?>'); return false;" onmouseover="window.status='View This Script'; return true;" onmouseout="window.status='';"><?php echo $script; ?></A></TD>
       <TD>Active</TD>
       <TD>&nbsp;</TD>
       <TD>
-        <A HREF="" onclick="setActive(<?php echo $i ?>); return false;" onmouseover="status='Set script <?php echo $script; ?> as the active script'; return true;" onmouseout="status='';">Set Active</A>
+        <A HREF="" onclick="setActive(<?php echo $i ?>); return false;" onmouseover="window.status='Set script <?php echo $script; ?> as the active script'; return true;" onmouseout="window.status='';">Set Active</A>
       </TD>
     </TR>
 <?php
@@ -289,15 +289,15 @@ else { ?>
     <TABLE WIDTH="100%" BORDER="0" CELLPADDING="2" CELLSPACING="1">
     <BR>
       <TD CLASS="options">
-        <A CLASS="option" HREF="" onclick="setActive(); return false;" onmouseover="status='Activate Script'; return true;" onmouseout="status='';">Activate</a>
+        <A CLASS="option" HREF="" onclick="setActive(); return false;" onmouseover="window.status='Activate Script'; return true;" onmouseout="window.status='';">Activate</a>
          |
-        <A CLASS="option" HREF="" onclick="Submit('deactivate'); return false;" onmouseover="status='Deactivate All'; return true;" onmouseout="status='';">Deactivate</a>
+        <A CLASS="option" HREF="" onclick="Submit('deactivate'); return false;" onmouseover="window.status='Deactivate All'; return true;" onmouseout="window.status='';">Deactivate</a>
          |
-        <A CLASS="option" HREF="" onclick="createScript(); return false;" onmouseover="status='Create New Script'; return true;" onmouseout="status='';">Create</a>
+        <A CLASS="option" HREF="" onclick="createScript(); return false;" onmouseover="window.status='Create New Script'; return true;" onmouseout="window.status='';">Create</a>
          |
-        <A CLASS="option" HREF="" onclick="Submit('delete'); return false;" onmouseover="status='Delete Script'; return true;" onmouseout="status='';">Delete</a>
+        <A CLASS="option" HREF="" onclick="Submit('delete'); return false;" onmouseover="window.status='Delete Script'; return true;" onmouseout="window.status='';">Delete</a>
          |
-        <A CLASS="option" HREF="" onclick="Submit('rename'); return false;" onmouseover="status='Rename Script'; return true;" onmouseout="status='';">Rename</A>
+        <A CLASS="option" HREF="" onclick="Submit('rename'); return false;" onmouseover="window.status='Rename Script'; return true;" onmouseout="window.status='';">Rename</A>
       </TD>
     </BR>
     </TABLE>

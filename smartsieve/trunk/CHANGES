@@ -1,6 +1,9 @@
 Smartsieve - Changes file
 -------------------------
 
+04 March 2003 S Grier
+* onmouseover handlers reference window.status (bug 696102).
+
 03 March 2003 S Grier
 * LOG_ERROR should be LOG_ERR.
 * cleaned code to work when error_reporting = E_ALL.
