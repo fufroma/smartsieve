@@ -12,6 +12,7 @@ required:
 10. magic_quotes_runtime must be Off.
 
 TODO:
+- view raw script option.
 - should 'keep' be an action rather than an option?
 - fix stylesheet forbidden problem.
 - call getMailboxName from retrieveMailboxList.
