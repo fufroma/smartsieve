@@ -51,7 +51,7 @@
 <?php echo SmartSieve::text('Auto-respond text');?>:
       </TD>
       <TD NOWRAP="nowrap">
-        <TEXTAREA NAME="text" ROWS="3" COLS="40" WRAP="hard" TABINDEX="1">
+        <TEXTAREA NAME="text" ROWS="3" COLS="<?php echo $wrap_width;?>" WRAP="hard" TABINDEX="1">
 <?php if ($vacation['text']) print $vacation['text']; ?>
 </TEXTAREA>
       </TD>

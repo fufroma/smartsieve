@@ -147,6 +147,7 @@ if (!empty($default->vacation_help_url)){
 } else {
     $help_url = '';
 }
+$wrap_width = (SmartSieve::getConf('wrap_width')) ? SmartSieve::getConf('wrap_width') : 80;
 
 include $default->include_dir . '/common-head.inc';
 include $default->include_dir . '/menu.inc';

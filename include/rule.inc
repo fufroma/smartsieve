@@ -137,7 +137,7 @@
     <INPUT TYPE="radio" NAME="action" VALUE="reject" <?php if ($rule['action'] == 'reject') print "CHECKED"; ?> > <?php echo SmartSieve::text("Send a reject message");?>:
   </TD>
   <TD>
-    <TEXTAREA NAME="reject" ROWS="3" COLS="40" WRAP="hard" TABINDEX="14">
+    <TEXTAREA NAME="reject" ROWS="3" COLS="<?php echo $wrap_width;?>" WRAP="hard" TABINDEX="14">
 <?php if ($rule['action'] == 'reject') print $rule['action_arg']; ?>
 </TEXTAREA>
   </TD>
