@@ -335,6 +335,46 @@ class SmartSieve {
         return $def;
     }
 
+   /**
+    * Write a message to the log.
+    *
+    * @param msg string message to write to log
+    * @param level integer one of the LOG_* constants
+    * @return mixed boolean true on success, string error if not
+    */
+    function writeToLog($msg, $level=LOG_DEBUG)
+    {
+        static $log;
+        if (SmartSieve::getConf('logging') == false) {
+            return true;
+        }
+        if ($level > SmartSieve::getConf('logging_level')) {
+            return true;
+        }
+
+        if (!is_object($log)) {
+            include_once SmartSieve::getConf('lib_dir') . "/Log.php";
+
+            if (SmartSieve::getConf('logging_method') === null ||
+                SmartSieve::getConf('logging_facility') === null ||
+                SmartSieve::getConf('logging_ident') === null) {
+                return 'writeToLog: logging not configured correctly';
+            }
+            $log = new Log(SmartSieve::getConf('logging_method'),
+                           SmartSieve::getConf('logging_facility'),
+                           SmartSieve::getConf('logging_ident'));
+
+            if ($log->errstr){
+                return $log->errstr;
+            }
+            if (!is_object($log)){
+                return 'writeToLog: failed to create log object';
+            }
+        }
+
+        return ($log->writetoLog($msg, $level)) ? true : $log->errstr;
+    }
+
 
 }
 
