@@ -97,6 +97,7 @@ class Encrypt {
     * to use. ie. which set of cryptography libraries should be used.
     * Use the lib specified by $default->crypt_lib if acceptable. If not,
     * check for mcrypt, PEAR's Rc4, and PEAR's HCEMD5, in that order.
+    * function mcrypt_module_open is only found in libmcrypt 2.4.x and above.
     */
     function getCryptLib ()
     {
@@ -108,7 +109,7 @@ class Encrypt {
             }
         }
         if ($crypt_lib == ''){
-            if (extension_loaded('mcrypt')){
+            if (extension_loaded('mcrypt') && function_exists('mcrypt_module_open')){
                 $crypt_lib = 'MCRYPT';
             }
             elseif (@include_once('Crypt/Rc4.php')){
