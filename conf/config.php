@@ -79,6 +79,10 @@ $default->allow_regex = true;
 /* should we return to view all rules page following updates? */
 $default->return_after_update = false;
 
+/* what date format do we want on the script head? */
+/* see http://www.php.net/manual/en/function.date.php
+$default->script_date_format = 'l dS of F Y h:i:s A';
+
 // logging
 
 // should we log messages?
