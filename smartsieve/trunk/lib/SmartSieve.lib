@@ -496,7 +496,7 @@ class Script {
 	$this->name = $scriptname;
 	$this->script = '';
         $this->size = 0;
-        $this->so = false;
+        $this->so = true;
         $this->mode = '';
 	$this->rules = array();
 	$this->vacation = array();
