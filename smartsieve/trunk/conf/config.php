@@ -22,6 +22,14 @@ $default->user_select_server = true;
  */
 $default->allow_multi_scripts = true;
 
+// SmartSieve can only be safely used to edit scripts created using either 
+// SmartSieve or Websieve. If SmartSieve does not recognise the encoding 
+// on a sieve script it assumes it is not safe to overwrite the script. The 
+// user will receive a warning. If this is set to true the user will be 
+// allowed to overwrite the script anyway, otherwise they will be blocked 
+// from doing so. You are best advised to set this to false.
+$default->allow_write_unrecognised_scripts = false;
+
 /* default script filename. note that timsieved will add a .script 
  * extension when saving on the server. */
 $default->scriptfile = 'smartsieve';
