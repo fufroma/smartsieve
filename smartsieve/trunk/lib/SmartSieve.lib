@@ -202,21 +202,19 @@ class SmartSieve {
     */
     function getLang()
     {
-        global $HTTP_SESSION_VARS;
-        global $HTTP_POST_VARS, $HTTP_GET_VARS;
         global $default;
 
         /* get lang if login form submitted. */
-        if (isset($HTTP_POST_VARS['lang']))
+        if (isset($_POST['lang']))
             return SmartSieve::getFormValue('lang');
 
         /* check if user has changed language on login page. */
-        if (isset($HTTP_GET_VARS['login_lang']))
+        if (isset($_GET['login_lang']))
             return SmartSieve::getFormValue('login_lang');
 
         /* check if language is set in the session. */
-        if (isset($HTTP_SESSION_VARS['smartsieve_lang']))
-            return $HTTP_SESSION_VARS['smartsieve_lang'];
+        if (isset($_SESSION['smartsieve_lang']))
+            return $_SESSION['smartsieve_lang'];
 
         /* if none of the above, use the default. */
         return $default->language;

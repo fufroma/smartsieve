@@ -22,14 +22,14 @@ class Encrypt {
     */
     function generateKey () {
 
-        if (isset($GLOBALS['HTTP_COOKIE_VARS']) &&
-            isset($GLOBALS['HTTP_COOKIE_VARS'][session_name()])) {
+        if (isset($_COOKIE) &&
+            isset($_COOKIE[session_name()])) {
 
             // seed the generator. should only happen once.
             mt_srand((double)microtime() * 1000000);
             $key = md5(uniqid(mt_rand(),1));
 
-            $GLOBALS['HTTP_COOKIE_VARS']['key'] = $key;
+            $_COOKIE['key'] = $key;
             setcookie('key',$key,0,$GLOBALS['default']->cookie_path,$GLOBALS['default']->cookie_domain,0);
 
         }
@@ -49,10 +49,9 @@ class Encrypt {
     * or the less random one based on session_id.
     */
     function retrieveKey () {
-        global $HTTP_COOKIE_VARS;
 
-        if (isset($HTTP_COOKIE_VARS['key']))
-            $key = $HTTP_COOKIE_VARS['key'];
+        if (isset($_COOKIE['key']))
+            $key = $_COOKIE['key'];
         else
             $key = md5(session_id());
 

@@ -34,7 +34,6 @@ class Script {
 
   // get sieve script rules for this user
   function retrieveRules () {
-    global $HTTP_SESSION_VARS;
     global $managesieve;
     $continuebit = 1;
     $sizebit = 2;
@@ -155,7 +154,7 @@ class Script {
  
   // update and save sieve script
   function updateScript () {
-    global $HTTP_SESSION_VARS,$default;
+    global $default;
     global $managesieve;
  
     $activerules = 0;
