@@ -41,6 +41,14 @@ if (!$script->retrieveRules($sieve->connection)) {
 	": " . $script->errstr, LOG_ERROR);
 }
 
+// warn if script encoding was not recognised.
+if ($script->so == false){
+    array_push($msgs, 'WARNING: this script does not appear to be in a format SmartSieve can read.<BR>Modifying this script may result in existing rules being lost.');
+}
+if ($script->mode == 'advanced'){
+    array_push($msgs, 'WARNING: this script appears to be in advanced mode.<BR>Modifying this script may result in existing rules being lost.');
+}
+
 /* do rule status change if requested. */
 
 if (isset($GLOBALS['HTTP_POST_VARS']['action'])) {
