@@ -1,6 +1,9 @@
 Smartsieve - Changes file
 -------------------------
 
+23 Oct 2002 S Grier
+* main.php: $errstr is now $errors array. will also now report $msgs.
+
 22 Oct 2002 S Grier
 * improved stylesheet formatting. now uses #RRGGBB codes for colours. 
 * added some &nbsp; chars to main.php, rule.php, vacation.php to improve 
