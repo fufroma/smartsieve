@@ -2,6 +2,11 @@ Smartsieve - Changes file
 -------------------------
 
 18 Oct 2002 S Grier
+* changed login.php and main.php to use AppSession::setUrl().
+* lib/Encrypt.php: check for specific session_name() cookie when setting 
+  key cookie. necessary to handle cookie-less sessions.
+* added AppSession::setUrl() function to cope where cookies are not 
+  accepted by the browser.
 * addended README and INSTALL notes for mailinglist info.
 
 08 Oct 2002 S Grier
