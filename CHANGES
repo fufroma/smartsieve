@@ -1,6 +1,9 @@
 Smartsieve - Changes file
 -------------------------
 
+07 July 2004 S Grier
+* Add contributing and translating notes to README.
+
 05 July 2004 S Grier
 * Set charsets in conf/locales.php.
 * Only read translations file on first call to SmartSieve::text().
