@@ -1,6 +1,9 @@
 Smartsieve - Changes file
 -------------------------
 
+02 Dec 2002 S Grier
+* small changes to INSTALL.
+
 28 Nov 2002 S Grier
 * AppSession class now always sets errstr when returning false.
 * initialize SieveSession object with function arguments.
