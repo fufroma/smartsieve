@@ -32,7 +32,7 @@ if (isset($HTTP_SESSION_VARS['sieve']) && is_object($HTTP_SESSION_VARS['sieve'])
 	session_unregister('sieve');
     }
     else {
-	header('Location: ' . $baseurl . 'main.php',true);
+	header('Location: ' . AppSession::setUrl('main.php'),true);
 	exit;
     }
 }
@@ -56,7 +56,7 @@ if (isset($HTTP_POST_VARS['sieveuid']) && isset($HTTP_POST_VARS['passwd'])) {
 	$GLOBALS['HTTP_SERVER_VARS']['REMOTE_ADDR'] . '] {' .
 	$sieve->server . ':' . $sieve->sieveport . '}', LOG_ERR))
       print "ERROR: " . $sieve->errstr . "<BR>";
-    header('Location: ' . $default->baseurl . 'login.php?reason=failure',true);
+    header('Location: ' . AppSession::setUrl('login.php?reason=failure'),true);
     exit;
 }
 
@@ -93,7 +93,7 @@ $tabindex = 1;
 
 <BODY onload="setFocus()">
 
-<FORM ACTION="<?php AppSession::setUrl('login.php'); ?>" METHOD="post" NAME="login">
+<FORM ACTION="<?php echo AppSession::setUrl('login.php'); ?>" METHOD="post" NAME="login">
 
 <CENTER>
 <TABLE WIDTH="300" CELLPADDING="5" BORDER="0" CELLSPACING="0">
