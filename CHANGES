@@ -1,6 +1,9 @@
 Smartsieve - Changes file
 -------------------------
 
+16 July 2003 S Grier
+* add "vacation" to require line if custom rule contains vacation command.
+
 14 July 2003 S Grier
 * added support for Websieve's custom rules.
 
