@@ -14,7 +14,8 @@ require "$default->lib_dir/SmartSieve.lib";
 
 session_name('SIEVE_SESSION');
 @session_start();
-$errstr = '';
+$errors = array();
+$msgs = array();
 
 $sieve = &$GLOBALS['HTTP_SESSION_VARS']['sieve'];
 $script = &$GLOBALS['HTTP_SESSION_VARS']['script'];
@@ -35,7 +36,7 @@ if (!$sieve->openSieveSession()) {
     exit;
 }
 if (!$script->retrieveRules($sieve->connection)) {
-    $errstr .= "ERROR: " . $script->errstr . "<BR>\n";
+    array_push($errors, 'ERROR: ' . $script->errstr);
     $sieve->writeToLog("ERROR: retrieveRules failed for " . $sieve->user .
 	": " . $script->errstr, LOG_ERROR);
 }
@@ -91,14 +92,14 @@ if (isset($GLOBALS['HTTP_POST_VARS']['action'])) {
     }
     /* write these changes. */
     if (!$script->updateScript($sieve->connection)) {
-	$errstr .= "ERROR: " . $script->errstr . "<BR>\n";
+	array_push($errors, 'ERROR: ' . $script->errstr);
 	$sieve->writeToLog('ERROR: updateScript failed for ' . $sieve->user
 	    . ': ' . $script->errstr, LOG_ERROR);
     }
     /* get the rules from the saved script again. */
     else {
 	if (!$script->retrieveRules($sieve->connection)) {
-	    $errstr .= "ERROR: " . $script->errstr . "<BR>\n";
+	    array_push($errors, 'ERROR: ' . $script->errstr);
 	    $sieve->writeToLog('ERROR: retrieveRules failed for ' . $sieve->user
 	    	. ': ' . $script->errstr, LOG_ERROR);
 	}
@@ -146,18 +147,27 @@ require "$default->include_dir/main.js";
 </TABLE>
 
 <BR>
-<?php if ($errstr) {  ?>
+<?php if ($errors || $msgs) {  ?>
 
 <TABLE WIDTH="100%" CELLPADDING="5" BORDER="0" CELLSPACING="0">
+<?php foreach ($errors as $err){ ?>
   <TR>
     <TD CLASS="errors">
-      <?php print $errstr; ?>
+      <?php print "$err\n"; ?>
     </TD>
   </TR>
+<?php } ?>
+<?php foreach ($msgs as $msg){ ?>
+  <TR>
+    <TD CLASS="messages">
+      <?php echo "$msg\n"; ?>
+    </TD>
+  </TR>
+<?php } ?>
 </TABLE>
 
 <BR>
-<?php } //end if $errstr ?>
+<?php } //end if $errors ?>
 
 <TABLE WIDTH="100%" CELLPADDING="1" BORDER="0" CELLSPACING="0">
 <TR>
