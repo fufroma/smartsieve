@@ -1,7 +1,7 @@
 
 required:
 	1. php-4.x
-	2. register_globals must be on.
+	2. register_globals must be on (no longer true).
 	3. track vars on. should always be with php-4.x.
 	4. php must be compiled with imap support.
 	5. php-4.3.0 + openssl for ssl/tls support.
@@ -12,7 +12,6 @@ required:
 	10. magic_quotes_runtime must be Off.
 
 TODO:
-	-  make it possible to switch logging off.
 	-  cross site scripting: filter form data using htmlspecialchars and/or
 	   strip_tags().
 	-  inner table width formatting on main.php.
@@ -24,8 +23,9 @@ TODO:
 		- return codes.
 	-  vacation rule checkbox on main page.
 	-  generic error function, to use when openSieveSession() fails.
-	- add config option as whether to return to main.php or report 
-	  success on successful update of rule or vacation.
+	-  add config option as whether to return to main.php or report 
+	   success on successful update of rule or vacation.
+	-  add $servers->imapflags value to conf/servers.php (?).
 
 
 	-  modify to handle magic_quotes_runtime = On (?)
@@ -39,6 +39,7 @@ TODO:
 	-  sieve.lib - ssl imap connections.
 		- could use fsockopen('ssl://server...
 		  or do something with the sieve STARTTLS command.
+	-  need to think about interface for managing existing scripts.
 
 
 $Id$
