@@ -45,6 +45,9 @@ $default->lib_dir = './lib';
 /* location of images. */
 $default->image_dir = './images';
 
+// what name should we use for the php session.
+$default->session_name = 'SmartSieve';
+
 // this should be the same as $default->baseurl.
 $default->cookie_domain = $GLOBALS['HTTP_SERVER_VARS']['SERVER_NAME'];
 
