@@ -10,13 +10,22 @@
 
 class Log {
 
+    var $method;   /* logging method: file or syslog. */
+    var $facility; /* syslog facility or file name, depending on $method. */
+    var $ident;    /* string to identify SmartSieve log messages in log. */
+    var $stream;   /* file pointer to log facility. */
+    var $open;     /* boolean: is fp to log open? */
+    var $errstr;   /* error messages. */
+
     // class constructor
     function Log($method,$facility,$ident) {
 
 	$this->method = $method;
 	$this->facility = $facility;
 	$this->ident = $ident;
+        $this->stream = 0;
 	$this->open = false;
+        $this->errstr = '';
 
 	if ($method == 'file'){
 	    if (!$this->open_file()) return false;
@@ -58,21 +67,19 @@ class Log {
     }
 
     function writeToLog($msg,$level) {
-	if (!isset($this->stream)){
+	if (!$this->stream){
 	    $this->errstr = "writeToLog: no log open";
 	    return false;
 	}
-	$s = "$msg\n";
 	if ($this->method == 'file'){
-	    $s = strftime("%b %d %T") . ' [' . $this->ident . "] $s";
-	    $ret = fwrite($this->stream, $s);
-	    if ($ret == -1){
+	    $s = strftime("%b %d %T") . ' [' . $this->ident . "] $msg\n";
+	    if (!fwrite($this->stream, $s)){
 	        $this->errstr = "writeToLog: error writing to log";
 	        return false;
 	    }
 	}
 	elseif ($this->method == 'syslog'){
-	    if (!syslog($level, $s)){
+	    if (!syslog($level, $msg)){
 		$this->errstr = "writeToLog: error writing to log";
 		return false;
 	    }

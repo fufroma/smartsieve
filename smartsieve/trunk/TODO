@@ -13,7 +13,6 @@ required:
 
 TODO:
 - fix stylesheet forbidden problem.
-- apply patch to Log.php.
 - call getMailboxName from retrieveMailboxList.
 - write a getScriptLine function to do rtrim, stripslashes, etc.
 - move functions to SmartSieve class: rule.php:checkRule(), 

@@ -1,6 +1,12 @@
 Smartsieve - Changes file
 -------------------------
 
+30 Jan 2003 S Grier
+* Log class:
+  - added var declarations.
+  - initialize $errstr and $stream properly.
+  - expect fwrite to return false rather than -1 on failure.
+
 28 Jan 2003 S Grier
 * first bash at scripts page for managing scripts.
 * smartsieve.css stylesheet replaced by css.php and style.php.
