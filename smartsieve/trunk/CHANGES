@@ -1,6 +1,14 @@
 Smartsieve - Changes file
 -------------------------
 
+30 April 2003 S Grier
+* login.php:
+   now tries to authenticate when a SmartSieve session already exists. If this 
+   fails SmartSieve now warns that its cookie settings may be wrong. This stops 
+   browser loops when cookie_domain and cookie_path are set incorrectly.
+* SmartSieve.lib:
+   pass SieveSession object $default->socket_timeout value.
+
 28 April 2003 S Grier
 * Re-worked SmartSieve's cryptographic handling:
  - abstracted the code which interfaces with external cryptographic libraries into
