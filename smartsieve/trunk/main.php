@@ -120,27 +120,6 @@ require "$default->include_dir/main.js";
 
 <BODY>
 
-<?php print "IMPLEM: " . $sieve->connection->implementation;
-print "<BR>SASL: ";
-foreach ($sieve->connection->saslmethods as $meth){
-    print " $meth";
-}
-print "<BR>SIEVE: ";
-foreach ($sieve->connection->capabilities as $meth){
-    print " $meth";
-}
-
-foreach($script->scriptlist as $scpt){
-    print "<BR>$scpt";
-    if ($scpt == $script->activescript)
-	print " ACTIVE";
-}
-print "<BR><BR>\n";
-foreach ($HTTP_COOKIE_VARS as $var => $val){
-    print "VAR: $var $val<BR>\n";
-}
-
-?>
 
 <FORM ACTION="<?php print $default->baseurl ?>main.php" METHOD="post" NAME="rules">
 
