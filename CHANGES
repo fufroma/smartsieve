@@ -1,6 +1,12 @@
 Smartsieve - Changes file
 -------------------------
 
+04 Feb 2003 S Grier
+* set workingscript active if $default->allow_multi_scripts = false.
+* add $default->scripts_help_url config option for new scripts page.
+* scripts.php: make links to view scripts work.
+* added manage scripts menu links.
+
 31 Jan 2003 S Grier
 * scripts.php: can now change active script.
 
