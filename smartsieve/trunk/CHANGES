@@ -2,7 +2,7 @@ Smartsieve - Changes file
 -------------------------
 
 27 Oct 2003 S Grier
-* moved html from rule.php to new rule.inc template.
+* moved html from rule.php, scripts.php, vacation.php and login.php to templates.
 
 23 Oct 2003 S Grier
 * added forward mail interface forward.php.
