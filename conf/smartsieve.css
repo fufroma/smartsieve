@@ -158,6 +158,13 @@ a.rule:hover{
 	font-size: 9pt;
 }
 
+.messages{
+	background-color: #FFFFFF;
+	color: #000000;
+	font-family: helvetica,sans-serif;
+	font-size: 9pt;
+}
+
 a.option:link{
         color: blue;
         font-family: helvetica,sans-serif;
