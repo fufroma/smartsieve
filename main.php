@@ -108,9 +108,9 @@ if (isset($GLOBALS['HTTP_POST_VARS']['action'])) {
 ?>
 
 <HTML>
-<HEAD><TITLE><? print $default->page_title; ?></TITLE>
+<HEAD><TITLE><?php print $default->page_title; ?></TITLE>
 <LINK HREF="<?php print $default->config_dir; ?>/smartsieve.css" REL="stylesheet" TYPE="text/css">
-<?
+<?php
 
 require "$default->include_dir/main.js";
 
@@ -120,7 +120,7 @@ require "$default->include_dir/main.js";
 
 <BODY>
 
-<? print "IMPLEM: " . $sieve->connection->implementation;
+<?php print "IMPLEM: " . $sieve->connection->implementation;
 print "<BR>SASL: ";
 foreach ($sieve->connection->saslmethods as $meth){
     print " $meth";
@@ -142,7 +142,7 @@ foreach ($HTTP_COOKIE_VARS as $var => $val){
 
 ?>
 
-<FORM ACTION="<? print $default->baseurl ?>main.php" METHOD="post" NAME="rules">
+<FORM ACTION="<?php print $default->baseurl ?>main.php" METHOD="post" NAME="rules">
 
 <TABLE WIDTH="100%" CELLPADDING="2" BORDER="0" CELLSPACING="0">
 <TR>
@@ -151,10 +151,10 @@ foreach ($HTTP_COOKIE_VARS as $var => $val){
       <TR>
 	<TD CLASS="menu">
 	  &nbsp;
-	  <a href="<? print $default->baseurl; ?>login.php?reason=logout">Logout</a> |
-	  <a href="<? print $default->baseurl; ?>vacation.php">Vacation Messages</a> |
-	  <a href="<? print $default->baseurl; ?>main.php">Main</a> |
-	  <a href="<? print $default->baseurl; ?>rule.php">New Filter Rule</a> <?php if ($default->main_help_url){ ?>| 
+	  <a href="<?php print $default->baseurl; ?>login.php?reason=logout">Logout</a> |
+	  <a href="<?php print $default->baseurl; ?>vacation.php">Vacation Messages</a> |
+	  <a href="<?php print $default->baseurl; ?>main.php">Main</a> |
+	  <a href="<?php print $default->baseurl; ?>rule.php">New Filter Rule</a> <?php if ($default->main_help_url){ ?>| 
 	  <a href="<?php print $default->main_help_url; ?>">Help</a> <?php } /* endif. */ ?>
 
 	</TD>
@@ -170,22 +170,22 @@ foreach ($HTTP_COOKIE_VARS as $var => $val){
 <TABLE WIDTH="100%" CELLPADDING="5" BORDER="0" CELLSPACING="0">
   <TR>
     <TD CLASS="errors">
-      <? print $errstr; ?>
+      <?php print $errstr; ?>
     </TD>
   </TR>
 </TABLE>
 
 <BR>
-<? } //end if $errstr ?>
+<?php } //end if $errstr ?>
 
 <TABLE WIDTH="100%" CELLPADDING="1" BORDER="0" CELLSPACING="0">
 <TR>
   <TD CLASS="statusouter">
     <TABLE WIDTH="100%" CELLPADDING="2" BORDER="0" CELLSPACING="0">
       <TR>
-	<TD CLASS="status">&nbsp;User: <?print $sieve->user; ?></TD>
-        <TD CLASS="status">&nbsp;Server: <?print $sieve->server; ?></TD>
-        <TD CLASS="status">&nbsp;Script: <?print $sieve->scriptfile; ?></TD>
+	<TD CLASS="status">&nbsp;User: <?php print $sieve->user; ?></TD>
+        <TD CLASS="status">&nbsp;Server: <?php print $sieve->server; ?></TD>
+        <TD CLASS="status">&nbsp;Script: <?php print $sieve->scriptfile; ?></TD>
       </TR>
     </TABLE>
   </TD>
@@ -294,7 +294,7 @@ if ($script->vacation){
 
 </FORM>
 
-<?
+<?php
 
 $sieve->closeSieveSession();
 

@@ -142,9 +142,9 @@ if ($action == 'save')
 ?>
 
 <HTML>
-<HEAD><TITLE><? print $default->page_title; ?></TITLE>
+<HEAD><TITLE><?php print $default->page_title; ?></TITLE>
 <LINK HREF="<?php print $default->config_dir; ?>/smartsieve.css" REL="stylesheet" TYPE="text/css">
-<?
+<?php
 
 require "$default->include_dir/rule.js";
 
@@ -155,7 +155,7 @@ require "$default->include_dir/rule.js";
 
 <BODY>
 
-<FORM ACTION="<? print $default->baseurl ?>rule.php" METHOD="post" NAME="thisRule">
+<FORM ACTION="<?php print $default->baseurl ?>rule.php" METHOD="post" NAME="thisRule">
 
 <TABLE WIDTH="100%" CELLPADDING="2" BORDER="0" CELLSPACING="0">
 <TR>
@@ -164,10 +164,10 @@ require "$default->include_dir/rule.js";
       <TR>
         <TD CLASS="menu">
           &nbsp;
-          <a href="<? print $default->baseurl; ?>login.php?reason=logout">Logout</a> |
-          <a href="<? print $default->baseurl; ?>vacation.php">Vacation Messages</a> |
-          <a href="<? print $default->baseurl; ?>main.php">Main</a> |
-          <a href="<? print $default->baseurl; ?>rule.php">New Filter Rule</a> <?php if ($default->rule_help_url){ ?>|
+          <a href="<?php print $default->baseurl; ?>login.php?reason=logout">Logout</a> |
+          <a href="<?php print $default->baseurl; ?>vacation.php">Vacation Messages</a> |
+          <a href="<?php print $default->baseurl; ?>main.php">Main</a> |
+          <a href="<?php print $default->baseurl; ?>rule.php">New Filter Rule</a> <?php if ($default->rule_help_url){ ?>|
           <a href="<?php print $default->rule_help_url; ?>">Help</a> <?php } /* endif. */ ?>
 
         </TD>
@@ -183,22 +183,22 @@ require "$default->include_dir/rule.js";
 <TABLE WIDTH="100%" CELLPADDING="5" BORDER="0" CELLSPACING="0">
   <TR>
     <TD CLASS="errors">
-      <? print $errstr; ?>
+      <?php print $errstr; ?>
     </TD>
   </TR>
 </TABLE>
 
 <BR>
-<? } //end if $errstr ?>
+<?php } //end if $errstr ?>
 
 <TABLE WIDTH="100%" CELLPADDING="1" BORDER="0" CELLSPACING="0">
 <TR>
   <TD CLASS="statusouter">
     <TABLE WIDTH="100%" CELLPADDING="2" BORDER="0" CELLSPACING="0">
       <TR>
-        <TD CLASS="status">&nbsp;User: <?print $sieve->user; ?></TD>
-        <TD CLASS="status">&nbsp;Server: <?print $sieve->server; ?></TD>
-        <TD CLASS="status">&nbsp;Script: <?print $sieve->scriptfile; ?></TD>
+        <TD CLASS="status">&nbsp;User: <?php print $sieve->user; ?></TD>
+        <TD CLASS="status">&nbsp;Server: <?php print $sieve->server; ?></TD>
+        <TD CLASS="status">&nbsp;Script: <?php print $sieve->scriptfile; ?></TD>
       </TR>
     </TABLE>
   </TD>
@@ -214,7 +214,7 @@ require "$default->include_dir/rule.js";
     <TABLE WIDTH="100%" CELLPADDING="5" BORDER="0" CELLSPACING="0">
     <TR>
       <TD CLASS="ruleinfo">
-    <? if ($rule) {
+    <?php if ($rule) {
 	 print "Edit Mail Filter Rule</TD><TD CLASS=";
 	 if ($rule['status'] == 'ENABLED'){
 	    print "\"ruleenabled\"> ENABLED ";
@@ -235,10 +235,10 @@ require "$default->include_dir/rule.js";
     <TABLE WIDTH="100%" CELLPADDING="2" BORDER="0" CELLSPACING="0">
     <TR>
       <TD>
-    <INPUT TYPE="checkbox" NAME="continue" VALUE="continue" <? if ($rule['continue']) print "CHECKED"; ?> >Check message against next rule also
-    <INPUT TYPE="checkbox" NAME="keep" VALUE="keep" <? if ($rule['keep']) print "CHECKED"; ?> >Keep a copy of the message in your Inbox
+    <INPUT TYPE="checkbox" NAME="continue" VALUE="continue" <?php if ($rule['continue']) print "CHECKED"; ?> >Check message against next rule also
+    <INPUT TYPE="checkbox" NAME="keep" VALUE="keep" <?php if ($rule['keep']) print "CHECKED"; ?> >Keep a copy of the message in your Inbox
  <?php if ($default->allow_regex){ ?>
-    <INPUT TYPE="checkbox" NAME="regexp" VALUE="regexp" <? if ($rule['regexp']) print "CHECKED"; ?> >Use regular expressions
+    <INPUT TYPE="checkbox" NAME="regexp" VALUE="regexp" <?php if ($rule['regexp']) print "CHECKED"; ?> >Use regular expressions
  <?php }  ?>
       </TD>
     </TR>
@@ -259,25 +259,25 @@ require "$default->include_dir/rule.js";
       <TD NOWRAP="nowrap">
 Match 
         <SELECT NAME="anyof">
-	    <OPTION <? if (!$rule['anyof']) print "SELECTED"; ?> VALUE="0"> all of
-	    <OPTION <? if ($rule['anyof']) print "SELECTED"; ?> VALUE="1"> any of
+	    <OPTION <?php if (!$rule['anyof']) print "SELECTED"; ?> VALUE="0"> all of
+	    <OPTION <?php if ($rule['anyof']) print "SELECTED"; ?> VALUE="1"> any of
         </SELECT>
       </TD>
       <TD NOWRAP="nowrap">
-    If message 'From:' contains: <INPUT TYPE="text" NAME="from" <? if ($rule['from']) print "VALUE=\"" . $rule['from'] . "\" "; ?>SIZE="50">
+    If message 'From:' contains: <INPUT TYPE="text" NAME="from" <?php if ($rule['from']) print "VALUE=\"" . $rule['from'] . "\" "; ?>SIZE="50">
   </TD>
 </TR>
 <TR>
   <TD>
   </TD>
   <TD>
-    If message 'To:' contains: <INPUT TYPE="text" NAME="to" <? if ($rule['to']) print "VALUE=\"" . $rule['to'] . "\" "; ?>SIZE="50">
+    If message 'To:' contains: <INPUT TYPE="text" NAME="to" <?php if ($rule['to']) print "VALUE=\"" . $rule['to'] . "\" "; ?>SIZE="50">
 </TR>
 <TR>
   <TD>
   </TD>
   <TD>
-    If message 'Subject:' contains: <INPUT TYPE="text" NAME="subject" <? if ($rule['subject']) print "VALUE=\"" . $rule['subject'] . "\" "; ?>SIZE="50">
+    If message 'Subject:' contains: <INPUT TYPE="text" NAME="subject" <?php if ($rule['subject']) print "VALUE=\"" . $rule['subject'] . "\" "; ?>SIZE="50">
   </TD>
 </TR>
 <TR>
@@ -286,17 +286,17 @@ Match
   <TD>
     If message size is 
 	<SELECT NAME="gthan">
-	    <OPTION <? if (!$rule['gthan']) print "SELECTED"; ?> VALUE="0"> less than
-	    <OPTION <? if ($rule['gthan']) print "SELECTED"; ?> VALUE="1"> greater than
+	    <OPTION <?php if (!$rule['gthan']) print "SELECTED"; ?> VALUE="0"> less than
+	    <OPTION <?php if ($rule['gthan']) print "SELECTED"; ?> VALUE="1"> greater than
 	</SELECT>
-	<INPUT TYPE="text" NAME="size" <? if ($rule['size']) print "VALUE=\"" . $rule['size'] . "\" "; ?>SIZE="5"> KiloBytes
+	<INPUT TYPE="text" NAME="size" <?php if ($rule['size']) print "VALUE=\"" . $rule['size'] . "\" "; ?>SIZE="5"> KiloBytes
   </TD>
 </TR>
 <TR>
   <TD>
   </TD>
   <TD>
-    If mail header: <INPUT TYPE="text" NAME="field" <? if ($rule['field']) print "VALUE=\"" . $rule['field'] . "\" "; ?>SIZE="20"> contains: <INPUT TYPE="text" NAME="field_val" <? if ($rule['field_val']) print "VALUE=\"" . $rule['field_val'] . "\" "; ?>SIZE="30">
+    If mail header: <INPUT TYPE="text" NAME="field" <?php if ($rule['field']) print "VALUE=\"" . $rule['field'] . "\" "; ?>SIZE="20"> contains: <INPUT TYPE="text" NAME="field_val" <?php if ($rule['field_val']) print "VALUE=\"" . $rule['field_val'] . "\" "; ?>SIZE="30">
   </TD>
     </TR>
     </TABLE>
@@ -316,11 +316,11 @@ Match
 </TR>
 <TR>
   <TD>
-    <INPUT TYPE="radio" NAME="action" VALUE="folder" <? if ($rule['action'] == 'folder') print "CHECKED"; ?> > File Into: 
+    <INPUT TYPE="radio" NAME="action" VALUE="folder" <?php if ($rule['action'] == 'folder') print "CHECKED"; ?> > File Into: 
   </TD>
   <TD>
     <SELECT NAME="folder">
-<? foreach ($sieve->mboxlist as $mbox){
+<?php foreach ($sieve->mboxlist as $mbox){
       $opt =  "\t<OPTION ";
       if ($rule['action_arg'] == $mbox) $opt .= "SELECTED ";
       $opt .= "VALUE=\"$mbox\">$mbox</OPTION>\n";
@@ -332,25 +332,25 @@ Match
 </TR>
 <TR>
   <TD>
-    <INPUT TYPE="radio" NAME="action" VALUE="address" <? if ($rule['action'] == 'address') print "CHECKED"; ?> > Forward to address: 
+    <INPUT TYPE="radio" NAME="action" VALUE="address" <?php if ($rule['action'] == 'address') print "CHECKED"; ?> > Forward to address: 
   </TD>
   <TD>
-    <INPUT TYPE="text" NAME="address" <? if ($rule['action'] == 'address') print "VALUE=\"" . $rule['action_arg'] . "\" "; ?>SIZE="40">
+    <INPUT TYPE="text" NAME="address" <?php if ($rule['action'] == 'address') print "VALUE=\"" . $rule['action_arg'] . "\" "; ?>SIZE="40">
   </TD>
 </TR>
 <TR>
   <TD>
-    <INPUT TYPE="radio" NAME="action" VALUE="reject" <? if ($rule['action'] == 'reject') print "CHECKED"; ?> > Send a reject message: 
+    <INPUT TYPE="radio" NAME="action" VALUE="reject" <?php if ($rule['action'] == 'reject') print "CHECKED"; ?> > Send a reject message: 
   </TD>
   <TD>
     <TEXTAREA NAME="reject" ROWS="3" COLS="40" WRAP="hard" TABINDEX="14">
-<? if ($rule['action'] == 'reject') print $rule['action_arg']; ?>
+<?php if ($rule['action'] == 'reject') print $rule['action_arg']; ?>
 </TEXTAREA>
   </TD>
 </TR>
 <TR>
   <TD>
-    <INPUT TYPE="radio" NAME="action" VALUE="discard" <? if ($rule['action'] == 'discard') print "CHECKED"; ?> > Discard the message.
+    <INPUT TYPE="radio" NAME="action" VALUE="discard" <?php if ($rule['action'] == 'discard') print "CHECKED"; ?> > Discard the message.
   </TD>
   <TD></TD>
     </TR>
@@ -366,15 +366,15 @@ Match
       <TD CLASS="options" COLSPAN="2">
         <BR>
         <A CLASS="option" HREF="" onclick="Submit('save'); return false;" onmouseover="status='Save Changes'; return true;" onmouseout="status='';">Save Changes</a>
-<? // if ($rule) { ?>
-<? if ($script->rules[$ruleID]) { ?>
+<?php // if ($rule) { ?>
+<?php if ($script->rules[$ruleID]) { ?>
           |
         <A CLASS="option" HREF="" onclick="Submit('enable'); return false;" onmouseover="status='Enable'; return true;" onmouseout="status='';">Enable</a>
           |
         <A CLASS="option" HREF="" onclick="Submit('disable'); return false;" onmouseover="status='Disable'; return true;" onmouseout="status='';">Disable</a>
           |
         <A CLASS="option" HREF="" onclick="Submit('delete'); return false;" onmouseover="status='Delete'; return true;" onmouseout="status='';">Delete</a>
-<? } ?>
+<?php } ?>
       </TD>
     </TR>
     </TABLE>
@@ -384,25 +384,25 @@ Match
 </TABLE>
 
 
-<INPUT TYPE="hidden" NAME="priority" VALUE="<?
+<INPUT TYPE="hidden" NAME="priority" VALUE="<?php
     if ($rule) {
 	print $rule['priority'];
     }
     else print $script->pcount+1;
 ?>">
-<INPUT TYPE="hidden" NAME="status" VALUE="<?
+<INPUT TYPE="hidden" NAME="status" VALUE="<?php
     if ($rule) {
 	print $rule['status'];
     }
     else print "ENABLED";
 ?>">
-<INPUT TYPE="hidden" NAME="flg" VALUE="<?
+<INPUT TYPE="hidden" NAME="flg" VALUE="<?php
     if ($rule) {
 	print $rule['flg'];
     }
 ?>">
 <INPUT TYPE="hidden" NAME="thisAction" VALUE="">
-<INPUT TYPE="hidden" NAME="ruleID" VALUE="<?
+<INPUT TYPE="hidden" NAME="ruleID" VALUE="<?php
    if ($rule && isset($ruleID)) {
 	print $ruleID;
    }
@@ -411,7 +411,7 @@ Match
 
 </FORM>
 
-<?
+<?php
 
 $sieve->closeSieveSession();
 
