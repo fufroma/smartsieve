@@ -26,7 +26,7 @@ $reason = AppSession::getFormValue('reason');
 if (isset($HTTP_SESSION_VARS['sieve']) && is_object($HTTP_SESSION_VARS['sieve'])) {
     if ($reason == 'logout') {
 	if (!$HTTP_SESSION_VARS['sieve']->writeToLog("logout: " . 
-				$HTTP_SESSION_VARS['sieve']->user, LOG_INFO))
+				$HTTP_SESSION_VARS['sieve']->authz, LOG_INFO))
 	    echo SmartSieve::text('ERROR: ') . $HTTP_SESSION_VARS['sieve']->errstr . "<BR>";
 	unset($HTTP_SESSION_VARS['sieve']);
 	session_unregister('sieve');
@@ -60,12 +60,12 @@ if (isset($HTTP_SESSION_VARS['sieve']) && is_object($HTTP_SESSION_VARS['sieve'])
 
 
 // create new session if login form submitted
-if (isset($HTTP_POST_VARS['sieveuid']) && isset($HTTP_POST_VARS['passwd'])) {
+if (isset($HTTP_POST_VARS['auth']) && isset($HTTP_POST_VARS['passwd'])) {
     $sieve = new AppSession();
     if ($sieve->initialize() && $sieve->authenticate()) {
 	// must have created session, and authenticated ok
 
-	if (!$sieve->writeToLog("login: " . $sieve->user . ' [' . 
+	if (!$sieve->writeToLog("login: " . (($sieve->auth != $sieve->authz) ? "$sieve->auth as " : "") .  $sieve->authz . ' [' . 
 		$GLOBALS['HTTP_SERVER_VARS']['REMOTE_ADDR'] . '] {' . 
 		$sieve->server . ':' . $sieve->sieveport . '}', LOG_INFO))
 	    echo SmartSieve::text('ERROR: ') . $sieve->errstr . "<BR>";
@@ -85,7 +85,7 @@ if (isset($HTTP_POST_VARS['sieveuid']) && isset($HTTP_POST_VARS['passwd'])) {
 	exit;
     }
 
-    if (!$sieve->writeToLog("FAILED LOGIN: " . $sieve->user . ' [' .
+    if (!$sieve->writeToLog("FAILED LOGIN: " . $sieve->authz . ' [' .
 	$GLOBALS['HTTP_SERVER_VARS']['REMOTE_ADDR'] . '] {' .
 	$sieve->server . ':' . $sieve->sieveport . '}: ' . $sieve->errstr, LOG_ERR)) {
         echo SmartSieve::text('ERROR: ') . $sieve->errstr . "<BR>";

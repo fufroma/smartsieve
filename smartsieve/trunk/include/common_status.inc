@@ -28,7 +28,7 @@
     <TABLE WIDTH="100%" CELLPADDING="2" BORDER="0" CELLSPACING="0">
       <TR CLASS="status">
         <TD>
-          &nbsp;<?php echo SmartSieve::text('User');?>: <?php print $sieve->user; ?> 
+          &nbsp;<?php echo SmartSieve::text('User');?>: <?php print $sieve->authz; ?> 
         </TD>
         <TD>
           &nbsp;<?php echo SmartSieve::text('Server');?>: <?php print $sieve->server; ?> 
