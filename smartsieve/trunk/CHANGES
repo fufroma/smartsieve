@@ -2,6 +2,7 @@ Smartsieve - Changes file
 -------------------------
 
 13 August 2003 S Grier
+* make sure $script->mode always set. basic by default, advanced if encoding unrecognised.
 * moved removeEncoding() to Script:: class. call from updateScript().
 
 11 August 2003 S Grier
