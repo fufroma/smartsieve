@@ -7,12 +7,13 @@ required:
 5. php-4.3.0 + openssl for socket ssl/tls support.
 6. apache should be configured to check .htaccess files.
 7. set session.save_path in php.ini to secure location.
-8. PEAR with Crypt/HCEMD5.php.
+8. PEAR with Crypt/HCEMD5.php or Crypt/Rc4.php.
 9. cyrus-imap must be using sasl libraries (ie. for proxy authorization).
 10. magic_quotes_runtime must be Off.
 
 TODO:
-- remove PEAR Crypt/HCEMD5 dependency.
+- write a getConfValue() function to get config values cleanly.
+- add support for mcrypt for encryption.
 - handle Websieve's 'custom' rules.
 - vacation and reject text abbreviation in rule summaries.
 - view raw script option.

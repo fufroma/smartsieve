@@ -1,6 +1,16 @@
 Smartsieve - Changes file
 -------------------------
 
+28 April 2003 S Grier
+* Re-worked SmartSieve's cryptographic handling:
+ - abstracted the code which interfaces with external cryptographic libraries into
+   a new SmartSieveCrypt class. SmartSieveCrypt::factory() instantiates a sub-class 
+   which interfaces with the chosen cryptographic library. Sub-classes can be found 
+   in lib/Crypt/. Encrypt::getCryptLib() decides which library SmartSieve should use.
+ - The Encrypt class now instantiates a SmartSieveCrypt object to do the encryption
+   decryption work.
+ - Added support for PEAR's Crypt_Rc4 library.
+
 16 April 2003 S Grier
 * sieve.lib:
  - fixed bug in read(). no longer returns $buffer if socket_get_status() 
