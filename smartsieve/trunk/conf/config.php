@@ -116,6 +116,11 @@ $default->crypt_lib = '';
 // an array containing any values needed by the Crypt object.
 $default->crypt_args = array();
 
+// SmartSieve will auto negotiate which SASL mechanism to use to authenticate.
+// If you want to specify a mechanism instead set this to something other 
+// than an empty string. Currently, only 'plain' is supported.
+$default->sasl_mech = '';
+
 // logging
 
 // should we log messages?

@@ -20,6 +20,7 @@ class SieveSession {
     var $proxy;   /* proxy authorization user. */
     var $uid;     /* authentication user. */
     var $passwd;  /* authentication user's password. */
+    var $sasl_mech;       /* SASL auth mechanism to use. */
     var $implentation;    /* server implementation and version. */
     var $saslmethods;     /* array: SASL auth methods server supports. */
     var $extensions;      /* array: sieve extensions server supports. */
@@ -33,13 +34,14 @@ class SieveSession {
     /* 
      * class constructor. 
      */
-    function SieveSession ($server='127.0.0.1', $port='2000', $uid, $passwd, $proxy='', $socket_timeout=2) {
+    function SieveSession ($server='127.0.0.1', $port='2000', $uid, $passwd, $proxy='', $sasl_mech, $socket_timeout=2) {
 
 	$this->server = $server;
 	$this->port = $port;
 	$this->uid = $uid;
 	$this->passwd = $passwd;
 	$this->proxy = $proxy;
+        $this->sasl_mech = $sasl_mech;
         $this->socket_timeout = $socket_timeout;
 
 	$this->implementation = array('unknown');
@@ -116,27 +118,94 @@ class SieveSession {
 	    }
 	}
 
-//	$said = $this->read();   /* retrieve \n following OK. */
+        if (!$sasl_mech = $this->_selectsaslmech($this->sasl_mech)){
+            return false;
+        }
 
-	$authstr = $this->proxy . "\x00" . $this->uid . "\x00" . $this->passwd;
-	$encoded = base64_encode($authstr);
-	$len = strlen($encoded);
-	fputs($this->socket,"AUTHENTICATE \"PLAIN\" \{$len+}\r\n");
-	fputs($this->socket,"$encoded\r\n");
-	$said = $this->read();
+        if (!$this->_authenticate($this->uid, $this->passwd, $this->proxy, $sasl_mech)){
+            return false;
+        }
 
-	if (preg_match("/NO/",$said)) {
-	    $this->close();
-	    $this->errstr = "start: authentication failure connecting to $this->server";
-	    return false;
-	}
-	elseif (!preg_match("/OK/",$said)) {
-	    $this->close();
-	    $this->errstr = "start: bad authentication response from $this->server: $said";
-	    return false;
-	}
+        return true;
+    }
 
-	return true;
+
+   /*
+    * Select which SASL mechanism to use for authentication.
+    * The server advertises which mechanisms it will allow. If 
+    * none of the mechanisms SmartSieve supports are available, 
+    * this will return false, and authentication will fail.
+    */
+    function _selectsaslmech ($sasl_mech = '')
+    {
+        // list of SASL mechanisms SieveSession supports.
+        $ss_sasl_mechs = array('plain');
+        // list of SASL mechanisms to use in auth attempt.
+        $use_sasl_mechs = array();
+
+        // if $sasl_mech supplied, check it's one we support.
+        if ($sasl_mech){
+            $mech_supported = false;
+            foreach ($ss_sasl_mechs as $mech){
+                if ($sasl_mech == $mech)
+                    $mech_supported = true;
+            }
+            if (!$mech_supported){
+                $this->errstr = "_selectsaslmech: mechanism '" . $sasl_mech . "' not supported";
+                return false;
+            }
+            $use_sasl_mechs = array($sasl_mech);
+        }
+        else
+            $use_sasl_mechs = $ss_sasl_mechs;
+
+        // select the first supported mech which the server has
+        // advertised as being available.
+        foreach ($use_sasl_mechs as $use_mech){
+            foreach ($this->saslmethods as $mech){
+                if ($use_mech == strtolower($mech))
+                    return $use_mech;
+            }
+        }
+        $this->errstr = "_selectsaslmech: no available mechanisms";
+        return false;
+    }
+
+
+   /*
+    * Authenticate using the SASL mechanism selected.
+    */
+    function _authenticate ($user, $password, $proxy, $sasl_mech = '')
+    {
+        switch ($sasl_mech){
+
+            case "plain":
+                $authstr = $proxy . "\x00" . $user . "\x00" . $password;
+                $encoded = base64_encode($authstr);
+                $len = strlen($encoded);
+                fputs($this->socket,"AUTHENTICATE \"PLAIN\" \{$len+}\r\n");
+                fputs($this->socket,"$encoded\r\n");
+                $said = $this->read();
+
+                if (preg_match("/NO/",$said)) {
+                    $this->close();
+                    $this->errstr = "_authenticate: authentication failure connecting to $this->server";
+                    return false;
+                }
+                elseif (!preg_match("/OK/",$said)) {
+                    $this->close();
+                    $this->errstr = "_authenticate: bad authentication response from $this->server: $said";
+                    return false;
+                }
+                return true;
+                break;
+
+            default:
+                $this->errstr = "_authenticate: mechanism '" . $selected_mech . "' not supported";
+                return false;
+                break;
+
+        } //end switch.
     }
 
     /*
