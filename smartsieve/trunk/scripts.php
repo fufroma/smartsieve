@@ -53,28 +53,57 @@ if (!$sieve->openSieveSession()) {
 }
 
 
-/* save script changes if requested. */
+/* do script actions if necessary. */
 
 $action = AppSession::getFormValue('action');
 
 if ($action == 'setactive')
 {
-    $s = $sieve->scriptlist[AppSession::getFormValue('scriptID')];
-    $sieve->connection->activatescript($s);
-    if ($sieve->connection->errstr)
-        array_push($errors,$sieve->connection->errstr);
-    /* prompt AppSession object to update its script list and active
-     * script data in the light of any changes we may have made. */
-    if (!AppSession::doListScripts()) {
-        $this->errstr = 'updateScript: AppSession::doListScripts failed: ' . AppSession::getError();
-        return false;
+    $sids = AppSession::getFormValue('scriptID');
+    if (is_array($sids)){
+        // might have been more than one checkbox selected.
+        // set only the first one active.
+        $s = $sieve->scriptlist[$sids[0]];
+        if ($s){
+            $sieve->connection->activatescript($s);
+            if ($sieve->connection->errstr)
+                array_push($errors,'activatescript failed: ' . $sieve->connection->errstr);
+            else
+                array_push($msgs,"script '$s' successfully activated");
+            if (!AppSession::doListScripts())
+                array_push($errors,'AppSession::doListScripts failed: ' . AppSession::getError());
+        }
+    }
+}
+
+if ($action == 'createscript')
+{
+    $newscript = AppSession::getFormValue('newscript');
+    if (AppSession::scriptExists($newscript)){
+        array_push($errors,'script ' . $newscript . ' already exists');
+    }
+    else {
+        if (!is_object($scripts[$newscript])){
+            $scripts[$newscript] = new Script($newscript);
+            if (is_object($scripts[$newscript])){
+                if (!$scripts[$newscript]->updateScript($sieve->connection)) {
+                    array_push($errors, 'updateScript failed: ' . $scripts[$newscript]->errstr);
+                    $sieve->writeToLog('scripts.php: updateScript failed for ' . $sieve->user
+                        . ': ' . $scripts[$newscript]->errstr, LOG_ERROR);
+                }
+            }
+        }
+        if (AppSession::scriptExists($newscript))
+            array_push($msgs,"successfully created script '$newscript'");
+        else
+            array_push($errors,"could not create script '$newscript'");
     }
 }
 
 if ($action == 'viewscript') 
 {
-    if (isset($sieve->scriptlist[AppSession::getFormValue('scriptID')])){
-        $s = $sieve->scriptlist[AppSession::getFormValue('scriptID')];
+    $s = AppSession::getFormValue('viewscript');
+    if ($s){
         $sieve->workingscript = $s;
         header('Location: ' . AppSession::setUrl('main.php'),true);
         exit;
@@ -227,13 +256,15 @@ if ($sieve->scriptlist){ ?>
 
     $i = 0;
     foreach ($sieve->scriptlist as $script){
+        if (AppSession::isActiveScript($script)) $class = 'activescript';
+        else $class='inactivescript';
 ?>
-    <TR onmouseover="javascript:style.background='grey'" onmouseout="javascript:style.background='#e5e5e5'">
-      <TD CLASS="rules"><INPUT TYPE="checkbox" NAME="scriptID[]" VALUE="<?php print $i; ?>"></TD>
-      <TD CLASS="rules"><A CLASS="rule" HREF="" onclick="viewScript(<?php echo $i; ?>); return false;" onmouseover="status='View This Script'; return true;" onmouseout="status='';"><?php echo $script; ?></A></TD>
-      <TD CLASS="<?php if (AppSession::isActiveScript($script)) echo "enabled"; else echo "disabled"; ?>">Active</TD>
-      <TD CLASS="rules">&nbsp;</TD>
-      <TD CLASS="rules">
+    <TR CLASS="<?php echo $class;?>">
+      <TD><INPUT TYPE="checkbox" NAME="scriptID[]" VALUE="<?php print $i; ?>"></TD>
+      <TD><A CLASS="rule" HREF="" onclick="viewScript('<?php echo $script; ?>'); return false;" onmouseover="status='View This Script'; return true;" onmouseout="status='';"><?php echo $script; ?></A></TD>
+      <TD>Active</TD>
+      <TD>&nbsp;</TD>
+      <TD>
         <A HREF="" onclick="setActive(<?php echo $i ?>); return false;" onmouseover="status='Set script <?php echo $script; ?> as the active script'; return true;" onmouseout="status='';">Set Active</A>
       </TD>
     </TR>
@@ -258,11 +289,11 @@ else { ?>
     <TABLE WIDTH="100%" BORDER="0" CELLPADDING="2" CELLSPACING="1">
     <BR>
       <TD CLASS="options">
-        <A CLASS="option" HREF="" onclick="Activate(); return false;" onmouseover="status='Activate Script'; return true;" onmouseout="status='';">Activate</a>
+        <A CLASS="option" HREF="" onclick="setActive(); return false;" onmouseover="status='Activate Script'; return true;" onmouseout="status='';">Activate</a>
          |
         <A CLASS="option" HREF="" onclick="Submit('deactivate'); return false;" onmouseover="status='Deactivate All'; return true;" onmouseout="status='';">Deactivate</a>
          |
-        <A CLASS="option" HREF="" onclick="Submit('create'); return false;" onmouseover="status='Create New Script'; return true;" onmouseout="status='';">Create</a>
+        <A CLASS="option" HREF="" onclick="createScript(); return false;" onmouseover="status='Create New Script'; return true;" onmouseout="status='';">Create</a>
          |
         <A CLASS="option" HREF="" onclick="Submit('delete'); return false;" onmouseover="status='Delete Script'; return true;" onmouseout="status='';">Delete</a>
          |
@@ -276,7 +307,8 @@ else { ?>
 </TABLE>
 
 <INPUT TYPE="hidden" NAME="action" VALUE="" >
-<INPUT TYPE="hidden" NAME="scriptID" VALUE="">
+<INPUT TYPE="hidden" NAME="viewscript" VALUE="" >
+<INPUT TYPE="hidden" NAME="newscript" VALUE="" >
 
 </FORM>
 
