@@ -1,6 +1,12 @@
 Smartsieve - Changes file
 -------------------------
 
+19 Sept 2003 S Grier
+* sieve.lib: changes to socket handling:
+  - initialize $this->socket false.
+  - set $this->socket false in close() function.
+  - check status of socket with is_resource() calls.
+
 12 Sept 2003 S Grier
 * rule.php: set wrap="off" for custom rule textarea.
 

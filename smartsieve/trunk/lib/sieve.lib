@@ -42,6 +42,7 @@ class SieveSession {
 	$this->passwd = $passwd;
 	$this->proxy = $proxy;
         $this->sasl_mech = $sasl_mech;
+        $this->socket = false;
         $this->socket_timeout = $socket_timeout;
 
 	$this->implementation = array('unknown');
@@ -65,9 +66,12 @@ class SieveSession {
      */
     function start () {
 
-	if(!isset($this->socket)){
-	    $this->socket = fsockopen($this->server, $this->port, $this->errnum, $this->errstr, "60");
-	}
+        if (is_resource($this->socket)){
+            $this->errstr = 'start: socket already open';
+            return false;
+        }
+
+        $this->socket = fsockopen($this->server, $this->port, $this->errnum, $this->errstr, "60");
 	if (!$this->socket) {
 	    return false;
 	}
@@ -177,6 +181,10 @@ class SieveSession {
     */
     function _authenticate ($user, $password, $proxy, $sasl_mech = '')
     {
+        if (!is_resource($this->socket)){
+            $this->errstr = '_authenticate: no connection open to ' . $this->server;
+            return false;
+        }
         switch ($sasl_mech){
 
             case "plain":
@@ -289,17 +297,17 @@ class SieveSession {
     /*
      * end the session. logout and close the socket.
      */
-    function close () {
-
-	if (!$this->socket) {
-	    return true;
-	}
-	fputs($this->socket,"LOGOUT\r\n");
-	$rc = fclose ($this->socket);
-	if ($rc != 1) {
-	    $this->errstr = "close: failed closing socket to $this->server";
-	    return false; 
-	}
+    function close () 
+    {
+	if (is_resource($this->socket)) {
+	    fputs($this->socket,"LOGOUT\r\n");
+	    $rc = fclose ($this->socket);
+	    if ($rc != 1) {
+	        $this->errstr = "close: failed closing socket to $this->server";
+	        return false; 
+	    }
+        }
+        $this->socket = false;
 	return true;
     }
 
@@ -312,8 +320,9 @@ class SieveSession {
 
         $buffer = '';
 
-        if (!$this->socket)
+        if (!is_resource($this->socket)){
             return $buffer;
+        }
 
         socket_set_timeout($this->socket,$this->socket_timeout);
         socket_set_blocking($this->socket,true);
@@ -344,7 +353,7 @@ class SieveSession {
      * server belonging to the current user.
      */
     function listscripts () {
-	if (!$this->socket) {
+	if (!is_resource($this->socket)) {
             $this->errstr = "listscripts: no connection open to $this->server";
             return false;
         }
@@ -391,7 +400,7 @@ class SieveSession {
 	    $this->errstr = "getscript: no script file specified";
 	    return false;
 	}
-	if (!$this->socket) {
+	if (!is_resource($this->socket)) {
 	    $this->errstr = "getscript: no connection open to $this->server";
 	    return false;
 	}
@@ -437,7 +446,7 @@ class SieveSession {
             return false;
         }
 
-        if (!$this->socket) {
+        if (!is_resource($this->socket)) {
             $this->errstr = "activatescript: no connection open to $this->server";
             return false;
         }
@@ -460,7 +469,7 @@ class SieveSession {
     * by uploading script $scriptname of size $size bytes.
     */
     function havespace ($scriptname, $size) {
-        if (!$this->socket) {
+        if (!is_resource($this->socket)) {
             $this->errstr = 'havespace: no connection open to ' . $this->server;
             return false;
         }
@@ -499,7 +508,7 @@ class SieveSession {
             $this->errstr = "putscript: no script specified";
             return false;
         }
-	if (!$this->socket) {
+	if (!is_resource($this->socket)) {
             $this->errstr = "putscript: no connection open to $this->server";
             return false;
         }
@@ -526,7 +535,7 @@ class SieveSession {
     * delete the script $scriptname.
     */
     function deletescript ($scriptname) {
-        if (!$this->socket) {
+        if (!is_resource($this->socket)) {
             $this->errstr = "deletescript: no connection open to $this->server";
             return false;
         }
