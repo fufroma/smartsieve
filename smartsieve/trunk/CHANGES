@@ -1,6 +1,9 @@
 Smartsieve - Changes file
 -------------------------
 
+01 Dec 2004 S Grier
+* Escape "&" characters in the encoded script index.
+
 25 Nov 2004 S Grier
 * Use transliterations when converting from UTF-8 using iconv.
 
