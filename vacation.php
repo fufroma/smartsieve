@@ -64,7 +64,7 @@ elseif ($script->vacation) {
     $vacation = $script->vacation;
 }
 else {
-    $vacation = array('status'=>'','text'=>'','days'=>0,'addresses'=>array());
+    $vacation = array('status'=>'on','text'=>'','days'=>0,'addresses'=>array());
 }
 
 /* save vacation settings if requested. */
@@ -376,7 +376,7 @@ if (is_array($vacation['addresses'])) {
 
 <INPUT TYPE="hidden" NAME="submitted" VALUE="1">
 <INPUT TYPE="hidden" NAME="thisAction" VALUE="">
-<INPUT TYPE="hidden" NAME="status" VALUE="<?php echo $vacation['status'] ? $vacation['status'] : 'off'; ?>">
+<INPUT TYPE="hidden" NAME="status" VALUE="<?php echo $vacation['status']; ?>">
 
 </FORM>
 
