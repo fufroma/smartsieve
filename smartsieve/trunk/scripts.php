@@ -163,6 +163,7 @@ if ($action == 'rename')
                             array_push($errors, 'updateScript failed: ' . $scripts[$newscript]->errstr);
                             $sieve->writeToLog('scripts.php: updateScript failed for ' . $sieve->user
                                 . ': ' . $scripts[$newscript]->errstr, LOG_ERR);
+                            unset($scripts[$newscript]);
                         }
                         else {
                             $sieve->connection->deletescript($oldscript);
@@ -328,10 +329,9 @@ require "$default->include_dir/scripts.js";
 if ($sieve->scriptlist){ ?>
       <TR>
         <TH WIDTH="10%">&nbsp;</TH>
-        <TH WIDTH="60%">Script</TH>
+        <TH WIDTH="70%">Script</TH>
         <TH WIDTH="10%">Status</TH>
         <TH WIDTH="10%">Size</TH>
-        <TH WIDTH="10%">&nbsp;</TH>
       </TR>
 <?php
 
@@ -362,17 +362,14 @@ if ($sieve->scriptlist){ ?>
       <TD>
         &nbsp;<?php echo $size; ?> 
       </TD>
-      <TD>
-        <A HREF="" onclick="setActive(<?php echo $i ?>); return false;" onmouseover="window.status='Set script <?php echo $script; ?> as the active script'; return true;" onmouseout="window.status='';">Set Active</A>
-      </TD>
     </TR>
 <?php
         $i++;
     }
 }
 else { ?>
-    <TR>
-      <TD CLASS="rules" COLSPAN="5">[No existing scripts]</TD>
+    <TR CLASS="enabledrule">
+      <TD COLSPAN="4">[No existing scripts]</TD>
     </TR>
 <?php
 }
