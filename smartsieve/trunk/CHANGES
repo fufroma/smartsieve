@@ -2,6 +2,7 @@ Smartsieve - Changes file
 -------------------------
 
 14 Nov 2003 S Grier
+* set session.use_trans_sid off and call session_set_cookie_params() on each page.
 * use AppSession::getFormValue() to get reason value in login.php. and call 
   session_destroy() on logout.
 

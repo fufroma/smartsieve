@@ -13,6 +13,8 @@ require "$default->config_dir/servers.php";
 require "$default->lib_dir/sieve.lib";
 require "$default->lib_dir/SmartSieve.lib";
 
+ini_set('session.use_trans_sid', 0);
+session_set_cookie_params(0, $default->cookie_path, $default->cookie_domain);
 session_name($default->session_name);
 @session_start();
 
