@@ -1,7 +1,7 @@
 SMARTSIEVE SIEVE SCRIPT MANAGER
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-SmartSieve-0.1.0devel
+SmartSieve-0.3.1devel
 
 SmartSieve is a web based graphical user interface for creating and 
 managing sieve scripts on a Cyrus imap mail server. It provides a 
@@ -17,6 +17,11 @@ will be of particular interest to those currently deploying Websieve
 for this purpose. SmartSieve is compatible with Websieve in that 
 sieve scripts created using Websieve can be read and modified using 
 SmartSieve, and visa-versa.
+
+SmartSieve is not a sieve script 'parser'. It cannot directly read 
+and understand the sieve language itself. It should, therefore, not 
+be used to read sieve scripts which were not created using SmartSieve 
+(although it should handle scripts created by Websieve).
 
 
 PROJECT STATUS
