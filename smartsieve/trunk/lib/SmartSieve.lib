@@ -161,13 +161,15 @@ class SmartSieve {
     function text($string = '', $args = array())
     {
         global $default;
-        static $lang;
+        static $lang, $phrase;
 
         if (!isset($lang)) {
             $lang = SmartSieve::getLang();
         }
 
-        @include "$default->lang_dir/$lang/strings.php";
+        if (!isset($phrase)) {
+            @include "$default->lang_dir/$lang/strings.php";
+        }
 
         if (!empty($phrase[$string])) {
             $string = $phrase[$string];
