@@ -1,6 +1,9 @@
 Smartsieve - Changes file
 -------------------------
 
+03 Oct 2002 S Grier
+* improved top menus.
+
 02 Oct 2002 S Grier
 * modified to cope with register_globals=off.
 

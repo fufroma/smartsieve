@@ -130,10 +130,11 @@ require "$default->include_dir/vacation.js";
         <TD CLASS="menu">
           &nbsp;
           <a href="<?php print $default->baseurl; ?>login.php?reason=logout">Logout</a> |
-          <a href="<?php print $default->baseurl; ?>vacation.php">Vacation Messages</a> |
-          <a href="<?php print $default->baseurl; ?>main.php">Main</a> |
-          <a href="<?php print $default->baseurl; ?>rule.php">New Filter Rule</a> <?php if ($default->vacation_help_url){ ?>|
-          <a href="<?php print $default->vacation_help_url; ?>">Help</a> <?php } /* endif. */ ?>
+          <a href="<?php print $default->baseurl; ?>main.php">View All
+Rules</a> |
+          <a href="<?php print $default->baseurl; ?>vacation.php">Vacation Settings</a> |
+          <a href="<?php print $default->baseurl; ?>rule.php">New Filter Rule</a> <?php if ($default->main_help_url){ ?>|
+          <a href="<?php print $default->main_help_url; ?>">Help</a> <?php } /* endif. */ ?>
 
         </TD>
       </TR>
