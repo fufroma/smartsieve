@@ -12,6 +12,7 @@ required:
 	10. magic_quotes_runtime must be Off.
 
 TODO:
+	-  file/line number of log messages.
 	-  change to handle unixhierarchysep ('/' instead of '.' in fileinto).
 	-  handle userprefix and sharedprefix in altnamespace.
 	-  modify to check if script was written by SmartSieve. probably 
@@ -22,7 +23,6 @@ TODO:
 	-  cross site scripting: filter form data using htmlspecialchars and/or
 	   strip_tags().
 	-  inner table width formatting on main.php.
-	-  set stylesheet colours with RRGGBB codes.
 	-  config options for other sieve rule options (forward, reject etc).
 	-  improve sieve.lib:
 		- function args.

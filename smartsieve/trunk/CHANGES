@@ -1,6 +1,13 @@
 Smartsieve - Changes file
 -------------------------
 
+22 Oct 2002 S Grier
+* improved stylesheet formatting. now uses #RRGGBB codes for colours. 
+* added some &nbsp; chars to main.php, rule.php, vacation.php to improve 
+  appearance in browsers like Netscape.
+* rule.php: more informative log message for openSieveSession.
+* small bugfix to conf/config.php: missing '*/'.
+
 21 Oct 2002 S Grier
 * moved script head date format to $default->script_date_format.
 * removed redundant $baseurl variables from index.php.
