@@ -1,6 +1,18 @@
 Smartsieve - Changes file
 -------------------------
 
+16 Nov 2005 S Grier
+Changes to auth handling:
+- Abstrct SmartSieve login into new SmartSieve::login() function
+- Added new SmartSieve::checkAuthentication() function to check the auth state
+  of the current session, handle login attempts and redirect to the login page
+  if necessary
+- A few include/require calls changed to use SmartSieve::getConf()
+- New initial_page config option controls which page users see following login
+- Added new SmartSieve::destroy() function. Make sure we destroy the current
+  session following an auth failure. This will avoid browser loops.
+- Added SmartSieve::logout() function so we don't have to redirect via login.php
+
 03 Dec 2004 S Grier
 * Handle script names containing space, backslash and double-quote chars (Bug #1075450).
 
