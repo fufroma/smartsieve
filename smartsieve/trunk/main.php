@@ -9,10 +9,10 @@
 
 
 require './conf/config.php';
-require "$default->lib_dir/Managesieve.php";
 require "$default->lib_dir/SmartSieve.lib";
-require "$default->lib_dir/Script.php";
-require "$default->config_dir/style.php";
+require SmartSieve::getConf('lib_dir', 'lib') . "/Managesieve.php";
+require SmartSieve::getConf('lib_dir', 'lib') . "/Script.php";
+require SmartSieve::getConf('config_dir', 'conf') . "/style.php";
 
 ini_set('session.use_trans_sid', 0);
 session_set_cookie_params(0, $default->cookie_path, $default->cookie_domain);
@@ -21,11 +21,7 @@ session_name($default->session_name);
 
 $smartsieve = &$_SESSION['smartsieve'];
 
-// If a session does not exist, redirect to login page.
-if (SmartSieve::authenticate() !== true) {
-    header('Location: ' . SmartSieve::setUrl('login.php'),true);
-    exit;
-}
+SmartSieve::checkAuthentication();
 
 // Change working script if requested.
 if (isset($_POST['script'])) {

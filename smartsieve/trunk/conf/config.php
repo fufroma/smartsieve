@@ -155,6 +155,9 @@ $default->allow_custom = true;
 // Should we enable the "Forward Mail" interface?
 $default->use_forward_mail_interface = true;
 
+// Which page should users see following login?
+$default->initial_page = 'main.php';
+
 // Should we return to the View All Rules page following rule changes?
 $default->return_after_update = false;
 
@@ -221,5 +224,15 @@ $default->vacation_help_url = '';
 // $default->scripts_help_url = 'http://example.co.uk/help.html';
 $default->scripts_help_url = '';
 
+/**
+ * Custom function hooks.
+ */
+
+// If this is set to a function name, that function will be called to 
+// retrieve login details for the user. Note, the details supplied when 
+// the login page is submitted take precedence over this. The function 
+// must return an array of the form expected by the SmartSieve::getLoginDetails
+// function.
+$default->get_login_details_hook = null;
 
 ?>

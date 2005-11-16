@@ -18,6 +18,139 @@
 class SmartSieve {
 
    /**
+    * Check the authentication state of this session. If a session exists 
+    * try to authenticate. If not, check for submitted login credentials, set 
+    * a session and try to authenticate. If all else fails, redirect to the 
+    * login page.
+    *
+    * @return void Sends a 302 redirect on failure
+    */
+    function checkAuthentication()
+    {
+        if (isset($_SESSION['smartsieve']) && is_array($_SESSION['smartsieve'])) {
+            if (SmartSieve::authenticate() !== true) {
+                SmartSieve::destroy();
+                header('Location: ' . SmartSieve::setUrl('login.php'));
+                exit;
+            }
+        } elseif (($details = SmartSieve::getLoginDetails()) !== false) {
+            $ret = SmartSieve::login($details);
+            if ($ret !== true) {
+                header('Location: ' . SmartSieve::setUrl('login.php?reason=failure'));
+                exit;
+            }
+        } else {
+            // No existing session or login attempt. Redirect to login page.
+            header('Location: ' . SmartSieve::setUrl('login.php'));
+            exit;
+        }
+    }
+
+   /**
+    * Get the login details from the login page, or some other source.
+    *
+    * @return mixed array of login details on success, boolean false if not
+    */
+    function getLoginDetails()
+    {
+        $details = array();
+        /* If user has submitted login page, get details from POST request. */
+        if (isset($_POST['auth']) && isset($_POST['passwd'])) {
+            $details['auth'] = SmartSieve::getFormValue('auth');
+            $details['passwd'] = SmartSieve::getFormValue('passwd');
+            $details['authz'] = SmartSieve::getFormValue('authz');
+            $details['server'] = SmartSieve::getFormValue('server');
+        }
+        /* Try an alternative source. */
+        elseif (($func = SmartSieve::getConf('get_login_details_hook')) !== null &&
+             function_exists($func)) {
+            $details = call_user_func($func);
+        }
+        return (!empty($details) && is_array($details)) ? $details : false;
+    }
+
+   /**
+    * Handle a login event. Set session environment and authenticate.
+    *
+    * @param array Login credentials (auth, passwd, authz, server)
+    * @return boolean true on success, false if not
+    */
+    function login($credentials)
+    {
+        if (empty($credentials) || !is_array($credentials)) {
+            return false;
+        }
+        // Make sure we have a clean session.
+        SmartSieve::destroy();
+        session_start();
+
+        if (($ret = SmartSieve::setSession($credentials['auth'], 
+            $credentials['passwd'], $credentials['authz'], $credentials['server'])) === true &&
+            ($ret = SmartSieve::authenticate()) === true) {
+
+            $smartsieve = &$_SESSION['smartsieve'];
+
+            $ret = SmartSieve::writeToLog(sprintf('login: %s%s [%s] {%s:%s}', 
+                ($smartsieve['auth'] != $smartsieve['authz']) ? 
+                    sprintf('%s as ', $smartsieve['auth']) : '',
+                $smartsieve['authz'], $_SERVER['REMOTE_ADDR'],
+                $smartsieve['server'], $smartsieve['sieveport']), LOG_INFO);
+            if ($ret !== true) {
+                SmartSieve::setError($ret);
+            }
+            // Set the array of script objects in the PHP session.
+            $_SESSION['scripts'] = array();
+            // Set which script to edit first.
+            SmartSieve::setWorkingScript(SmartSieve::getFormValue('scriptfile'));
+            if (isset($_POST['lang'])) {
+                $_SESSION['smartsieve_lang'] = SmartSieve::getFormValue('lang');
+            }
+            return true;
+        }
+        SmartSieve::writeToLog(sprintf('FAILED LOGIN: %s%s [%s] {%s}: %s',
+            $credentials['auth'],
+            (!empty($credentials['authz']) && 
+                $credentials['authz'] != $credentials['auth']) ? 
+                sprintf(' as %s', $credentials['authz']) : '',
+            $_SERVER['REMOTE_ADDR'], $credentials['server'], $ret), LOG_ERR);
+
+        SmartSieve::destroy();
+        return false;
+    }
+
+   /**
+    * Destroy the current PHP session.
+    *
+    * @return void
+    */
+    function destroy()
+    {
+        if (isset($_SESSION['smartsieve'])) {
+            $_SESSION['smartsieve'] = null;
+            unset($_SESSION['smartsieve']);
+        }
+        if (isset($_SESSION['scripts'])) {
+            $_SESSION['scripts'] = null;
+            unset($_SESSION['scripts']);
+        }
+        @session_destroy();
+    }
+
+   /**
+    * Handle a logout event.
+    *
+    * @return void
+    */
+    function logout()
+    {
+        if (isset($_SESSION['smartsieve']) && is_array($_SESSION['smartsieve'])) {
+            SmartSieve::writeToLog(sprintf('logout: %s',
+                $_SESSION['smartsieve']['authz']), LOG_INFO);
+            SmartSieve::destroy();
+        }
+    }
+
+   /**
     * Set up the SmartSieve session. This should only be called when 
     * a user logs in.
     *
@@ -41,6 +174,8 @@ class SmartSieve {
         }
 
         $smartsieve = array();
+
+        include_once SmartSieve::getConf('config_dir') . "/servers.php";
 
         if (!array_key_exists($server, $servers) ||
             !is_array($servers[$server])) {
