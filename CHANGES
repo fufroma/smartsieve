@@ -1,6 +1,9 @@
 Smartsieve - Changes file
 -------------------------
 
+29 Nov 2005 S Grier
+* Returning references to non-variables causes an error in PHP 4.4/5.1 (Bug #1365169).
+
 16 Nov 2005 S Grier
 Changes to auth handling:
 - Abstrct SmartSieve login into new SmartSieve::login() function
