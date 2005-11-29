@@ -27,11 +27,12 @@ class SmartSieveCrypt {
 
         $subclass = 'SmartSieveCrypt' . strtoupper($driver);
         if (class_exists($subclass)){
-            return new $subclass($args);
+            $driver = new $subclass($args);
         }
         else {
-            return false;
+            $driver = false;
         }
+        return $driver;
     }
 
 
