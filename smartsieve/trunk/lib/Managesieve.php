@@ -564,7 +564,7 @@ class Managesieve {
                 $authstr = $this->authz . "\x00" . $this->auth . "\x00" . $passwd;
                 $authstr = base64_encode($authstr);
                 $len = strlen($authstr);
-                fputs($this->_socket,"AUTHENTICATE \"PLAIN\" \{$len+}\r\n");
+                fputs($this->_socket, sprintf("AUTHENTICATE \"PLAIN\" {%s+}\r\n", $len));
                 fputs($this->_socket,"$authstr\r\n");
 
                 if ($this->getResponse() == F_OK) {
