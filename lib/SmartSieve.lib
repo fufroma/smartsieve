@@ -183,6 +183,7 @@ class SmartSieve {
             $server = (!empty($srvkeys)) ? $srvkeys[0] : '';
         }
         $smartsieve['server'] = SmartSieve::getServerValue($server, 'server');
+        $smartsieve['server_display'] = SmartSieve::getServerValue($server, 'display', $smartsieve['server']);
         $smartsieve['sieveport'] = SmartSieve::getServerValue($server, 'sieveport', '2000');
         $smartsieve['imapport'] = SmartSieve::getServerValue($server, 'imapport', '143');
         $smartsieve['alt_namespace'] = SmartSieve::getServerValue($server, 'alt_namespace', false);
