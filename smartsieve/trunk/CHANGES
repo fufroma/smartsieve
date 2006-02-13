@@ -1,6 +1,9 @@
 Smartsieve - Changes file
 -------------------------
 
+13 Feb 2006 S Grier
+* Display the server 'display' value instead of the host name common_status.inc.
+
 29 Nov 2005 S Grier
 * Use sprintf to avoid curly bracket confusion (Bug #1369220).
 * Returning references to non-variables causes an error in PHP 4.4/5.1 (Bug #1365169).
