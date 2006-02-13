@@ -12,6 +12,12 @@
  * servers on the login page (if $default->user_select_server 
  * is set to true in conf/conf.php).
  *
+ * use_starttls: by default, SmartSieve will try to use TLS 
+ * to protect the connection to the managesieve server. This will 
+ * only work with PHP-5.1 and above built with OpenSSL support, 
+ * and where the server supports it. Set this to false if you want
+ * to disable TLS.
+ *
  * imapport: port to connect to imapd; usually 143. If you
  * want to do imap-ssl set this to '993/imap/ssl', or even 
  * '143/imap/tls'. Note that if you are using a self-signed 

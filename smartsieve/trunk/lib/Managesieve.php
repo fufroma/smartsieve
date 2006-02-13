@@ -731,6 +731,40 @@ class Managesieve {
 
 
    /**
+    * Intiate TLS negotiation with the server.
+    *
+    * @return boolean true on success, false on failure
+    */
+    function starttls()
+    {
+        unset($this->resp);
+        $this->_errstr = '';
+
+        if (!is_resource($this->_socket)) {
+            $this->_errstr = 'starttls: no server connection';
+            return false;
+        }
+        if (!isset($this->_capabilities['starttls']) ||
+            $this->_capabilities['starttls'] !== true) {
+            $this->_errstr = 'starttls: STARTTLS not advertised by server';
+            return false;
+        }
+        if (!function_exists('stream_socket_enable_crypto')) {
+            $this->_errstr = 'starttls: TLS not available';
+            return false;
+        }
+        fputs($this->_socket, "STARTTLS\r\n");
+        if ($this->getResponse() === F_OK) {
+            if(stream_socket_enable_crypto($this->_socket, true, STREAM_CRYPTO_METHOD_TLS_CLIENT)) {
+                return ($this->capability() !== false) ? true : false;
+            }
+        }
+        $this->_errstr = 'starttls: TLS initialization failed: ' . $this->responseToString();
+        return false;
+    }
+
+
+   /**
     * Return a list of the Sieve scripts owned by the authzed user.
     *
     * @return mixed array containing Sieve scripts, or false on failure
