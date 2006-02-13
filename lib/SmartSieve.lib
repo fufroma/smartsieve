@@ -190,6 +190,7 @@ class SmartSieve {
         $smartsieve['namespace_user_prefix'] = SmartSieve::getServerValue($server, 'namespace_user_prefix', '');
         $smartsieve['namespace_shared_prefix'] = SmartSieve::getServerValue($server, 'namespace_shared_prefix', '');
         $smartsieve['maildomain'] = SmartSieve::getServerValue($server, 'maildomain');
+        $smartsieve['use_starttls'] = SmartSieve::getServerValue($server, 'use_starttls', true);
 
         $smartsieve['auth'] = $auth;
         $auth_domain = SmartSieve::getServerValue($server, 'auth_domain');
@@ -234,6 +235,16 @@ class SmartSieve {
             $err = $managesieve->getError();
             $managesieve->close();
             return $err;
+        }
+        if (in_array('starttls', $managesieve->_capabilities) &&
+            function_exists('stream_socket_enable_crypto') &&
+            $smartsieve['use_starttls'] !== false) {
+            $ret = $managesieve->starttls();
+            if ($ret !== true) {
+                $err = $managesieve->getError();
+                $managesieve->close();
+                return $err;
+            }
         }
         $ret = $managesieve->authenticate($smartsieve['auth'], $passwd, $smartsieve['authz'], SmartSieve::getConf('sasl_mech'));
         if ($ret !== true) {

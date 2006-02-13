@@ -2,6 +2,7 @@ Smartsieve - Changes file
 -------------------------
 
 13 Feb 2006 S Grier
+* Add STARTTLS support. Requires PHP-5.1 or above with OpenSSL support.
 * Updated Copyright for 2006.
 * Display the server 'display' value instead of the host name common_status.inc.
 
