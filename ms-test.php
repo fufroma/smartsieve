@@ -75,6 +75,23 @@ if (isset($managesieve->_capabilities['unknown_banners'])) {
 echo '<BR>'; ?>
   </LI>
 
+<?php if (in_array('starttls', $managesieve->_capabilities) &&
+          function_exists('stream_socket_enable_crypto')) {
+?>
+  <LI><B>Testing $managesieve->starttls(): </B>
+
+<?php
+$res = $managesieve->starttls();
+if ($res !== true){
+    echo "<FONT COLOR=\"red\">Test failed</FONT><BR>";
+    echo "Response: " . $managesieve->getError() . '<BR>';
+} else {
+    echo "<FONT COLOR=\"green\">Test Passed</FONT><BR>";
+}
+?>
+  </LI>
+<?php } ?>
+
   <LI><B>Testing response when not authenticated: </B>
 
 <?php
