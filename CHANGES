@@ -2,6 +2,7 @@ Smartsieve - Changes file
 -------------------------
 
 17 Feb 2006 S Grier
+* Disable TLS before closing socket if enabled.
 * Read starttls response correctly if negotiation fails.
 
 13 Feb 2006 S Grier

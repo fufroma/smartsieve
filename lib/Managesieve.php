@@ -111,6 +111,13 @@ class Managesieve {
     var $_state;
 
    /**
+    * Whether TLS is enabled on connection.
+    * @var boolean
+    * @access private
+    */
+    var $_tls = false;
+
+   /**
     * An array containing values from the last server response.
     * @var array
     * @public
@@ -692,6 +699,9 @@ class Managesieve {
         $this->_errstr = '';
 
         if (is_resource($this->_socket)) {
+            if ($this->_tls === true && function_exists('stream_socket_enable_crypto')) {
+                stream_socket_enable_crypto($this->_socket, false);
+            }
             $this->logout();
             if (!fclose($this->_socket)){
                 $this->_errstr = "close: failed closing socket to $this->server";
@@ -756,6 +766,7 @@ class Managesieve {
         fputs($this->_socket, "STARTTLS\r\n");
         if ($this->getResponse() === F_OK) {
             if (stream_socket_enable_crypto($this->_socket, true, STREAM_CRYPTO_METHOD_TLS_CLIENT)) {
+                $this->_tls = true;
                 return ($this->capability() !== false) ? true : false;
             }
             // Issue bogus capability command.
