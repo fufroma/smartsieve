@@ -755,9 +755,12 @@ class Managesieve {
         }
         fputs($this->_socket, "STARTTLS\r\n");
         if ($this->getResponse() === F_OK) {
-            if(stream_socket_enable_crypto($this->_socket, true, STREAM_CRYPTO_METHOD_TLS_CLIENT)) {
+            if (stream_socket_enable_crypto($this->_socket, true, STREAM_CRYPTO_METHOD_TLS_CLIENT)) {
                 return ($this->capability() !== false) ? true : false;
             }
+            // Issue bogus capability command.
+            fputs($this->_socket, "CAPABILITY\r\n");
+            $this->getResponse();
         }
         $this->_errstr = 'starttls: TLS initialization failed: ' . $this->responseToString();
         return false;

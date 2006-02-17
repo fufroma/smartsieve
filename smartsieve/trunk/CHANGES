@@ -1,6 +1,9 @@
 Smartsieve - Changes file
 -------------------------
 
+17 Feb 2006 S Grier
+* Read starttls response correctly if negotiation fails.
+
 13 Feb 2006 S Grier
 * Add STARTTLS support. Requires PHP-5.1 or above with OpenSSL support.
 * Updated Copyright for 2006.
