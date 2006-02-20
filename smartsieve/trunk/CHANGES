@@ -1,6 +1,9 @@
 Smartsieve - Changes file
 -------------------------
 
+20 Feb 2006 S Grier
+* Added logout_redirect config option to redirect users following logout.
+
 17 Feb 2006 S Grier
 * Disable TLS before closing socket if enabled.
 * Read starttls response correctly if negotiation fails.

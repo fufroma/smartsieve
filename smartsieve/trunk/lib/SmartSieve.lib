@@ -139,7 +139,7 @@ class SmartSieve {
    /**
     * Handle a logout event.
     *
-    * @return void
+    * @return void Possibly a 302 redirect
     */
     function logout()
     {
@@ -147,6 +147,10 @@ class SmartSieve {
             SmartSieve::writeToLog(sprintf('logout: %s',
                 $_SESSION['smartsieve']['authz']), LOG_INFO);
             SmartSieve::destroy();
+            if (($uri = SmartSieve::getConf('logout_redirect')) !== null) {
+                header(sprintf('Location: %s', $uri));
+                exit;
+            }
         }
     }
 
