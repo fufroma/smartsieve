@@ -158,6 +158,11 @@ $default->use_forward_mail_interface = true;
 // Which page should users see following login?
 $default->initial_page = 'main.php';
 
+// Following logout, users will be redirected to the login page. If you 
+// prefer to have them redirected elsewhere you can specify this here.
+// Note, this should be a complete URI including the scheme and hostname.
+// $default->logout_redirect = 'http://my.logout.message.com';
+
 // Should we return to the View All Rules page following rule changes?
 $default->return_after_update = false;
 
