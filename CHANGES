@@ -1,6 +1,9 @@
 Smartsieve - Changes file
 -------------------------
 
+17 Mar 2006 S Grier
+* Added view source option on view script page.
+
 20 Feb 2006 S Grier
 * Added logout_redirect config option to redirect users following logout.
 
