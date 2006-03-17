@@ -122,6 +122,11 @@ if ($script->vacation){
         <A CLASS="option" HREF="" onclick="ChangeMode(); return false;" onmouseover="window.status='<?php echo SmartSieve::text('Switch to direct edit mode');?>'; return true;" onmouseout="window.status='';"><?php echo SmartSieve::text('Direct edit mode');?></A>
       </TD>
 <?php endif; ?>
+<?php if (SmartSieve::getConf('allow_view_source', true) !== false): ?>
+      <TD ALIGN="right" CLASS="options">
+        <A CLASS="option" HREF="" onclick="window.open('<?php echo SmartSieve::setUrl('main.php?action=view_source');?>','','menubar=yes,toolbar=no,location=no,status=no,scrollbars=yes,resizable=yes'); return false;" onmouseover="window.status='<?php echo SmartSieve::text('View script source');?>'; return true;" onmouseout="window.status='';"><?php echo SmartSieve::text('View Source');?></A>
+      </TD>
+<?php endif; ?>
     </BR>
     </TABLE>
 

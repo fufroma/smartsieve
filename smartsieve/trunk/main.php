@@ -174,6 +174,12 @@ switch ($action) {
             SmartSieve::setNotice(SmartSieve::text('You are now in direct edit mode.'));
         }
         break;
+
+    case ('view_source'):
+        header('Content-Type: text/plain; charset=utf-8');
+        echo $script->script;
+        exit;
+        break;
 }
 
 
