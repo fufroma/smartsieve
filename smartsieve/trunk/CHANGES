@@ -1,6 +1,9 @@
 Smartsieve - Changes file
 -------------------------
 
+17 May 2006 S Grier
+* Set focus on authz field when it becomes visible.
+
 17 Mar 2006 S Grier
 * Added view source option on view script page.
 

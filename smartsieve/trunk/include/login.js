@@ -40,6 +40,7 @@ function checkUser()
             } else if (document.getElementById) {
                 tr = document.getElementById('authztr').style.display = 'table-row';
             }
+            document.login.authz.focus();
         }
     }
 }
