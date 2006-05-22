@@ -26,6 +26,9 @@ define ("S_NOCONNECTION", 1);
 define ("S_CONNECTED", 2);
 define ("S_AUTHENTICATED", 3);
 
+// Version info
+define ("MS_VERSION", '$Revision$');
+
 
 /**
  * Class Managesieve is an implementation of the managesieve protocol 
@@ -1006,6 +1009,16 @@ class Managesieve {
             $i++;
         }
         return $qs;
+    }
+
+   /**
+    * Return the version of class Managesieve.
+    *
+    * @return string The version of this class
+    */
+    function getVersion()
+    {
+        return MS_VERSION;
     }
 
 
