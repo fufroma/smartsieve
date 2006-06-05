@@ -45,7 +45,7 @@ function ChangeOrder(a,b)
 
 function ChangeMode()
 {
-    if (!confirm("<?php echo SmartSieve::text('If you choose to edit this script directly you will not be able to switch back to GUI mode.\nDo you still want to continue?');?>")) {
+    if (!confirm("<?php echo SmartSieve::text('If you edit this script directly, any changes you make will be lost if you revert to GUI later.\nDo you still want to continue?');?>")) {
         return true;
     }
     document.rules.action.value = 'direct';
