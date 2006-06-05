@@ -45,9 +45,10 @@ $default->allow_multi_scripts = true;
 // not created using SmartSieve or Websieve, set this to false.
 $default->allow_write_unrecognised_scripts = true;
 
-// Should we allow users to switch from the GUI mode into the direct edit 
-// mode? Note they will not be able to switch the script back to GUI mode.
-$default->allow_change_mode = true;
+// Should we allow users to switch between GUI mode into the direct edit mode? 
+// Note, this is generally a bad idea because any changes made in direct edit 
+// mode will be lost if the user reverts to GUI mode.
+$default->allow_change_mode = false;
 
 // Websieve 0.61 includes a feature which will automatically use the ':matches' 
 // comparator where the match string contains the special wildcard characters 

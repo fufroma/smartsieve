@@ -16,5 +16,14 @@ function Save()
     document.rules.submit();
 }
 
+function ChangeMode()
+{
+    if (!confirm("<?php echo SmartSieve::text('If you switch to GUI mode you will lose any changes you have made in direct edit mode.\nAre you sure you want to continue?');?>")) {
+        return true;
+    }
+    document.rules.action.value = 'gui';
+    document.rules.submit();
+}
+
 //-->
 </script>

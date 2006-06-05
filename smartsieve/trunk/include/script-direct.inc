@@ -29,6 +29,11 @@
       <TD CLASS="options">
         <A CLASS="option" HREF="" onclick="Save(); return false;" onmouseover="window.status='<?php echo SmartSieve::text('Save Changes');?>'; return true;" onmouseout="window.status='';"><?php echo SmartSieve::text('Save Changes');?></a>
       </TD>
+<?php if (SmartSieve::getConf('allow_change_mode')): ?>
+      <TD ALIGN="right" CLASS="options">
+        <A CLASS="option" HREF="" onclick="ChangeMode(); return false;" onmouseover="window.status='<?php echo SmartSieve::text('Switch to GUI mode');?>'; return true;" onmouseout="window.status='';"><?php echo SmartSieve::text('GUI mode');?></A>
+      </TD>
+<?php endif; ?>
     </BR>
     </TABLE>
 

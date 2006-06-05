@@ -175,6 +175,18 @@ switch ($action) {
         }
         break;
 
+    case ('gui'):
+        $script->mode = 'basic';
+        if (!$script->updateScript()) {
+            SmartSieve::setError(SmartSieve::text('ERROR: ') . $script->errstr);
+            $logmsg = sprintf('failed writing script "%s" for %s: %s',
+              $script->name, $_SESSION['smartsieve']['authz'], $script->errstr);
+            SmartSieve::writeToLog($logmsg, LOG_ERR);
+        } else {
+            SmartSieve::setNotice(SmartSieve::text('You are now in GUI mode.'));
+        }
+        break;
+
     case ('view_source'):
         header('Content-Type: text/plain; charset=utf-8');
         echo $script->script;
