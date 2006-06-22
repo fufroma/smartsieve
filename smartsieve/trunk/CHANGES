@@ -1,6 +1,9 @@
 Smartsieve - Changes file
 -------------------------
 
+22 June 2006 S Grier
+* Add cache control headers to style sheet, and cache by default.
+
 05 June 2006 S Grier
 * Add ability to switch from direct edit mode to GUI mode.
 
