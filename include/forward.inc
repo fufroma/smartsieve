@@ -8,12 +8,12 @@
     <TR CLASS="heading">
       <TD>
 <?php if (isset($ruleID) && $ruleID !== 'new'): ?>
-        <?php echo SmartSieve::text("Edit Forward Rule");?> 
+        <?php echo SmartSieve::text('Edit mail forwarding');?> 
       </TD>
       <TD CLASS="<?php echo (isset($rule['status']) && $rule['status'] == 'ENABLED') ? 'enabled' : 'disabled';?>">
         <?php echo (isset($rule['status']) && $rule['status'] == 'ENABLED') ? SmartSieve::text('ENABLED') : SmartSieve::text('DISABLED');?> 
 <?php else: ?>
-        <?php echo SmartSieve::text('Create Forward Rule');?> 
+        <?php echo SmartSieve::text('Set mail forwarding');?> 
       </TD>
       <TD>
         &nbsp;
@@ -30,7 +30,7 @@
     <TABLE WIDTH="100%" CELLPADDING="5" BORDER="0" CELLSPACING="0">
     <TR>
       <TD>
-        <?php echo SmartSieve::text('Forwarding Address:');?> 
+        <?php echo SmartSieve::text('Forward mail to address:');?> 
       </TD>
       <TD>
         <INPUT TYPE="text" NAME="address" VALUE="<?php echo (isset($rule['action_arg']) && $rule['action'] == 'address') ? SmartSieve::utf8Decode($rule['action_arg']) : '';?>" SIZE="40">

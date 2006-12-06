@@ -8,9 +8,9 @@
     <TR CLASS="heading">
       <TD>
     <?php if ($script->vacation) {
-         echo SmartSieve::text("Edit Vacation Auto-respond settings");
+         echo SmartSieve::text('Edit vacation out-of-office message');
        }
-       else echo SmartSieve::text("Create New Vacation Auto-respond settings").":";
+       else echo SmartSieve::text('Set vacation out-of-office message').":";
     ?>
       </TD>
     </TR>
@@ -42,13 +42,13 @@
     <TABLE WIDTH="100%" CELLPADDING="5" BORDER="0" CELLSPACING="0">
     <TR>
       <TD CLASS="heading">
-<?php echo SmartSieve::text('Vacation');?>:
+<?php echo SmartSieve::text('Vacation settings');?>:
       </TD>
       <TD CLASS="heading">&nbsp;</TD>
     </TR>
     <TR>
       <TD NOWRAP="nowrap">
-<?php echo SmartSieve::text('Auto-respond text');?>:
+<?php echo SmartSieve::text('Message');?>:
       </TD>
       <TD NOWRAP="nowrap">
         <TEXTAREA NAME="text" ROWS="3" COLS="<?php echo $wrap_width;?>" WRAP="hard" TABINDEX="1">
@@ -58,7 +58,7 @@
     </TR>
     <TR>
       <TD>
-<?php echo SmartSieve::text('Days');?>:
+<?php echo SmartSieve::text('Days between responses');?>:
       </TD>
       <TD>
         <SELECT NAME="days">
@@ -74,7 +74,7 @@ for ($i = 1; $i <= $max_days; $i++){
     </TR>
     <TR>
       <TD>
-<?php echo SmartSieve::text('Addresses');?>:
+<?php echo SmartSieve::text('Your e-mail addresses');?>:
       </TD>
       <TD>
         <INPUT TYPE="text" NAME="addresses" <?php
