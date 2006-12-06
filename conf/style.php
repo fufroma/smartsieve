@@ -82,6 +82,8 @@ $css['.disabled']['color'] = '#FF0000';
 $css['.disabled']['font-weight'] = 'normal';
 
 $css['.menu']['background-color'] = '#b5b5b5';
+$css['.menu']['font-family'] = 'helvetica,sans-serif';
+$css['.menu']['font-size'] = '10pt';
 
 $css['.menuouter']['background-color'] = '#000000';
 
