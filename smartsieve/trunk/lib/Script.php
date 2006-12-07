@@ -159,6 +159,7 @@ class Script {
     $rejectused = 0;
     $vacationused = 0;
     $notifyused = 0;
+    $imapflagsused = 0;
  
     include_once "$default->lib_dir/version.php";
  
@@ -305,6 +306,9 @@ class Script {
             if (preg_match("/notify/i", $rule['action_arg'])) {
                 $notifyused = 1;
             }
+            if (preg_match("/(addflag|setflag|removeflag)/i", $rule['action_arg'])) {
+                $imapflagsused = 1;
+            }
         }
  
         $continue = 0;
@@ -403,6 +407,7 @@ class Script {
         if ($this->vacation && $this->vacation['status'] == 'on' || $vacationused)
             $newrequire .= ",\"vacation\"";
         if ($notifyused) $newrequire .= ',"notify"';
+        if ($imapflagsused) $newrequire .= ',"imapflags"';
         $newrequire .= "];\n\n";
     }
     else {
