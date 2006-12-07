@@ -16,90 +16,52 @@
   <TD CLASS="main">
 
     <TABLE WIDTH="100%" BORDER="0" CELLPADDING="2" CELLSPACING="1">
-<?php
-
-if ($script->rules){ ?>
+<?php if ($script->rules):?>
       <TR>
         <TH WIDTH="5%">&nbsp;</TH>
         <TH WIDTH="10%"><?php echo SmartSieve::text('Status');?></TH>
         <TH WIDTH="80%"><?php echo SmartSieve::text('Rule');?></TH>
         <TH WIDTH="5%"><?php echo SmartSieve::text('Order');?></TH>
       </TR>
-<?php
-
-    $i = 0;
-    foreach ($script->rules as $rule){
-        $complete = buildRule($rule);
-        $class = 'disabledrule';
-        $eclass = 'disabled';
-        $onmouseover = $css['.disabledrule-over']['background-color'];
-        $onmouseout = $css['.disabledrule']['background-color'];
-        $status = SmartSieve::text('DISABLED');
-        if ($rule['status'] == 'ENABLED'){
-            $class = 'enabledrule';
-            $eclass = 'enabled';
-            $onmouseover = $css['.enabledrule-over']['background-color'];
-            $onmouseout = $css['.enabledrule']['background-color'];
-            $status = SmartSieve::text('ENABLED');
-        }
-?>
-    <TR CLASS="<?php echo $class; ?>" onmouseover="javascript:style.backgroundColor='<?php echo $onmouseover;?>'" onmouseout="javascript:style.backgroundColor='<?php echo $onmouseout;?>'">
+<?php foreach ($rows as $tr):?>
+    <TR CLASS="<?php echo $tr['class']; ?>" onmouseover="javascript:style.backgroundColor='<?php echo $tr['onmouseover'];?>'" onmouseout="javascript:style.backgroundColor='<?php echo $tr['onmouseout'];?>'">
       <TD>
-        <INPUT TYPE="checkbox" NAME="ruleID[]" VALUE="<?php print $i; ?>">
+        <INPUT TYPE="checkbox" NAME="ruleID[]" VALUE="<?php echo $tr['id'];?>">
       </TD>
-      <TD CLASS="<?php echo $eclass; ?>">
-        <?php echo $status; ?> 
+      <TD CLASS="<?php echo $tr['eclass'];?>">
+        <?php echo $tr['status'];?> 
       </TD>
       <TD>
-        <A CLASS="rule" HREF="<?php print SmartSieve::setUrl("rule.php?ruleID=$i"); ?>" onmouseover="window.status='<?php echo SmartSieve::text('Edit this rule');?>'; return true;" onmouseout="window.status='';"><?php print $complete; ?></A>
+        <A CLASS="rule" HREF="<?php echo SmartSieve::setUrl("rule.php?ruleID=" . $tr['id']); ?>" onmouseover="window.status='<?php echo SmartSieve::text('Edit this rule');?>'; return true;" onmouseout="window.status='';"><?php echo $tr['summary'];?></A>
       </TD>
       <TD NOWRAP="nowrap">
-        <A HREF="" onclick="ChangeOrder('increase',<?php print $i; ?>); return false;"><IMG SRC="<?php print $default->image_dir; ?>/up.gif" ALT="Move rule up" BORDER="0" onmouseover="window.status='<?php echo SmartSieve::text('Move rule up');?>'; return true;" onmouseout="window.status='';"></A>
-        <A HREF="" onclick="ChangeOrder('decrease',<?php print $i; ?>); return false;"><IMG SRC="<?php print $default->image_dir; ?>/down.gif" ALT="Move rule down" BORDER="0" onmouseover="window.status='<?php echo SmartSieve::text('Move rule down');?>'; return true;" onmouseout="window.status='';"></A>
+        <A HREF="" onclick="ChangeOrder('increase',<?php echo $tr['id'];?>); return false;"><IMG SRC="<?php echo SmartSieve::getConf('image_dir', 'images');?>/up.gif" ALT="Move rule up" BORDER="0" onmouseover="window.status='<?php echo SmartSieve::text('Move rule up');?>'; return true;" onmouseout="window.status='';"></A>
+        <A HREF="" onclick="ChangeOrder('decrease',<?php echo $tr['id'];?>); return false;"><IMG SRC="<?php echo SmartSieve::getConf('image_dir', 'images');?>/down.gif" ALT="Move rule down" BORDER="0" onmouseover="window.status='<?php echo SmartSieve::text('Move rule down');?>'; return true;" onmouseout="window.status='';"></A>
       </TD>
     </TR>
-<?php
-        $i++;
-    }
-}
-else { ?>
+<?php endforeach;?>
+<?php else:?>
     <TR CLASS="enabledrule">
       <TD COLSPAN="4">[<?php echo SmartSieve::text('No rules found');?>]</TD>
     </TR>
-<?php
-}
+<?php endif;?>
 
-if ($script->vacation){
-    $class = 'disabledrule';
-    $eclass = 'disabled';
-    $onmouseover = $css['.disabledrule-over']['background-color'];
-    $onmouseout = $css['.disabledrule']['background-color'];
-    $status = SmartSieve::text('DISABLED');
-    if ($script->vacation['status'] == 'on'){
-        $class = 'enabledrule';
-        $eclass = 'enabled';
-        $onmouseover = $css['.enabledrule-over']['background-color'];
-        $onmouseout = $css['.enabledrule']['background-color'];
-        $status = SmartSieve::text('ENABLED');
-    }
-?>
+<?php if ($script->vacation):?>
     <TR>
       <TD CLASS="heading" COLSPAN="4"><?php echo SmartSieve::text('Vacation Message Settings');?>:</TD>
     </TR>
-    <TR CLASS="<?php echo $class; ?>" onmouseover="javascript:style.backgroundColor='<?php echo $onmouseover;?>'" onmouseout="javascript:style.backgroundColor='<?php echo $onmouseout; ?>'">
+    <TR CLASS="<?php echo $vRow['class'];?>" onmouseover="javascript:style.backgroundColor='<?php echo $vRow['onmouseover'];?>'" onmouseout="javascript:style.backgroundColor='<?php echo $vRow['onmouseout'];?>'">
       <TD>
         <INPUT TYPE="checkbox" NAME="ruleID[]" VALUE="vacation">
       </TD>
-      <TD CLASS="<?php echo $eclass; ?>">
-        <?php echo $status;?> 
+      <TD CLASS="<?php echo $vRow['eclass'];?>">
+        <?php echo $vRow['status'];?> 
       </TD>
       <TD COLSPAN="2">
-        <A CLASS="rule" HREF="<?php print SmartSieve::setUrl('vacation.php'); ?>" onmouseover="window.status='<?php echo SmartSieve::text('Edit vacation settings');?>'; return true;" onmouseout="window.status='';"><?php echo buildVacationString();?></A>
+        <A CLASS="rule" HREF="<?php echo SmartSieve::setUrl('vacation.php'); ?>" onmouseover="window.status='<?php echo SmartSieve::text('Edit vacation settings');?>'; return true;" onmouseout="window.status='';"><?php echo $vRow['summary'];?></A>
       </TD>
     </TR>
-<?php
-} // end if $vacation.
-?>
+<?php endif;?>
 
     </TABLE>
 

@@ -1,6 +1,12 @@
 Smartsieve - Changes file
 -------------------------
 
+07 Dec 2006 S Grier
+* Make if/elsif logic visible in rule summaries + cleanup template.
+
+06 Dec 2006 S Grier
+* Minor textual changes.
+
 22 June 2006 S Grier
 * Add cache control headers to style sheet, and cache by default.
 

@@ -225,71 +225,117 @@ include $default->include_dir . '/common_status.inc';
 
 if ($script->mode == 'advanced' || $script->so == false){
     include $default->include_dir . '/script-direct.inc';
-}
-else {
+} else {
+    $summaries = getSummaries();
+    $rows = array();
+    for ($i=0; $i<count($script->rules); $i++) {
+        $tr = array();
+        $tr['summary'] = $summaries[$i];
+        $tr['class'] = 'disabledrule';
+        $tr['eclass'] = 'disabled';
+        $tr['onmouseover'] = $css['.disabledrule-over']['background-color'];
+        $tr['onmouseout'] = $css['.disabledrule']['background-color'];
+        $tr['status'] = SmartSieve::text('DISABLED');
+        if ($script->rules[$i]['status'] == 'ENABLED'){
+            $tr['class'] = 'enabledrule';
+            $tr['eclass'] = 'enabled';
+            $tr['onmouseover'] = $css['.enabledrule-over']['background-color'];
+            $tr['onmouseout'] = $css['.enabledrule']['background-color'];
+            $tr['status'] = SmartSieve::text('ENABLED');
+        }
+        $tr['id'] = $i;
+        $rows[] = $tr;
+    }
+    $vRow = array();
+    $vRow['summary'] = getVacationSummary();
+    $vRow['class'] = 'disabledrule';
+    $vRow['eclass'] = 'disabled';
+    $vRow['onmouseover'] = $css['.disabledrule-over']['background-color'];
+    $vRow['onmouseout'] = $css['.disabledrule']['background-color'];
+    $vRow['status'] = SmartSieve::text('DISABLED');
+    if ($script->vacation && $script->vacation['status'] == 'on'){
+        $vRow['class'] = 'enabledrule';
+        $vRow['eclass'] = 'enabled';
+        $vRow['onmouseover'] = $css['.enabledrule-over']['background-color'];
+        $vRow['onmouseout'] = $css['.enabledrule']['background-color'];
+        $vRow['status'] = SmartSieve::text('ENABLED');
+    }
     include $default->include_dir . '/script-gui.inc';
 }
 
 SmartSieve::close();
 
 
-function buildRule($rule) {
-    $andor = ' ' . SmartSieve::text('AND') . ' ';
-    $started = 0;
-    if ($rule['anyof']) $andor = ' ' . SmartSieve::text('OR') . ' ';
+function getSummaries() {
+    global $script;
+    $summaries = array();
+    $useif = 1;
+    foreach ($script->rules as $rule) {
+        $andor = ' ' . SmartSieve::text('AND') . ' ';
+        $started = 0;
+        if ($rule['anyof']) $andor = ' ' . SmartSieve::text('OR') . ' ';
 
-    if (preg_match("/custom/i",$rule['action'])){
-        return '[' . SmartSieve::text('Custom Rule') . '] ' . SmartSieve::utf8Decode($rule['action_arg']);
-    }
+        if ($useif) {
+            $complete = SmartSieve::text('IF') . ' ';
+        } else {
+            $complete = SmartSieve::text('ELSE IF') . ' ';
+        }
+        if ($rule['unconditional']) $complete = '[' . SmartSieve::text('Unconditional') . '] ';
 
-    $complete = SmartSieve::text('IF') . ' ';
-    if ($rule['unconditional']) $complete = '[' . SmartSieve::text('Unconditional') . '] ';
-
-    if ($rule['from']) {
-        $match = setMatchType($rule['from'],$rule['regexp']);
-	$complete .= "'From:' " . $match . " '" . SmartSieve::utf8Decode($rule['from']) . "'";
-	$started = 1;
+        if ($rule['from']) {
+            $match = setMatchType($rule['from'],$rule['regexp']);
+        $complete .= "'From:' " . $match . " '" . SmartSieve::utf8Decode($rule['from']) . "'";
+        $started = 1;
+        }
+        if ($rule['to']) {
+        if ($started) $complete .= $andor;
+            $match = setMatchType($rule['to'],$rule['regexp']);
+        $complete .= "'To:' " . $match . " '" . SmartSieve::utf8Decode($rule['to']) . "'";
+        $started = 1;
+        }
+        if ($rule['subject']) {
+        if ($started) $complete .= $andor;
+            $match = setMatchType($rule['subject'],$rule['regexp']);
+        $complete .= "'Subject:' " . $match . " '" . SmartSieve::utf8Decode($rule['subject']) . "'";
+        $started = 1;
+        }
+        if ($rule['field'] && $rule['field_val']) {
+        if ($started) $complete .= $andor;
+            $match = setMatchType($rule['field_val'],$rule['regexp']);
+        $complete .= "'" . SmartSieve::utf8Decode($rule['field']) . "' " . $match . " '" . SmartSieve::utf8Decode($rule['field_val']) . "'";
+        $started = 1;
+        }
+        if (isset($rule['size']) && $rule['size'] !== '') {
+        $xthan = SmartSieve::text('less than');
+        if ($rule['gthan']) $xthan = SmartSieve::text('greater than');
+        if ($started) $complete .= $andor;
+        $complete .= SmartSieve::text("message %s '%sKB'", array($xthan,$rule['size']));
+        $started = 1;
+        }
+        if (!$rule['unconditional']) $complete .= " ".SmartSieve::text('THEN')." ";
+        if (preg_match("/folder/i",$rule['action']))
+        $complete .= SmartSieve::text("file into '%s';",array(SmartSieve::mutf7Decode($rule['action_arg'])));
+        if (preg_match("/reject/i",$rule['action']))
+        $complete .= SmartSieve::text("reject '%s';",array(SmartSieve::utf8Decode($rule['action_arg'])));
+        if (preg_match("/address/i",$rule['action']))
+            $complete .= SmartSieve::text("forward to '%s';",array(SmartSieve::utf8Decode($rule['action_arg'])));
+        if (preg_match("/discard/i",$rule['action']))
+            $complete .= SmartSieve::text("discard;");
+        if ($rule['keep']) $complete .= " [".SmartSieve::text('Keep a copy')."]";
+        if (preg_match("/custom/i",$rule['action'])){
+            $complete = '[' . SmartSieve::text('Custom Rule') . '] ' . SmartSieve::utf8Decode($rule['action_arg']);
+        }
+        $summaries[] = htmlspecialchars($complete);
+        if ($rule['continue'] == 1 || $rule['unconditional']) {
+            $useif = 1;
+        } else {
+            $useif = 0;
+        }
     }
-    if ($rule['to']) {
-	if ($started) $complete .= $andor;
-        $match = setMatchType($rule['to'],$rule['regexp']);
-	$complete .= "'To:' " . $match . " '" . SmartSieve::utf8Decode($rule['to']) . "'";
-	$started = 1;
-    }
-    if ($rule['subject']) {
-	if ($started) $complete .= $andor;
-        $match = setMatchType($rule['subject'],$rule['regexp']);
-	$complete .= "'Subject:' " . $match . " '" . SmartSieve::utf8Decode($rule['subject']) . "'";
-	$started = 1;
-    }
-    if ($rule['field'] && $rule['field_val']) {
-	if ($started) $complete .= $andor;
-        $match = setMatchType($rule['field_val'],$rule['regexp']);
-	$complete .= "'" . SmartSieve::utf8Decode($rule['field']) . "' " . $match . " '" . SmartSieve::utf8Decode($rule['field_val']) . "'";
-	$started = 1;
-    }
-    if (isset($rule['size']) && $rule['size'] !== '') {
-	$xthan = SmartSieve::text('less than');
-	if ($rule['gthan']) $xthan = SmartSieve::text('greater than');
-	if ($started) $complete .= $andor;
-	$complete .= SmartSieve::text("message %s '%sKB'", array($xthan,$rule['size']));
-	$started = 1;
-    }
-    if (!$rule['unconditional']) $complete .= " ".SmartSieve::text('THEN')." ";
-    if (preg_match("/folder/i",$rule['action']))
-	$complete .= SmartSieve::text("file into '%s';",array(SmartSieve::mutf7Decode($rule['action_arg'])));
-    if (preg_match("/reject/i",$rule['action']))
-	$complete .= SmartSieve::text("reject '%s';",array(SmartSieve::utf8Decode($rule['action_arg'])));
-    if (preg_match("/address/i",$rule['action']))
-        $complete .= SmartSieve::text("forward to '%s';",array(SmartSieve::utf8Decode($rule['action_arg'])));
-    if (preg_match("/discard/i",$rule['action']))
-        $complete .= SmartSieve::text("discard;");
-    if ($rule['continue']) $complete .= " [".SmartSieve::text('Continue')."]";
-    if ($rule['keep']) $complete .= " [".SmartSieve::text('Keep a copy')."]";
-    return htmlspecialchars($complete);
+    return $summaries;
 }
 
-function buildVacationString()
+function getVacationSummary()
 {
     global $script;
     $vacation = $script->vacation;
