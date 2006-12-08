@@ -1,6 +1,9 @@
 Smartsieve - ChangeLog
 ----------------------
 
+08 Dec 2006 S Grier
+* release_1_0_0-RC1
+
 07 Dec 2006 S Grier
 * Make if/elsif logic visible in rule summaries + cleanup template.
 * Add support for imapflags extension in custom rules.
