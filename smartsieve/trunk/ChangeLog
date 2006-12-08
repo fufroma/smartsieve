@@ -1,0 +1,711 @@
+Smartsieve - ChangeLog
+----------------------
+
+07 Dec 2006 S Grier
+* Make if/elsif logic visible in rule summaries + cleanup template.
+* Add support for imapflags extension in custom rules.
+
+06 Dec 2006 S Grier
+* Minor textual changes.
+
+22 June 2006 S Grier
+* Add cache control headers to style sheet, and cache by default.
+
+05 June 2006 S Grier
+* Add ability to switch from direct edit mode to GUI mode.
+
+17 May 2006 S Grier
+* Set focus on authz field when it becomes visible.
+
+17 Mar 2006 S Grier
+* Added view source option on view script page.
+
+20 Feb 2006 S Grier
+* Added logout_redirect config option to redirect users following logout.
+
+17 Feb 2006 S Grier
+* Disable TLS before closing socket if enabled.
+* Read starttls response correctly if negotiation fails.
+
+13 Feb 2006 S Grier
+* Add STARTTLS support. Requires PHP-5.1 or above with OpenSSL support.
+* Updated Copyright for 2006.
+* Display the server 'display' value instead of the host name common_status.inc.
+
+29 Nov 2005 S Grier
+* Use sprintf to avoid curly bracket confusion (Bug #1369220).
+* Returning references to non-variables causes an error in PHP 4.4/5.1 (Bug #1365169).
+
+16 Nov 2005 S Grier
+Changes to auth handling:
+- Abstrct SmartSieve login into new SmartSieve::login() function
+- Added new SmartSieve::checkAuthentication() function to check the auth state
+  of the current session, handle login attempts and redirect to the login page
+  if necessary
+- A few include/require calls changed to use SmartSieve::getConf()
+- New initial_page config option controls which page users see following login
+- Added new SmartSieve::destroy() function. Make sure we destroy the current
+  session following an auth failure. This will avoid browser loops.
+- Added SmartSieve::logout() function so we don't have to redirect via login.php
+
+03 Dec 2004 S Grier
+* Handle script names containing space, backslash and double-quote chars (Bug #1075450).
+
+01 Dec 2004 S Grier
+* Escape "&" characters in the encoded script index.
+
+25 Nov 2004 S Grier
+* Use transliterations when converting from UTF-8 using iconv.
+
+11 Nov 2004 S Grier
+* Make custom rule interface more intuitive.
+* Fix unconditional custom rules (Bug #1000050).
+* Keep mailbox names encoded as mUTF-7. Only convert to local charset for display.
+
+10 Nov 2004 S Grier
+* Convert charset of user supplied strings to correctly handle non-ascii content.
+  Sieve scripts should always be UTF-8 on the server.
+
+05 Nov 2004 S Grier
+* Move class Encrypt:: functions to SmartSieve:: (Bug #1058951).
+* Replace remaining old style $HTTP_*_VARS arrays with superglobals.
+
+04 Aug 2004 S Grier
+* Display authz box on login page to proxy_authz_users only.
+
+30 July 2004 S Grier
+* Fixed document.scripts clash (bug #994671).
+
+29 July 2004 S Grier
+* Fixed bug in matching message size of 0 (bug #1000041).
+
+27 July 2004 S Grier
+* Added French translation. Contributed by Alain Richard.
+
+19 July 2004 S Grier
+* Don't treat ruleID=0 as new rule.
+
+14 July 2004 S Grier
+* Template cleanups.
+* Activate script correctly in updateScript.
+
+09 July 2004 S Grier
+* Add switch to direct edit option.
+* Don't lose script modifications on parse error.
+* Vacation checkbox now works.
+* Reset rule changes on error.
+* Call retrieveRules() from setWorkingScript.
+* include_once version.php
+
+07 July 2004 S Grier
+* Add contributing and translating notes to README.
+
+05 July 2004 S Grier
+* Set charsets in conf/locales.php.
+* Only read translations file on first call to SmartSieve::text().
+
+25 June 2004 S Grier
+* Handle notify action in custom rules.
+* Updated German translation file from Andreas Haase.
+
+09 June 2004 S Grier
+* Move setUrl to class SmartSieve.
+* Move getFormValue to class SmartSieve. This no longer does strip_tags or rtrim and 
+  may now return null. Also now takes a default value.
+* Remove class AppSession and move class Script to lib/Script.php.
+* Only remove 'sieve://' part of referral host where necessary. Cyrus v2.1 doesn't include it.
+
+04 June 2004 S Grier
+* Replace long predefined arrays (HTTP_*_VARS) with superglobals. Requires php > 4.1.
+* Replace $errors and $msgs arrays with $_SESSION['errors'] and $_SESSION['notoces'].
+  Added SmartSieve::setError() and SmartSieve::setNotice() for using these arrays.
+* Use register_shutdown_function to make sure we always logout cleanly.
+* Use new Managesieve class instead of SieveSession. We make the managesieve object 
+  global rather than owned by the $sieve object.
+* Drop AppSession class. Move getScriptList(), getActiveScript(), getMailboxList(), 
+  scriptExists() to class SmartSieve.  We should now only login once per page click.
+* Added SmartSieve::handleReferrals() to cope with managesieve referrals.
+* Added SmartSieve::setWorkingScript(). Can now set working script from anywhere.
+* Call setWorkingScript when renaming or deleting the working script.
+
+01 June 2004 S Grier
+* Move writeToLog to SmartSieve class.
+* Added setSession, authenticate and close functions to SmartSieve class to replace 
+  old AppSession functions.
+
+26 May 2004 S Grier
+* Handle Cyrus v2.0 logout Ok response.
+* Don't add extra NO responses to errstr following putscript.
+* Handle extra capability NO response with Cyrus v2.0.
+
+12 May 2004 S Grier
+* Added lib/Managesieve.php. Class Managesieve is an improved managesieve library 
+  intended to replace class SieveSession.
+
+21 April 2004 S Grier
+* Don't add extra newline to end of script in SieveSession::getscript().
+* Rewrite rename action on scripts.php.
+
+16 April 2004 S Grier
+* Support proxy authorization. We now authenticate as $sieve->auth, and authorize 
+  as $sieve->authz. Only users authenticating as a Cyrus admin or sieve_admin will 
+  be able to authorize as a different user. Also, note that the PHP imap extension 
+  doesn't support proxy authz, so the mailbox listing will be wrong.
+
+13 April 2004 S Grier
+* Added Russian koi8-r translation. Contributed by Alexander Borovsky aka Partizan.
+* Added $server['auth_domain'] option to append domain on usernames if 
+  fully-qualified usernames are needed. (Markus Rechtien)
+
+08 April 2004 S Grier
+* Widen vacation and reject message textareas to $default->wrap_width, or 80 
+  characters wide. We still wrap hard.
+
+07 April 2004 S Grier
+* Added SmartSieve::getConf function to avoid Undefined variable warnings.
+
+26 Mar 2004 S Grier
+* Added conf/locales.php. The language select widget on the login page is now 
+  generated from this file.
+* Cleanups to login page template.
+
+23 Mar 2004 S Grier
+* Added Spanish and Catalan translations. Contributed by Andreu Sánchez Costa.
+
+12 Mar 2004 S Grier
+* Match Cyrus version v2.x correctly in SieveSession::_authenticate()
+
+04 Mar 2004 S Grier
+* release_0_5_2
+* Fix typo in config.php
+* Cleaned up text in config.php.
+
+02 Mar 2004 S Grier
+* Updated Italian translation file from Andrea Tassinari.
+
+01 Mar 2004 S Grier
+* Protect code from non-existent config options using !empty().
+
+09 Feb 2004 S Grier
+* Updated German translation file from Andreas Haase.
+
+04 Feb 2004 S Grier
+* Added Italian translation. Contributed by Andrea Tassinari.
+
+27 Jan 2004 S Grier
+* Fix getForwardRule() return 0 bug in forward.php.
+
+26 Jan 2004 S Grier
+* Updated Copyright for 2004.
+* Merged i18n branch into HEAD.
+* Added $default->user_select_lang config option.
+
+15 Jan 2004 S Grier
+* Send Content-Type http header with all responses to set the correct charset.
+* Make language select list on login page dependent on $default->user_select_lang.
+
+14 Jan 2004 S Grier
+* Added scripts/locales_update.pl script. This can be used to (re)generate 
+  the translation files for supported languages. It will extract all output 
+  strings passed via the SmartSieve::text() function, and reuse any existing 
+  translations from the old translation file.
+
+17 Dec 2003 S Grier
+* SmartSieve::Text() -> SmartSieve::text().
+* cleaned up some SmartSieve::text() calls.
+
+15 Dec 2003 S Grier
+* SmartSieve::GetCharset() -> SmartSieve::getCharset().
+
+11 Dec 2003 S Grier
+* SmartSieve::Text() now takes an $args array argument, which is passed to a 
+  vsprintf() call. This allows us to translate strings with variables in them.
+* isset($phrase[$string]) changed to !empty($phrase[$string]) in SmartSieve::Text().
+* merge changes in HEAD to i18n branch.
+
+14 Nov 2003 S Grier
+* set session.use_trans_sid off and call session_set_cookie_params() on each page.
+* use AppSession::getFormValue() to get reason value in login.php. and call 
+  session_destroy() on logout.
+
+12 Nov 2003 S Grier
+* call session_name() and session_start() from index.php in order to redirect
+  correctly, and call AppSession::setUrl() to work with cookieless sessions.
+* call SmartSieve::mutf7Decode() instead of imap_utf7_decode() in AppSession::retrieveMailboxList().
+
+11 Nov 2003 S Grier
+* don't use short_open_tags in conf/locale/*/strings.php.
+
+03 Nov 2003 S Grier
+* fixed small bug in custom rule handling. should not be deemed unconditional if action_arg starts
+  with (els)if.
+
+31 Oct 2003 S Grier
+* added mutf7Decode() and modifiedToPlainUTF7() functions. We want to avoid using
+  the imap_utf7_decode() to decode mailbox names because it only converts modified
+  UTF-7 into ISO-8859-1. These functions convert mUTF-7 encoded mailbox names into
+  whatever character encoding is needed by the current locale. The modifiedToPlainUTF7()
+  code was contributed by Den aka Diesel.
+
+29 Oct 2003 S Grier
+* vacation rule changes:
+ - $default->vacation_days now defaults to 7 and max_vacation_days is now 30 as per 
+   draft-showalter-sieve-vacation-04.
+ - new require_vacation_days and require_vacation_addresses config options. If these are set to 
+   false the defaults are ignored and the user will be able to not specify these values, in which 
+   case we will not then include the :days or :addresses arguments when writing the vacation rule 
+   to the script. These are optional arguments in draft-showalter-sieve-vacation-04.
+ - new buildVacationString() function in main.php for an improved vacation rule summary.
+ - display defaults on vacation.php if no current vacation rule.
+
+27 Oct 2003 S Grier
+* moved html from rule.php, scripts.php, vacation.php and login.php to templates.
+
+23 Oct 2003 S Grier
+* added forward mail interface forward.php.
+
+26 Sept 2003 S Grier
+* added a javascript confirmation popup when a match string contains wildcard chars with 
+  $default->websieve_auto_matches = true to warn them that :matches will be used.
+* add $default->websieve_auto_matches config option to control the automatic use of the :matches 
+  comparator where match string contains wildcard characters. This defaults to off because of 
+  the unexpected results this can produce.
+
+23 Sept 2003 S Grier
+* small change to imapport comment.
+
+19 Sept 2003 S Grier
+* sieve.lib: changes to socket handling:
+  - initialize $this->socket false.
+  - set $this->socket false in close() function.
+  - check status of socket with is_resource() calls.
+
+12 Sept 2003 S Grier
+* rule.php: set wrap="off" for custom rule textarea.
+
+22 August 2003 S Grier
+* htmlspecialchar() rule and vacation sumarries to avoid garbled output.
+
+18 August 2003 S Grier
+* status and messages rows on all pages moved to new common_status.inc include file.
+* top menu on all pages now included from menu.inc include file.
+* don't display vacation or new rule links on the top menu in advanced mode.
+
+15 August 2003 S Grier
+* moved top menu html from main.php to new menu.inc include file.
+
+14 August 2003 S Grier
+* moved <head> html block on all pages to new common-head.inc include file.
+
+13 August 2003 S Grier
+* make sure $script->mode always set. basic by default, advanced if encoding unrecognised.
+* moved removeEncoding() to Script:: class. call from updateScript().
+
+11 August 2003 S Grier
+* added support for Websieve's advanced mode. A new direct edit interface will allow editing 
+  advanced mode scripts and scripts not created by SmartSieve or Websieve.
+* Fixed DIGEST-MD5 for SASL v1.x.
+* sieve.lib: getscript() now returns array $resp containing raw script and script size.
+
+17 July 2003 S Grier
+* set $rule['unconditional'] for custom rule if unconditional.
+
+16 July 2003 S Grier
+* add "vacation" to require line if custom rule contains vacation command.
+
+14 July 2003 S Grier
+* added support for Websieve's custom rules.
+
+04 July 2003 S Grier
+* added support for the DIGEST-MD5 sasl auth mechanism. based on Scott 
+  Russell's patch for sieve-php.lib, and RFC 2831.
+  Note: this is completely untested.
+
+20 June 2003 S Grier
+* sieve.lib:
+  - abstracted SASL authenticate command into new _authenticate() function. 
+    This is necessary for adding support for other SASL mechanisms.
+  - new _selectsaslmech() function selects which of the supported SASL mechanisms 
+    to use. Returns false if none of the supported mechanisms are available on 
+    the server.
+
+29 May 2003 S Grier
+* set the language in the PHP session, rather than the AppSession object.
+  this will make the translation work for the login page.
+* include/login.js: added changeLang() function. The language on the login page
+  will change as the value of the language list box is changed, unless there is
+  a value in the username or password fields (so they don't get lost).
+* lib/SmartSieve.lib:
+  - added getLang() function. return $default->language if not set in session                                                                             
+    if not set in session, GET or POST.
+  - modified Text() and GetChar() to use getLang().
+                                                                             
+28 May 2003 S Grier
+* rule.php: 2 strings for which SmartSieve::Text() should not be used.
+                                                                             
+23 May 2003 S Grier
+* login.php: missing quotes on tabindex.
+
+22 May 2003 S Grier
+* added i18n multi-language support (patch contributed by Andreas Haase).
+
+15 May 2003 S Grier
+* release_0_5_1devel.
+* lib/Crypt/mcrypt.php:
+   fixed undefined index warnings in $args array.
+* can now set SmartSieveCrypt $args from config.
+
+14 May 2003 S Grier
+* can now reverse a match condition by preceding a match string with the ! 
+  character, eg. "!matchstr" = 'not :contains "matchstr"'.
+* now interprets * and ? as wildcard chars and implements the :matches match type.
+
+13 May 2003 S Grier
+* scripts.php:
+   fixed Activate link broken in IE-6.0 (bug #732546).
+
+12 May 2003 S Grier
+* rule.php:
+   strip colons from end of mail header field.
+* Crypt.php:
+   only use libmcrypt if function mcrypt_module_open exists (libmcrypt >= 2.4.x).
+* now supports libmcrypt for encryption.
+
+30 April 2003 S Grier
+* login.php:
+   now tries to authenticate when a SmartSieve session already exists. If this 
+   fails SmartSieve now warns that its cookie settings may be wrong. This stops 
+   browser loops when cookie_domain and cookie_path are set incorrectly.
+* SmartSieve.lib:
+   pass SieveSession object $default->socket_timeout value.
+
+28 April 2003 S Grier
+* Re-worked SmartSieve's cryptographic handling:
+ - abstracted the code which interfaces with external cryptographic libraries into
+   a new SmartSieveCrypt class. SmartSieveCrypt::factory() instantiates a sub-class 
+   which interfaces with the chosen cryptographic library. Sub-classes can be found 
+   in lib/Crypt/. Encrypt::getCryptLib() decides which library SmartSieve should use.
+ - The Encrypt class now instantiates a SmartSieveCrypt object to do the encryption
+   decryption work.
+ - Added support for PEAR's Crypt_Rc4 library.
+
+16 April 2003 S Grier
+* sieve.lib:
+ - fixed bug in read(). no longer returns $buffer if socket_get_status() 
+   reports no bytes left in the read buffer, as read() may read them faster 
+   than they arrive. was causing lines to be broken, and rules to be lost.
+
+10 April 2003 S Grier
+* vacation.php:
+ - make $script a reference, to fix bug similar to bug #717615 in rule.php.
+
+09 April 2003 S Grier
+* rule.php:
+ - fixed undefined index warnings when rule doesn't exist.
+ - fixed bug where a new rule would be lost if you select 'Create New Rule' 
+   from the create new rule page (bug #717615).
+ - fixed problems caused by hidden ruleID value not being set correctly on 
+   saving a new rule.
+
+17 March 2003 S Grier
+* release_0_5_0devel.
+
+14 March 2003 S Grier
+* cleaned up scripts.php.
+* vacation status should default to 'on' when first set.
+* SmartSieve.lib: new getNumScripts function returns number of current user's scripts.
+* updateScript() will now set script active if no other script exists for user.
+
+12 March 2003 S Grier
+* scripts.php: added rename action.
+
+11 March 2003 S Grier
+* fixed problem with havespace function.
+
+10 March 2003 S Grier
+* scripts.php: fixed delete action.
+* fixed undefined warnings caused by SieveSession object.
+* rule.php: fixed undefined warnings.
+
+09 March 2003 S Grier
+* scripts.php: added delete action. not quite right yet though.
+* sieve.lib: added havespace and deletescript functions.
+* scripts.php: added deactivate action.
+
+07 March 2003 S Grier
+* vacation.php: fixed 'undefined' warnings.
+* new allow_write_unrecognised_scripts config option. this controls whether 
+  users are able to overwrite scripts not created using SmartSieve.
+* various style sheet improvements.
+* main.php: set column widths on rules table.
+* main.php: fixed broken javascript: style.background -> style.backgroundColor.
+* main.php: removed nowrap from rule summaries.
+
+04 March 2003 S Grier
+* onmouseover handlers reference window.status (bug 696102).
+
+03 March 2003 S Grier
+* LOG_ERROR should be LOG_ERR.
+* cleaned code to work when error_reporting = E_ALL.
+
+05 Feb 2003 S Grier
+* scripts.php: 
+  - added createscript action.
+  - modified activate action. warns if no script selected.
+* stylesheet changes to scripts.php.
+* $default->update_activate_script now defaults to false.
+
+04 Feb 2003 S Grier
+* set workingscript active if $default->allow_multi_scripts = false.
+* add $default->scripts_help_url config option for new scripts page.
+* scripts.php: make links to view scripts work.
+* added manage scripts menu links.
+
+31 Jan 2003 S Grier
+* scripts.php: can now change active script.
+
+30 Jan 2003 S Grier
+* Log class:
+  - added var declarations.
+  - initialize $errstr and $stream properly.
+  - expect fwrite to return false rather than -1 on failure.
+
+28 Jan 2003 S Grier
+* first bash at scripts page for managing scripts.
+* smartsieve.css stylesheet replaced by css.php and style.php.
+* session name now set by new $default->session_name config option.
+* page status line reports whether working script is active.
+* new scriptExists, isActiveScript and doListScripts functions in AppSession class.
+  these are initially needed by the Script class.
+* initialize $errstr properly in the AppSession and Script class.
+* Script class: $scriptfile variable changed to $name. remove $scriptlist.
+
+21 Jan 2003 S Grier
+* call count() not non-existent arraycount() in initialWorkingScript().
+
+12 Jan 2003 S Grier
+* improved handling of multiple scripts. now sets array $scripts in 
+  session, as array of script objects: ie. $scripts[$script1,$script2,...].
+* drop-down script list on rule.php and vacation.php.
+* $default->allow_user_supply_scriptfile now defaults to false.
+
+09 Jan 2003 S Grier
+* destroy $script object on logout.
+* separate sieve and script objects. initialize script object from main.php.
+* 1st bash at handling multiple scripts in same login session.
+* new initialWorkingScript function. SmartSieve now selects which script to 
+  open following a login. if script is passed from the login form, it will 
+  open that; or if not, if a script is set as the active script on the server, 
+  it open that; or if not, it will open the first of the list of user's scripts 
+  if there is one; or if all else fails, open $default->scriptfile.
+* new $default->allow_multi_scripts option controls whether to allow access 
+  to scripts other than $default->scriptfile.
+* don't display scriptfile box on login page if $default->allow_multi_scripts 
+  is false.
+* listScripts function moved to AppSession class.
+* cosmetic change to rule.php.
+
+04 Jan 2003 S Grier
+* main.php: don't do rule mods if HTTP_POST_VARS['action'] is set, only if 
+  a positive value. This is necessary for drop-down script list box to work.
+* lib/SmartSieve.lib: now gets updated script list for each updateScript call.
+* fixed bug in sieve.lib's activatescript: no longer need to read extra newline.
+
+03 Jan 2003 S Grier
+* main.php: first stab at drop-down script list for changing scripts.
+
+29 Dec 2002 S Grier
+* lib/SmartSieve.lib:
+  - take note of script size.
+  - read and note encoded mode value. only used by Websieve.
+  - check script has recognised encoding of rules. if script was not 
+    previously written by SmartSieve/Websieve, $script->so will indicate 
+    that is it not safe to overwrite the script.
+* main.php: 
+  - warn if script encoding was not recognised.
+  - warn if script was written in Websieve's advanced mode.
+
+11 Dec 2002 S Grier
+* alt_namespace should be boolean not a string in servers.php.
+
+02 Dec 2002 S Grier
+* release_0_3_2devel.
+* correct help urls in rule.php and vacation.php.
+* small changes to INSTALL.
+
+28 Nov 2002 S Grier
+* AppSession class now always sets errstr when returning false.
+* initialize SieveSession object with function arguments.
+* added var declarations for AppSession and Script classes.
+* keep server defaults if not set in conf/servers.php.
+
+27 Nov 2002 S Grier
+* login.php: include returned error in log message for failed login.
+* numerous changes to lib/sieve.lib: 
+  - added class var declarations.
+  - renamed $capabilities as $extensions.
+  - change to use fread() rather than fgets(). fread() is binary safe, and 
+    is more appropriate for reading single bytes. this will make SmartSieve 
+    work on php-4.3.0pre2.
+  - added $socket_timeout and socket_set_timeout() call so read() will not 
+    wait forever on the socket.
+  - read() now calls socket_get_status() and returns if socket has timed out 
+    or has no bytes left to read. this should make read() less likely to hang 
+    if there's a problem.
+  - now retrieves the newline char from the socket when line ends in a CRLF.
+
+07 Nov 2002 S Grier
+* rule.php: move call-time pass-by-reference checkRule(&$rule) to function 
+  definition. use of allow_call_time_pass_reference depreciated.
+
+06 Nov 2002 S Grier
+* lib/Encrypt.php: changed include_one calls to require_once.
+
+04 Nov 2002 S Grier
+* added welcome heading to login.php. can be formatted via 
+  $default->login_page_heading and .welcome stylesheet item.
+* 2 small fixes to make alt_namespace work.
+* more concise $default->script_head_format.
+* fixed namespace support. now done in new SmartSieve::getMailboxName() 
+  function. handles user and shared namespaces also.
+
+01 Nov 2002 S Grier
+* added note on PLAIN SASL auth requirement to INSTALL.
+* improved alt namespace support. still not right. NOTE: temporarily broken.
+
+30 Oct 2002 S Grier
+* sieve.lib: checks for "STARTTLS" capability. this is new in timesieved-1.1.0
+  (cyrus-imapd-2.1).
+
+23 Oct 2002 S Grier
+* main.php: $errstr is now $errors array. will also now report $msgs.
+
+22 Oct 2002 S Grier
+* improved stylesheet formatting. now uses #RRGGBB codes for colours. 
+* added some &nbsp; chars to main.php, rule.php, vacation.php to improve 
+  appearance in browsers like Netscape.
+* rule.php: more informative log message for openSieveSession.
+* small bugfix to conf/config.php: missing '*/'.
+
+21 Oct 2002 S Grier
+* moved script head date format to $default->script_date_format.
+* removed redundant $baseurl variables from index.php.
+* changed rule.php and vacation.php to use AppSession::setUrl().
+
+18 Oct 2002 S Grier
+* changed login.php and main.php to use AppSession::setUrl().
+* lib/Encrypt.php: check for specific session_name() cookie when setting 
+  key cookie. necessary to handle cookie-less sessions.
+* added AppSession::setUrl() function to cope where cookies are not 
+  accepted by the browser.
+* addended README and INSTALL notes for mailinglist info.
+
+08 Oct 2002 S Grier
+* release_0_3_1devel
+
+07 Oct 2002 S Grier
+* default config changes: $default->scriptfile now defaults to 'smartsieve'. 
+  $default->logging now defaults to off.
+* rule.php: small bugfix. was writing error msg to log regardless of what 
+  retrieveMailboxList() returns.
+
+04 Oct 2002 S Grier
+* rewrite of vacation.php. now builds $vacation array from POST if submitted 
+  or $script->vacation if not. this means we can't bypass chechRule() by 
+  clicking enable or disable.
+  also added success messages.
+
+03 Oct 2002 S Grier
+* added $default->return_after_update config option.
+* added success messages to rule.php.
+* improved top menus.
+
+02 Oct 2002 S Grier
+* modified to cope with register_globals=off.
+
+30 Sept 2002 S Grier
+* removed tmp print statements from main.php.
+* changed all occurrences of <? to <?php to eradicate dependency on 
+  short_open_tag php config option.
+
+27 Sept 2002 S Grier
+* release_0_1_0devel
+
+26 Sept 2002 S Grier
+* moved TODO text to new TODO file.
+* wrote README text.
+
+22 Sept 2002 S Grier
+* function getFormPOSTValues() makes rule.php more robust.
+* added INSTALL.
+
+20 Sept 2002 S Grier
+* removed proxy values from conf/servers.php. will be unused until we get
+  proxy authentication working.
+* added .htaccess files to lib/ conf/ and include/, containing 'Deny from all'.
+* renamed lib/EasySieve.lib to lib/SmartSieve.lib
+
+15 Sept 2002 S Grier
+* vacation.php: improved checkRule(). now checks for values which 
+  exceed $default->max_field_chars and $default->max_textbox_chars.
+* rule.php: improved checkRule(). no longer rejects From: and To:
+  values which don't contain an '@' character. now checks for values 
+  which exceed $default->max_field_chars and $default->max_textbox_chars.
+* added $default->max_field_chars and $default->max_textbox_chars
+  to control the size of values we accept from input fields and 
+  text boxes on rule.php and vacation.php.
+* added help menu items to all pages controlled by conf/config.php.
+* added images/up.gif and images/down.gif for order links on main.php.
+* a few aesthetic changes to all pages.
+
+14 Sept 2002 S Grier
+* main.php: numerous changes.
+* rule.php: modified to retrieve form values using AppSession::getFormValue().
+* vacation.php: further modified to retrieve form values using AppSession::getFormValue().
+
+12 Sept 2002 S Grier
+* lib/EasySieve.php: added getFormValue function. this will retrieve a POST/GET 
+		     value and do the following:
+		      - pass it through stripslashes() if magic_quotes_gpc set to on in php.ini
+		      - pass it through strip_tags() to remove any HTML
+		      - remove trailing whitespace (rtrim())
+* main.php: modified to retrieve form values using AppSession::getFormValue().
+* vacation.php: modified to retrieve form values using AppSession::getFormValue().
+
+09 Sept 2002 S Grier
+* Added license info on all source files.
+* Added cvs Id tags to most files.
+
+01 Sept 2002 S Grier
+* main.php: - changed ruleID to rindex to fix bug with last commit of ChangeOrder code.
+	    - fixed incorrect class value of 'enable' option.
+* include/main.js: changed ruleID to rindex to fix bug with last commit of 
+	           ChangeOrder code.
+* rule.php: now sets a priority value based on new $script->pcount value.
+* lib/EasySieve.lib: - added code to updateScript to reset priority value of rules.
+		       Note we only set these values at all for compatibility 
+		       with Websieve.
+		     - new $script->pcount value for current highest priority value.
+		       Used for setting priority value of new rules.
+		     - retrieveRules now sets $script->pcount value.
+
+30 August 2002 S Grier
+* main.php: Added functionality to change the order the filter rules
+            are saved in. An up and down arrow on the right of each rule
+            moves the rule either up or down accordingly.
+* include/main.js: ChangeOrder function added.
+
+31 July 2002 S Grier
+* vacation.php: better display and logging of all error messages.
+
+30 July 2002 S Grier
+* rule.php: better display and logging of all error messages.
+
+28 July 2002 S Grier
+* main.php: better display and logging of all error messages.
+
+27 July 2002 S Grier
+* rule.php: will now not get enable/disable options following failed save.
+
+
+$Id$
