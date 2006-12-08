@@ -34,7 +34,7 @@ $auth = $argv[1];
 $authz = $argv[2];
 $server = (isset($argv[3])) ? $argv[3] : '127.0.0.1';
 $port = (isset($argv[4])) ? $argv[4] : '2000';
-$sas_mech = (isset($argv[5])) ? $argv[5] : 'plain';
+$sasl_mech = (isset($argv[5])) ? $argv[5] : 'plain';
 
 // Prompt for a password.
 echo "Password: ";
