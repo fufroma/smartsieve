@@ -326,10 +326,12 @@ function getSummaries() {
             $complete = '[' . SmartSieve::text('Custom Rule') . '] ' . SmartSieve::utf8Decode($rule['action_arg']);
         }
         $summaries[] = htmlspecialchars($complete);
-        if ($rule['continue'] == 1 || $rule['unconditional']) {
-            $useif = 1;
-        } else {
-            $useif = 0;
+        if ($rule['status'] == 'ENABLED') {
+            if ($rule['continue'] == 1 || $rule['unconditional']) {
+                $useif = 1;
+            } else {
+                $useif = 0;
+            }
         }
     }
     return $summaries;

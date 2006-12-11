@@ -1,6 +1,9 @@
 Smartsieve - ChangeLog
 ----------------------
 
+11 Dec 2006 S Grier
+* Fix getSummaries() to ignore disabled rules when deciding to use if/elseif.
+
 08 Dec 2006 S Grier
 * Fix typo in ms-test.php.
 
