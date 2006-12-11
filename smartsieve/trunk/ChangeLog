@@ -2,6 +2,9 @@ Smartsieve - ChangeLog
 ----------------------
 
 08 Dec 2006 S Grier
+* Fix typo in ms-test.php.
+
+08 Dec 2006 S Grier
 * release_1_0_0-RC1
 
 07 Dec 2006 S Grier
