@@ -193,6 +193,7 @@ include $default->include_dir . '/common-head.inc';
 include $default->include_dir . '/menu.inc';
 include $default->include_dir . '/common_status.inc';
 include $default->include_dir . '/scripts.inc';
+include SmartSieve::getConf('include_dir', 'include') . '/common-footer.inc';
 
 SmartSieve::close();
 

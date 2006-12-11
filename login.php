@@ -81,5 +81,6 @@ if (isset($proxyusers[0]) && $proxyusers[0] == 'all') {
 
 include $default->include_dir . '/common-head.inc';
 include $default->include_dir . '/login.inc';
+include SmartSieve::getConf('include_dir', 'include') . '/common-footer.inc';
 
 ?>

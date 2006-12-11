@@ -100,7 +100,3 @@
 
 <?php if (is_readable($default->config_dir . '/motd.php')) include $default->config_dir . '/motd.php';?>
 
-
-</BODY>
-</HTML>
-

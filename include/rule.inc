@@ -216,7 +216,3 @@
 <INPUT TYPE="hidden" NAME="ruleID" VALUE="<?php echo (isset($ruleID)) ? $ruleID : 'new';?>">
 
 </FORM>
-
-</BODY>
-</HTML>
-
