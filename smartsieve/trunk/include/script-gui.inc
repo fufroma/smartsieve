@@ -100,7 +100,3 @@
 <INPUT TYPE="hidden" NAME="rindex" VALUE="" >
 
 </FORM>
-
-</BODY>
-</HTML>
-

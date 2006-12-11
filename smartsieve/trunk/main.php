@@ -262,6 +262,7 @@ if ($script->mode == 'advanced' || $script->so == false){
     }
     include $default->include_dir . '/script-gui.inc';
 }
+include SmartSieve::getConf('include_dir', 'include') . '/common-footer.inc';
 
 SmartSieve::close();
 

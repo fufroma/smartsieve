@@ -93,7 +93,3 @@
 <INPUT TYPE="hidden" NAME="custom" VALUE="">
 
 </FORM>
-
-</BODY>
-</HTML>
-

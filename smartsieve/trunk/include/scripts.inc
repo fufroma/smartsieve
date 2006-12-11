@@ -76,7 +76,3 @@
 <INPUT TYPE="hidden" NAME="newscript" VALUE="" >
 
 </FORM>
-
-</BODY>
-</HTML>
-

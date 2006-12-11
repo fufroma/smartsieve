@@ -122,7 +122,3 @@ if (is_array($vacation['addresses'])) {
 <INPUT TYPE="hidden" NAME="status" VALUE="<?php echo $vacation['status']; ?>">
 
 </FORM>
-
-</BODY>
-</HTML>
-
