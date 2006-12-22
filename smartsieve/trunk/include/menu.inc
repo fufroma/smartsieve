@@ -20,7 +20,7 @@
         | <A HREF="<?php print SmartSieve::setUrl('scripts.php');?>"><?php echo SmartSieve::text('Manage Scripts');?></A>
 <?php endif; //$default->allow_multi_scripts ?>
 <?php if (!empty($help_url)): ?>
-        | <a href="<?php echo $help_url; ?>"><?php echo SmartSieve::text('Help');?></a>
+        | <a href="<?php echo $help_url; ?>" target="_blank"><?php echo SmartSieve::text('Help');?></a>
 <?php endif; //$help_url ?>
 
         </TD>
