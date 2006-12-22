@@ -16,7 +16,7 @@ way for users to manage mail filtering and vacation messaging. It
 will be of particular interest to those currently deploying Websieve 
 for this purpose. SmartSieve is compatible with Websieve in that 
 Sieve scripts created using Websieve can be read and modified using 
-SmartSieve, and visa-versa.
+SmartSieve.
 
 SmartSieve is not a Sieve script 'parser'. It cannot directly read 
 and understand the Sieve language itself. For this reason, the GUI 
@@ -27,13 +27,13 @@ mode.
 
 PROJECT STATUS
 
-At the time of this release, SmartSieve is considered beta quality 
-software. It is undergoing constant development. There may well be 
-bugs in the code, and I cannot guarantee that SmartSieve will work 
-at all with your web and imap servers (see the requirements section 
-of the INSTALL file for software it is currently known to work with). 
-I do not accept responsibility for any loss or damage which might 
-occur as a result of using this software.
+At the time of this release, SmartSieve version 1.0 is considered 
+stable. See the requirements section of the INSTALL file for details 
+of the versions of PHP and Cyrus that SmartSieve is known to work 
+with. We cannot guarantee SmartSieve will work on all platforms or 
+older versions of PHP and Cyrus. The SmartSieve Project does not 
+accept responsibility for any loss or damage which might occur as a 
+result of using this software.
 
 Please feel free to give SmartSieve a whirl. The SmartSieve project 
 always appreciates feedback, so please let us know of any comments, 
