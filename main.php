@@ -343,10 +343,10 @@ function getVacationSummary()
     global $script;
     $vacation = $script->vacation;
     $vacation_str = '';
-    if (!is_array($vacation)){ return htmlspecialchars($vacation_str); }
+    if (!is_array($vacation) || empty($vacation){ return htmlspecialchars($vacation_str); }
 
     $vacation_str .= SmartSieve::text('Respond');
-    if (is_array($vacation['addresses']) && $vacation['addresses'][0]){
+    if (!empty($vacation['addresses']) && is_array($vacation['addresses'])){
         $vacation_str .= ' ' . SmartSieve::text('to mail sent to') . ' ';
         $first = true;
         foreach ($vacation['addresses'] as $addr){
