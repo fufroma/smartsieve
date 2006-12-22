@@ -107,7 +107,7 @@ class Script {
                     $rule['regexp'] = ($bits[8] & $regexbit);
                     $rule['unconditional'] = 0;
                     if ((!$rule['from'] && !$rule['to'] && !$rule['subject'] &&
-                       !$rule['field'] && $rule['size'] === '' && $rule['action'] &&
+                       !$rule['field'] && $rule['size'] === '' && 
                        $rule['action'] != 'custom') OR
                        ($rule['action'] == 'custom' && !preg_match("/^ *(els)?if/i", $rule['action_arg']))) {
                         $rule['unconditional'] = 1;
@@ -277,23 +277,23 @@ class Script {
  
         // actions
  
-        if (!$rule['unconditional']) $newruletext .= ") {\n\t";
+        if (!$rule['unconditional']) $newruletext .= ") {\n";
 
         if (preg_match("/folder/i",$rule['action'])) {
-            $newruletext .= "fileinto \"" . $rule['action_arg'] . "\";";
+            $newruletext .= ((!$rule['unconditional']) ? "\t" : '') . "fileinto \"" . $rule['action_arg'] . "\";\n";
         }
         if (preg_match("/reject/i",$rule['action'])) {
-            $newruletext .= "reject text: \n" . $rule['action_arg'] . "\n.\n;";
+            $newruletext .= ((!$rule['unconditional']) ? "\t" : '') . "reject text: \n" . $rule['action_arg'] . "\n.\n;\n";
             $rejectused = 1;
         }
         if (preg_match("/address/i",$rule['action'])) {
-            $newruletext .= "redirect \"" . $rule['action_arg'] . "\";";
+            $newruletext .= ((!$rule['unconditional']) ? "\t" : '') . "redirect \"" . $rule['action_arg'] . "\";\n";
         }
         if (preg_match("/discard/i",$rule['action'])) {
-            $newruletext .= "discard;";
+            $newruletext .= ((!$rule['unconditional']) ? "\t" : '') . "discard;\n";
         }
-        if ($rule['keep']) $newruletext .= "\n\tkeep;";
-        if (!$rule['unconditional']) $newruletext .= "\n}";
+        if ($rule['keep']) $newruletext .= ((!$rule['unconditional']) ? "\t" : '') . "keep;\n";
+        if (!$rule['unconditional']) $newruletext .= "}\n";
 
         if (preg_match("/custom/i",$rule['action'])) {
             $newruletext = $rule['action_arg'];
@@ -315,7 +315,7 @@ class Script {
         if ($rule['continue']) $continue = 1;
         if ($rule['unconditional']) $continue = 1;
  
-        $newscriptbody .= $newruletext . "\n\n";
+        $newscriptbody .= $newruletext . "\n";
  
       } // end 'if ! ENABLED'
     }
