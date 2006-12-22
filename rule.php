@@ -213,7 +213,7 @@ function getRulePOSTValues ($ruleID)
     if (SmartSieve::getFormValue('regexp')) $rule['regexp'] = 128;
     $rule['unconditional'] = 0;
     if ((!$rule['from'] && !$rule['to'] && !$rule['subject'] &&
-       !$rule['field'] && $rule['size'] === '' && $rule['action'] && 
+       !$rule['field'] && $rule['size'] === '' && 
        $rule['action'] != 'custom') OR
        ($rule['action'] == 'custom' && !preg_match("/^ *(els)?if/i", $rule['action_arg']))) {
         $rule['unconditional'] = 1;
@@ -247,9 +247,9 @@ function checkRule(&$rule)
     /* remove colon from end of header field. */
     if ($rule['field'] && preg_match("/:$/",$rule['field']))
         $rule['field'] = rtrim($rule['field'], ":");
-    if (!$rule['action'])
+    if (!$rule['action'] && !$rule['keep'])
         return SmartSieve::text("please supply an action");
-    if ($rule['action'] != 'discard' && !$rule['action_arg'])
+    if ($rule['action'] != 'discard' && !$rule['keep'] && !$rule['action_arg'])
         return SmartSieve::text("you must supply an argument for this action");
     /* if this is a forward rule, forward address must be a valid email. */
     if ($rule['action'] == 'address' && !preg_match("/\@/",$rule['action_arg']))

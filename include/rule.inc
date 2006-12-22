@@ -31,7 +31,6 @@
     <TR>
       <TD>
     <INPUT TYPE="checkbox" NAME="continue" VALUE="continue"<?php echo (!empty($rule['continue'])) ? ' CHECKED="checked"' : '';?>><?php echo SmartSieve::text('Next rule starts a new if/elseif/else block');?> 
-    <INPUT TYPE="checkbox" NAME="keep" VALUE="keep"<?php echo (!empty($rule['keep'])) ? ' CHECKED="checked"' : '';?>><?php echo SmartSieve::text('Keep a copy of the message in your Inbox');?> 
 <?php if (SmartSieve::getConf('allow_regex')): ?>
     <INPUT TYPE="checkbox" NAME="regexp" VALUE="regexp"<?php echo (!empty($rule['regexp'])) ? ' CHECKED="checked"' : '';?>><?php echo SmartSieve::text('Use regular expression matching');?> 
 <?php endif; ?>
@@ -152,6 +151,11 @@
       </TD>
       <TD>
         &nbsp;
+      </TD>
+    </TR>
+    <TR>
+      <TD>
+        <INPUT TYPE="checkbox" NAME="keep" VALUE="keep"<?php echo (!empty($rule['keep'])) ? ' CHECKED="checked"' : '';?>> <?php echo SmartSieve::text('Keep a copy in your Inbox');?> 
       </TD>
     </TR>
     </TABLE>

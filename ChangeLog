@@ -2,6 +2,7 @@ Smartsieve - ChangeLog
 ----------------------
 
 22 Dec 2006 S Grier
+* Make keep action work as a normal rule action.
 * Help links now open in a new window.
 
 11 Dec 2006 S Grier
