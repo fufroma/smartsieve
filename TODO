@@ -1,7 +1,7 @@
 SmartSieve - TODO
 
 
-TODO for 1.0
+TODO for 1.1
 
 * add getMailAddresses hook for getting mail aliases from site specific location.
 * fix mcrypt.php: MCRYPT_DEV_RANDOM->MCRYPT_RAND, keep IV, and mcrypt_generic_deinit
@@ -13,11 +13,12 @@ TODO for 1.0
 * add checks to make sure no HTML/javascript is written to a sieve script (htmlspecialchars strip_tags())
 * make checkRule() checkVacation() more generic and call from updateScript()
 * include file/line number to log messages
+* Add stop control/action
 
 TODO for 2.0
 
 * major rewrite of meta-indexing code
-* implement rule as an object
+* implement rule/condition/action as objects
 * write a generic error class similar to pearError
 
 Miscellaneous TODOs

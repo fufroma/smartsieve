@@ -39,14 +39,12 @@ REQUIREMENTS
    need to install mod_ssl (http://www.modssl.org).
 
 2. SmartSieve requires PHP version 4.1 or greater. SmartSieve is known 
-   to work correctly on versions 4.1.2, 4.2.3, 4.3.9 and 5.0.2. Note 
-   that PHP-4.1.1 and earlier are vulnerable to a remote vulnerability 
-   in the way it handles multipart/form-data. The latest 4.3.x or 5.0.x 
-   versions are recommended.
+   to work correctly on versions 4.1.2, 4.2.3, 4.3.10, and version 5 
+   up to 5.1.6. The latest 4.4.x or 5.1 versions are recommended.
 
-   Note: php-4.2 and above install with register_globals set to 
-   off by default. SmartSieve is no longer dependent on the value of 
-   register_globals and should work fine if this is set to 'Off'.
+   Note: php-4.2 and above install with register_globals set to off by 
+   default. SmartSieve is not dependent on the value of register_globals 
+   and it is recommended you set this to 'Off'.
 
    The PHP magic_quotes_runtime variable must be set to 'Off'. This 
    is usually the PHP default.
@@ -66,7 +64,7 @@ REQUIREMENTS
 4. SmartSieve will only work in conjunction with a Sieve enabled 
    email server which uses the managesieve protocol for remote 
    management of sieve scripts. It is currently only known to work 
-   with the Cyrus imap server (http://asg.web.cmu.edu/cyrus/imapd).
+   with the Cyrus imap server (http://cyrusimap.web.cmu.edu).
 
    You will need to configure Cyrus to run the timsieved daemon to 
    handle sieve requests. The master daemon's configuration file 
