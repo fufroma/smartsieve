@@ -343,7 +343,7 @@ function getVacationSummary()
     global $script;
     $vacation = $script->vacation;
     $vacation_str = '';
-    if (!is_array($vacation) || empty($vacation){ return htmlspecialchars($vacation_str); }
+    if (!is_array($vacation) || empty($vacation)){ return htmlspecialchars($vacation_str); }
 
     $vacation_str .= SmartSieve::text('Respond');
     if (!empty($vacation['addresses']) && is_array($vacation['addresses'])){
