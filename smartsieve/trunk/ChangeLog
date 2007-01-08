@@ -1,6 +1,9 @@
 Smartsieve - ChangeLog
 ----------------------
 
+08 Dec 2007 S Grier
+* Fix missing closing tag on css.php.
+
 22 Dec 2006 S Grier
 * Fix undefined index warnings.
 * Make keep action work as a normal rule action.
