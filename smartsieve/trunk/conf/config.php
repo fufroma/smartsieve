@@ -230,6 +230,15 @@ $default->vacation_help_url = '';
 // $default->scripts_help_url = 'http://example.co.uk/help.html';
 $default->scripts_help_url = '';
 
+// The following should be an array containing extra items you want 
+// to include in SmartSieve's menu. Each element should be an 
+// associative array containing the keys 'uri' and 'label'. The anchor's 
+// "target" attribute can be set via the optional 'target' value.
+// $default->menu_items = array(
+//     array('uri'=>'http://mydomain.com/mypage.html',
+//           'label'=>'Menu Item',
+//           'target'=>'_blank'));
+
 /**
  * Custom function hooks.
  */
