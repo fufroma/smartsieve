@@ -1,6 +1,9 @@
 Smartsieve - ChangeLog
 ----------------------
 
+18 Jan 2007 S Grier
+* Add menu_items config option for setting extra menu items.
+
 08 Dec 2007 S Grier
 * Fix missing closing tag on css.php.
 

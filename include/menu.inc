@@ -19,10 +19,12 @@
 <?php if (SmartSieve::getConf('allow_multi_scripts') !== false): ?>
         | <A HREF="<?php print SmartSieve::setUrl('scripts.php');?>"><?php echo SmartSieve::text('Manage Scripts');?></A>
 <?php endif; //$default->allow_multi_scripts ?>
+<?php foreach (SmartSieve::getConf('menu_items', array()) as $item):?>
+        | <a href="<?php echo $item['uri'];?>"<?php echo (isset($item['target'])) ? sprintf(' target="%s"', $item['target']) : '';?>><?php echo $item['label'];?></a>
+<?php endforeach;?>
 <?php if (!empty($help_url)): ?>
         | <a href="<?php echo $help_url; ?>" target="_blank"><?php echo SmartSieve::text('Help');?></a>
 <?php endif; //$help_url ?>
-
         </TD>
         <TD CLASS="menu" ALIGN="right">
           &nbsp;
