@@ -135,11 +135,11 @@ $default->require_vacation_addresses = true;
 $default->vacation_text = '';
 
 // What is the maximum number of characters an input field should accept?
-$default->max_field_chars = 50;
+$default->max_field_chars = 500;
 
 // What is the maximum number of characters a text box should accept?
 // e.g. the reject message on the rule page.
-$default->max_textbox_chars = 500;
+$default->max_textbox_chars = 50000;
 
 // Should we set the working script as the active script when saving? Note that 
 // the working script will always be set as the active script if there are no 
