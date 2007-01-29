@@ -1,6 +1,11 @@
 SmartSieve - TODO
 
 
+TODO for 1.0
+
+* Fix bug #1647116: ""Enable"/"Disable" options do not save changes"
+* Fix but #1647342: "vacation/rule/forward pages do not honour direct edit mode"
+
 TODO for 1.1
 
 * add getMailAddresses hook for getting mail aliases from site specific location.
