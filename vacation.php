@@ -18,10 +18,10 @@ session_set_cookie_params(0, $default->cookie_path, $default->cookie_domain);
 session_name($default->session_name);
 @session_start();
 
+SmartSieve::checkAuthentication();
+
 $smartsieve = &$_SESSION['smartsieve'];
 $script = &$_SESSION['scripts'][$_SESSION['smartsieve']['workingScript']];
-
-SmartSieve::checkAuthentication();
 
 $vacation = array();   /* $script->vacation. */
 
