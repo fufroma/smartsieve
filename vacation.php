@@ -37,7 +37,7 @@ if (isset($_POST['submitted'])) {
     $vacation['days'] = SmartSieve::getFormValue('days');
     $vacation['addresses'] = $addresses;
     $vacation['status'] = SmartSieve::getFormValue('status');
-} elseif ($script->vacation) {
+} elseif (!empty($script->vacation)) {
     $vacation = $script->vacation;
 } else {
     $vacation = array();

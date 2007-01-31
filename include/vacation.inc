@@ -7,11 +7,7 @@
     <TABLE WIDTH="100%" CELLPADDING="5" BORDER="0" CELLSPACING="0">
     <TR CLASS="heading">
       <TD>
-    <?php if ($script->vacation) {
-         echo SmartSieve::text('Edit vacation out-of-office message');
-       }
-       else echo SmartSieve::text('Set vacation out-of-office message').":";
-    ?>
+        <?php echo (!empty($script->vacation)) ? SmartSieve::text('Edit vacation out-of-office message') : SmartSieve::text('Set vacation out-of-office message');?> 
       </TD>
     </TR>
     </TABLE>
@@ -24,12 +20,7 @@
     <TABLE WIDTH="100%" CELLPADDING="2" BORDER="0" CELLSPACING="0">
     <TR CLASS="heading">
       <TD CLASS="<?php echo ($vacation['status'] == 'on') ? 'enabled' : 'disabled';?>">
-        <?php if ($script->vacation){
-                  if ($vacation['status'] == 'on')
-                      echo SmartSieve::text('ENABLED');
-                  else echo SmartSieve::text('DISABLED');
-              }
-              else echo '&nbsp;'; ?>
+        <?php echo (!empty($script->vacation)) ? (($vacation['status'] == 'on') ? SmartSieve::text('ENABLED') : SmartSieve::text('DISABLED')) : '&nbsp;';?> 
       </TD>
     </TR>
     </TABLE>
@@ -119,6 +110,6 @@ if (is_array($vacation['addresses'])) {
 
 <INPUT TYPE="hidden" NAME="submitted" VALUE="1">
 <INPUT TYPE="hidden" NAME="thisAction" VALUE="">
-<INPUT TYPE="hidden" NAME="status" VALUE="<?php echo $vacation['status']; ?>">
+<INPUT TYPE="hidden" NAME="status" VALUE="<?php echo (!empty($vacation['status'])) ? $vacation['status'] : 'on';?>">
 
 </FORM>

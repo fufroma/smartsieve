@@ -1,6 +1,9 @@
 Smartsieve - ChangeLog
 ----------------------
 
+31 Jan 2007 S Grier
+* Fix "Trying to get property of non-object" warnings.
+
 29 Jan 2007 S Grier
 * Be much more liberal on max_field_chars and max_textbox_chars.
 
