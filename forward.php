@@ -23,6 +23,12 @@ SmartSieve::checkAuthentication();
 $smartsieve = &$_SESSION['smartsieve'];
 $script = &$_SESSION['scripts'][$_SESSION['smartsieve']['workingScript']];
 
+// If not in GUI mode, redirect.
+if ($script->mode == 'advanced' || $script->so == false) {
+    header('Location: ' . SmartSieve::setUrl('main.php'));
+    exit;
+}
+
 // change working script if requested.
 if (isset($_POST['script'])) {
     SmartSieve::setWorkingScript(SmartSieve::getFormValue('script'));
