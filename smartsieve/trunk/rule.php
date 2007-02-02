@@ -23,6 +23,12 @@ SmartSieve::checkAuthentication();
 $smartsieve = &$_SESSION['smartsieve'];
 $script = &$_SESSION['scripts'][$_SESSION['smartsieve']['workingScript']];
 
+// If not in GUI mode, redirect.
+if ($script->mode == 'advanced' || $script->so == false) {
+    header('Location: ' . SmartSieve::setUrl('main.php'));
+    exit;
+}
+
 // Get the list of mailboxes for this user.
 // Set it in the session so we only do this once per login.
 if (!isset($_SESSION['smartsieve']['mailboxes'])) {
