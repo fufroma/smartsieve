@@ -68,48 +68,60 @@ $action = SmartSieve::getFormValue('thisAction');
 
 if ($action == 'enable') 
 {
-    if (isset($script->rules[$ruleID])){
-        $status = $script->rules[$ruleID]['status'];
-        $script->rules[$ruleID]['status'] = 'ENABLED';
-	// write and save the new script.
-	if (!$script->updateScript()) {
-            SmartSieve::setError(SmartSieve::text('ERROR: ') . $script->errstr);
-            SmartSieve::writeToLog(sprintf('failed writing script "%s" for %s: %s',
+    $ret = checkRule($rule);
+    if ($ret === true) {
+        if (isset($script->rules[$ruleID])){
+            $oldrule = $script->rules[$ruleID];
+            $script->rules[$ruleID] = $rule;
+            $script->rules[$ruleID]['status'] = 'ENABLED';
+            // write and save the new script.
+            if (!$script->updateScript()) {
+                SmartSieve::setError(SmartSieve::text('ERROR: ') . $script->errstr);
+                SmartSieve::writeToLog(sprintf('failed writing script "%s" for %s: %s',
                 $script->name, $_SESSION['smartsieve']['authz'], $script->errstr), LOG_ERR);
-            $script->rules[$ruleID]['status'] = $status;
-	} else {
-            SmartSieve::setNotice(SmartSieve::text('rule successfully enabled.'));
-            if (SmartSieve::getConf('return_after_update') === true) {
-                header('Location: ' . SmartSieve::setUrl('main.php'),true);
-                exit;
+                $script->rules[$ruleID] = $oldrule;
+            } else {
+                SmartSieve::setNotice(SmartSieve::text('rule successfully enabled.'));
+                $rule['status'] = 'ENABLED';
+                if (SmartSieve::getConf('return_after_update') === true) {
+                    header('Location: ' . SmartSieve::setUrl('main.php'),true);
+                    exit;
+                }
             }
-            $rule['status'] = 'ENABLED';
-	}
+        } else {
+            SmartSieve::setError(SmartSieve::text('ERROR: rule does not exist.'));
+        }
     } else {
-        SmartSieve::setError(SmartSieve::text('ERROR: rule does not exist.'));
+        SmartSieve::setError(SmartSieve::text('ERROR: ') . $ret);
     }
 }
 if ($action == 'disable') 
 {
-    if (isset($script->rules[$ruleID])){
-        $status = $script->rules[$ruleID]['status'];
-        $script->rules[$ruleID]['status'] = 'DISABLED';
-	// write and save the new script.
-	if (!$script->updateScript()) {
-            SmartSieve::setError(SmartSieve::text('ERROR: ') . $script->errstr);
-            SmartSieve::writeToLog(sprintf('failed writing script "%s" for %s: %s',
+    $ret = checkRule($rule);
+    if ($ret === true) {
+        if (isset($script->rules[$ruleID])){
+            $oldrule = $script->rules[$ruleID];
+            $script->rules[$ruleID] = $rule;
+            $script->rules[$ruleID]['status'] = 'DISABLED';
+            // write and save the new script.
+            if (!$script->updateScript()) {
+                SmartSieve::setError(SmartSieve::text('ERROR: ') . $script->errstr);
+                SmartSieve::writeToLog(sprintf('failed writing script "%s" for %s: %s',
                 $script->name, $_SESSION['smartsieve']['authz'], $script->errstr), LOG_ERR);
-            $script->rules[$ruleID]['status'] = $status;
-	} else {
-            SmartSieve::setNotice(SmartSieve::text('rule successfully disabled.'));
-            if (SmartSieve::getConf('return_after_update') === true) {
-                header('Location: ' . SmartSieve::setUrl('main.php'),true);
-                exit;
+                $script->rules[$ruleID] = $oldrule;
+            } else {
+                SmartSieve::setNotice(SmartSieve::text('rule successfully disabled.'));
+                $rule['status'] = 'DISABLED';
+                if (SmartSieve::getConf('return_after_update') === true) {
+                    header('Location: ' . SmartSieve::setUrl('main.php'),true);
+                    exit;
+                }
             }
-            $rule['status'] = 'DISABLED';
-	}
+        } else {
+            SmartSieve::setError(SmartSieve::text('ERROR: rule does not exist.'));
+        }
     } else {
-        SmartSieve::setError(SmartSieve::text('ERROR: rule does not exist.'));
+        SmartSieve::setError(SmartSieve::text('ERROR: ') . $ret);
     }
 }
 if ($action == 'delete') 
