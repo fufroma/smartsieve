@@ -3,6 +3,7 @@ Smartsieve - ChangeLog
 
 14 Feb 2007 S Grier
 * Fix bug #1647116: ""Enable"/"Disable" options do not save changes"
+* Code cleanups.
 
 02 Feb 2007 S Grier
 * Fix bug #1647342: "vacation/rule/forward pages do not honour direct edit mode"
