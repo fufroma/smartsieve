@@ -1,6 +1,9 @@
 Smartsieve - ChangeLog
 ----------------------
 
+15 Feb 2007 S Grier
+* Add new spam filter GUI and merge forward.php functionality into rule.php.
+
 14 Feb 2007 S Grier
 * Fix bug #1647116: ""Enable"/"Disable" options do not save changes"
 * Code cleanups.

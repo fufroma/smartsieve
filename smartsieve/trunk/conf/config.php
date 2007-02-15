@@ -239,6 +239,17 @@ $default->scripts_help_url = '';
 //           'label'=>'Menu Item',
 //           'target'=>'_blank'));
 
+// The following array provides a mechanism for specifying a site-specific 
+// spam filtering policy. If your mail domain adds a particular message 
+// header to mail either indicating that the message is spam, or holding 
+// some sort of spam score (like those added by SpamAssissin for example) 
+// you can specify those here. The user will then see a "Filter spam" menu 
+// item which will link to a simple GUI asking them what they want to do 
+// with such messages.
+// $default->spam_filter = array('header'=>'X-Spam-Score',
+//                               'value'=>'^[0-9]',
+//                               'regexp'=>true);
+
 /**
  * Custom function hooks.
  */

@@ -7,18 +7,17 @@
     <TABLE WIDTH="100%" CELLPADDING="5" BORDER="0" CELLSPACING="0">
     <TR CLASS="heading">
       <TD>
-<?php if (isset($ruleID) && $ruleID !== 'new'): ?>
-        <?php echo SmartSieve::text('Edit mail forwarding');?> 
+        <?php echo SmartSieve::text('What do you want to do with spam?');?> 
       </TD>
+<?php if (isset($ruleID) && $ruleID !== 'new'): ?>
       <TD CLASS="<?php echo (isset($rule['status']) && $rule['status'] == 'ENABLED') ? 'enabled' : 'disabled';?>">
         <?php echo (isset($rule['status']) && $rule['status'] == 'ENABLED') ? SmartSieve::text('ENABLED') : SmartSieve::text('DISABLED');?> 
-<?php else: ?>
-        <?php echo SmartSieve::text('Set mail forwarding');?> 
       </TD>
+<?php else: ?>
       <TD>
         &nbsp;
-<?php endif; ?>
       </TD>
+<?php endif; ?>
     </TR>
     </TABLE>
 
@@ -30,18 +29,30 @@
     <TABLE WIDTH="100%" CELLPADDING="5" BORDER="0" CELLSPACING="0">
     <TR>
       <TD>
-        <?php echo SmartSieve::text('Forward mail to address:');?> 
+        <INPUT TYPE="radio" NAME="action" VALUE="folder"<?php echo (!isset($rule['action']) || $rule['action'] == 'folder') ? ' CHECKED="checked"' : '';?>><?php echo SmartSieve::text("File Into");?>:
       </TD>
       <TD>
-        <INPUT TYPE="text" NAME="address" VALUE="<?php echo (isset($rule['action_arg']) && $rule['action'] == 'address') ? SmartSieve::utf8Decode($rule['action_arg']) : '';?>" SIZE="40">
+        <SELECT NAME="folder">
+<?php foreach ($_SESSION['smartsieve']['mailboxes'] as $mbox): ?>
+          <OPTION VALUE="<?php echo $mbox;?>"<?php echo (isset($rule['action_arg']) && $rule['action_arg'] == $mbox) ? ' SELECTED="selected"' : '';?>><?php echo SmartSieve::mutf7Decode($mbox);?></OPTION>
+<?php endforeach; ?>
+        </SELECT>
       </TD>
     </TR>
     <TR>
       <TD>
-        <?php echo SmartSieve::text('Keep a copy in Inbox:');?> 
+        <INPUT TYPE="radio" NAME="action" VALUE="reject"<?php echo (isset($rule['action']) && $rule['action'] == 'reject') ? ' CHECKED="checked"' : '';?>><?php echo SmartSieve::text("Send a reject message");?>:
       </TD>
       <TD>
-        <INPUT TYPE="checkbox" NAME="keep" VALUE="keep"<?php echo (!empty($rule['keep'])) ? ' CHECKED="checked"' : '';?>>
+        <TEXTAREA NAME="reject" ROWS="3" COLS="<?php echo $wrap_width;?>" WRAP="hard"><?php if (isset($rule['action_arg']) && $rule['action'] == 'reject') echo SmartSieve::utf8Decode($rule['action_arg']);?></TEXTAREA>
+      </TD>
+    </TR>
+    <TR>
+      <TD>
+        <INPUT TYPE="radio" NAME="action" VALUE="discard"<?php echo (isset($rule['action']) && $rule['action'] == 'discard') ? ' CHECKED="checked"' : '';?>><?php echo SmartSieve::text("Discard the message");?> 
+      </TD>
+      <TD>
+        &nbsp;
       </TD>
     </TR>
     </TABLE>
@@ -84,12 +95,10 @@
 <INPUT TYPE="hidden" NAME="subject" VALUE="">
 <INPUT TYPE="hidden" NAME="gthan" VALUE="">
 <INPUT TYPE="hidden" NAME="size" VALUE="">
-<INPUT TYPE="hidden" NAME="field" VALUE="">
-<INPUT TYPE="hidden" NAME="field_val" VALUE="">
-<INPUT TYPE="hidden" NAME="action" VALUE="address">
-<INPUT TYPE="hidden" NAME="folder" VALUE="">
-<INPUT TYPE="hidden" NAME="reject" VALUE="">
-<INPUT TYPE="hidden" NAME="discard" VALUE="">
+<INPUT TYPE="hidden" NAME="field" VALUE="<?php echo $config['header'];?>">
+<INPUT TYPE="hidden" NAME="field_val" VALUE="<?php echo $config['value'];?>">
+<INPUT TYPE="hidden" NAME="regexp" VALUE="<?php echo (!empty($config['regexp'])) ? 'regexp' : '';?>">
+<INPUT TYPE="hidden" NAME="continue" VALUE="continue">
 <INPUT TYPE="hidden" NAME="custom" VALUE="">
 <INPUT TYPE="hidden" NAME="mode" VALUE="<?php echo $mode;?>">
 
