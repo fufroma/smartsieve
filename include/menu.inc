@@ -10,12 +10,15 @@
           &nbsp;
           <a href="<?php print SmartSieve::setUrl('main.php');?>"><?php echo SmartSieve::text('View All Rules');?></a>
 <?php if ($_SESSION['scripts'][$_SESSION['smartsieve']['workingScript']]->mode != 'advanced'): ?>
-<?php     if (SmartSieve::getConf('use_forward_mail_interface')): ?>
-        | <A HREF="<?php print SmartSieve::setUrl('forward.php');?>"><?php echo SmartSieve::text('Forward Mail');?></A>
-<?php     endif; //use_forward_mail_interface ?>
+<?php if (SmartSieve::getConf('use_forward_mail_interface')):?>
+        | <A HREF="<?php print SmartSieve::setUrl('rule.php?mode=forward');?>"><?php echo SmartSieve::text('Forward Mail');?></A>
+<?php endif;?>
         | <a href="<?php print SmartSieve::setUrl('vacation.php');?>"><?php echo SmartSieve::text('Vacation Settings');?></a>
         | <a href="<?php print SmartSieve::setUrl('rule.php');?>"><?php echo SmartSieve::text('New Filter Rule');?></a>
-<?php endif; //$script->mode = 'advanced' ?>
+<?php if (SmartSieve::getConf('spam_filter')):?>
+        | <a href="<?php print SmartSieve::setUrl('rule.php?mode=spam');?>"><?php echo SmartSieve::text('Filter Spam');?></a>
+<?php endif;?>
+<?php endif;?>
 <?php if (SmartSieve::getConf('allow_multi_scripts') !== false): ?>
         | <A HREF="<?php print SmartSieve::setUrl('scripts.php');?>"><?php echo SmartSieve::text('Manage Scripts');?></A>
 <?php endif; //$default->allow_multi_scripts ?>

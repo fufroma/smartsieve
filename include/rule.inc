@@ -218,5 +218,6 @@
 <INPUT TYPE="hidden" NAME="flg" VALUE="<?php echo (isset($rule['flg'])) ? $rule['flg'] : '';?>">
 <INPUT TYPE="hidden" NAME="thisAction" VALUE="">
 <INPUT TYPE="hidden" NAME="ruleID" VALUE="<?php echo (isset($ruleID)) ? $ruleID : 'new';?>">
+<INPUT TYPE="hidden" NAME="mode" VALUE="<?php echo $mode;?>">
 
 </FORM>

@@ -18,6 +18,11 @@ session_set_cookie_params(0, $default->cookie_path, $default->cookie_domain);
 session_name($default->session_name);
 @session_start();
 
+// Rule modes.
+define("SMARTSIEVE_RULE_MODE_GENERAL", 'general');
+define("SMARTSIEVE_RULE_MODE_FORWARD", 'forward');
+define("SMARTSIEVE_RULE_MODE_SPAM", 'spam');
+
 SmartSieve::checkAuthentication();
 
 $smartsieve = &$_SESSION['smartsieve'];
@@ -27,6 +32,19 @@ $script = &$_SESSION['scripts'][$_SESSION['smartsieve']['workingScript']];
 if ($script->mode == 'advanced' || $script->so == false) {
     header('Location: ' . SmartSieve::setUrl('main.php'));
     exit;
+}
+
+// What kind of rule are we creating?
+$mode = SMARTSIEVE_RULE_MODE_GENERAL;
+if (SmartSieve::getFormValue('mode')) {
+    switch (SmartSieve::getFormValue('mode')) {
+        case (SMARTSIEVE_RULE_MODE_SPAM):
+            $mode = SMARTSIEVE_RULE_MODE_SPAM;
+            break;
+        case (SMARTSIEVE_RULE_MODE_FORWARD):
+            $mode = SMARTSIEVE_RULE_MODE_FORWARD;
+            break;
+    }
 }
 
 // Get the list of mailboxes for this user.
@@ -48,6 +66,8 @@ if (!isset($_SESSION['smartsieve']['mailboxes'])) {
  * $ruleID will be set in GET data. if $ruleID not set in POST or GET, or 
  * if $script->rules[$ruleID] does not exist, this will be a new rule page.
  */
+$ruleID = null;
+$rule = array();
 if (isset($_POST['ruleID'])) {
     $ruleID = SmartSieve::getFormValue('ruleID');
     $rule = getRulePOSTValues($ruleID);
@@ -57,12 +77,19 @@ elseif (isset($_GET['ruleID'])) {
     if (isset($script->rules[$ruleID])) {
         $rule = $script->rules[$ruleID];
     }
-} else {
-    $ruleID = null;
-    $rule = array();
+} elseif ($mode == SMARTSIEVE_RULE_MODE_SPAM) {
+    $ruleID = getSpamRule();
+    if ($ruleID !== null) {
+        $rule = $script->rules[$ruleID];
+    }
+} elseif ($mode == SMARTSIEVE_RULE_MODE_FORWARD) {
+    $ruleID = getForwardRule();
+    if ($ruleID !== null) {
+        $rule = $script->rules[$ruleID];
+    }
 }
 
-/* save rule changes if requested. */
+// Perform actions.
 
 $action = SmartSieve::getFormValue('thisAction');
 
@@ -156,7 +183,12 @@ switch ($action) {
                 $oldrule = $script->rules[$ruleID];
                 $script->rules[$ruleID] = $rule;
             } else {
-                $ruleID = array_push($script->rules, $rule) - 1;
+                if ($mode == SMARTSIEVE_RULE_MODE_SPAM) {
+                    array_unshift($script->rules, $rule);
+                    $ruleID = 0;
+                } else {
+                    $ruleID = array_push($script->rules, $rule) - 1;
+                }
             }
             // write and save the new script.
             if (!$script->updateScript()) {
@@ -184,17 +216,28 @@ switch ($action) {
 
 $jsfile = 'rule.js';
 $jsonload = '';
-if (!empty($default->rule_help_url)){
-    $help_url = $default->rule_help_url;
-} else {
-    $help_url = '';
-}
 $wrap_width = (SmartSieve::getConf('wrap_width')) ? SmartSieve::getConf('wrap_width') : 80;
 
-include $default->include_dir . '/common-head.inc';
-include $default->include_dir . '/menu.inc';
-include $default->include_dir . '/common_status.inc';
-include $default->include_dir . '/rule.inc';
+switch ($mode) {
+    case (SMARTSIEVE_RULE_MODE_SPAM):
+        $help_url = ($url = SmartSieve::getConf('spam_help_url')) ? $url : '';
+        $config = SmartSieve::getConf('spam_filter', array());
+        $template = '/spam.inc';
+        break;
+    case (SMARTSIEVE_RULE_MODE_FORWARD):
+        $help_url = ($url = SmartSieve::getConf('forward_help_url')) ? $url : '';
+        $template = '/forward.inc';
+        break;
+    default:
+        $help_url = ($url = SmartSieve::getConf('rule_help_url')) ? $url : '';
+        $template = '/rule.inc';
+        break;
+}
+
+include SmartSieve::getConf('include_dir', 'include') . '/common-head.inc';
+include SmartSieve::getConf('include_dir', 'include') . '/menu.inc';
+include SmartSieve::getConf('include_dir', 'include') . '/common_status.inc';
+include SmartSieve::getConf('include_dir', 'include') . $template;
 include SmartSieve::getConf('include_dir', 'include') . '/common-footer.inc';
 
 SmartSieve::close();
@@ -283,5 +326,48 @@ function checkRule(&$rule)
     return true;
 }
 
+/**
+ * Search for existing forward rule.
+ *
+ * @return mixed Matching rule array index if one exists, or null if not
+ */
+function getForwardRule()
+{
+    for ($i=0;$i<count($GLOBALS['script']->rules);$i++) {
+        $rule = $GLOBALS['script']->rules[$i];
+        if ($rule['action'] == 'address' && !$rule['from'] && !$rule['to'] &&
+            !$rule['subject'] && !$rule['field'] && !$rule['size']) {
+            return $i;
+        }
+    }
+    return null;
+}
+
+/**
+ * Search for existing spam filter rule.
+ *
+ * This will search for a rule matching the settings
+ * @return mixed Matching rule array index if one exists, or null if not
+ */
+function getSpamRule()
+{
+    $config = SmartSieve::getConf('spam_filter');
+    if ($config === false ||
+        !is_array($config) ||
+        !isset($config['header']) ||
+        !isset($config['value'])) {
+        return null;
+    }
+    for ($i=0;$i<count($GLOBALS['script']->rules);$i++) {
+        $rule = $GLOBALS['script']->rules[$i];
+        if ($rule['field'] == $config['header'] &&
+            $rule['field_val'] == $config['value'] &&
+            !$rule['from'] && !$rule['to'] &&
+            !$rule['subject'] && !$rule['size']) {
+            return $i;
+        }
+    }
+    return null;
+}
 
 ?>
