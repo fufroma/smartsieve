@@ -166,6 +166,7 @@ class SmartSieve {
     */
     function setSession($auth, $passwd, $authz='', $server)
     {
+        global $servers;
         if (empty($auth)) {
             return 'setSession: no auth name supplied';
         }
