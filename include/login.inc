@@ -5,7 +5,7 @@
 <TABLE WIDTH="300" CELLPADDING="5" BORDER="0" CELLSPACING="0">
   <TR>
     <TD CLASS="welcome" ALIGN="center" COLSPAN="2">
-      <?php echo $default->login_page_heading; ?> 
+      <?php echo SmartSieve::getConf('login_page_heading', '&nbsp;Welcome to SmartSieve');?> 
     </TD>
   </TR>
 
@@ -45,7 +45,7 @@
     </TD>
   </TR>
 
-<?php if (!empty($default->user_select_lang)): ?>
+<?php if (SmartSieve::getConf('user_select_lang') !== false):?>
   <TR CLASS="menu">
     <TD ALIGN="right"> <?php echo SmartSieve::text("Language");?>:
     </TD>
@@ -59,9 +59,9 @@
   </TR>
 
 <?php else: ?>
-    <INPUT TYPE="hidden" NAME="lang" VALUE="<?php echo $default->language; ?>">
+    <INPUT TYPE="hidden" NAME="lang" VALUE="<?php echo SmartSieve::getConf('language', 'en_GB');?>">
 <?php endif; ?>
-<?php if ($default->user_select_server): ?>
+<?php if (SmartSieve::getConf('user_select_server') !== false):?>
   <TR CLASS="menu">
     <TD ALIGN="right"><?php echo SmartSieve::text("Server");?>:
     </TD>
@@ -76,12 +76,12 @@
 <?php else: ?>
     <INPUT TYPE="hidden" NAME="server" VALUE="<?php echo $fsrv;?>">
 <?php endif; ?>
-<?php if ($default->user_supply_scriptfile && $default->allow_multi_scripts): ?>
+<?php if (SmartSieve::getConf('user_supply_scriptfile') && SmartSieve::getConf('allow_multi_scripts') !== false):?>
   <TR CLASS="menu">
     <TD ALIGN="right"><?php echo SmartSieve::text("Script name");?>:
     </TD>
     <TD ALIGN="left">
-      <INPUT TYPE="text" TABINDEX="<?php echo $tabindex++;?>" NAME="scriptfile" VALUE="<?php echo $default->scriptfile;?>">
+      <INPUT TYPE="text" TABINDEX="<?php echo $tabindex++;?>" NAME="scriptfile" VALUE="<?php echo SmartSieve::getConf('scriptfile', '');?>">
     </TD>
   </TR>
 <?php else: ?>
@@ -98,5 +98,5 @@
 
 </FORM>
 
-<?php if (is_readable($default->config_dir . '/motd.php')) include $default->config_dir . '/motd.php';?>
+<?php if (is_readable(SmartSieve::getConf('config_dir', 'conf') . '/motd.php')) include SmartSieve::getConf('config_dir', 'conf') . '/motd.php';?>
 

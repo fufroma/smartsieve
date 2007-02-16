@@ -14,8 +14,8 @@ require SmartSieve::getConf('lib_dir', 'lib') . "/Managesieve.php";
 require SmartSieve::getConf('lib_dir', 'lib') . "/Script.php";
 
 ini_set('session.use_trans_sid', 0);
-session_set_cookie_params(0, $default->cookie_path, $default->cookie_domain);
-session_name($default->session_name);
+session_set_cookie_params(0, SmartSieve::getConf('cookie_path', ''), SmartSieve::getConf('cookie_domain', ''));
+session_name(SmartSieve::getConf('session_name', session_name()));
 @session_start();
 
 SmartSieve::checkAuthentication();
@@ -48,8 +48,8 @@ if (isset($_POST['submitted'])) {
 } else {
     $vacation = array();
     $vacation['status'] = 'on';
-    $vacation['text'] = !empty($default->vacation_text) ? $default->vacation_text : '';
-    $vacation['days'] = !empty($default->vacation_days) ? $default->vacation_days : 0;
+    $vacation['text'] = SmartSieve::getConf('vacation_text', '');
+    $vacation['days'] = SmartSieve::getConf('vacation_days', 0);
     $vacation['addresses'] = array();
 }
 
@@ -144,17 +144,20 @@ switch ($action) {
 
 $jsfile = 'vacation.js';
 $jsonload = '';
-if (!empty($default->vacation_help_url)){
-    $help_url = $default->vacation_help_url;
-} else {
-    $help_url = '';
-}
+$help_url = SmartSieve::getConf('vacation_help_url', '');
 $wrap_width = (SmartSieve::getConf('wrap_width')) ? SmartSieve::getConf('wrap_width') : 80;
+$max_days = SmartSieve::getConf('max_vacation_days', 30);
+$addrs_display = '';
+if (is_array($vacation['addresses'])) {
+    foreach ($vacation['addresses'] as $address) {
+        $addrs_display .= sprintf("%s%s", (!empty($addrs_display)) ? ', ' : '', SmartSieve::utf8Decode($address));
+    }
+}
 
-include $default->include_dir . '/common-head.inc';
-include $default->include_dir . '/menu.inc';
-include $default->include_dir . '/common_status.inc';
-include $default->include_dir . '/vacation.inc';
+include SmartSieve::getConf('include_dir', 'include') . '/common-head.inc';
+include SmartSieve::getConf('include_dir', 'include') . '/menu.inc';
+include SmartSieve::getConf('include_dir', 'include') . '/common_status.inc';
+include SmartSieve::getConf('include_dir', 'include') . '/vacation.inc';
 include SmartSieve::getConf('include_dir', 'include') . '/common-footer.inc';
 
 SmartSieve::close();

@@ -14,8 +14,8 @@ require SmartSieve::getConf('lib_dir', 'lib') . "/Managesieve.php";
 require SmartSieve::getConf('lib_dir', 'lib') . "/Script.php";
 
 ini_set('session.use_trans_sid', 0);
-session_set_cookie_params(0, $default->cookie_path, $default->cookie_domain);
-session_name($default->session_name);
+session_set_cookie_params(0, SmartSieve::getConf('cookie_path', ''), SmartSieve::getConf('cookie_domain', ''));
+session_name(SmartSieve::getConf('session_name', session_name()));
 @session_start();
 
 SmartSieve::checkAuthentication();
@@ -181,18 +181,14 @@ if ($action == 'viewscript')
 
 $jsfile = 'scripts.js';
 $jsonload = '';
-if (!empty($default->scripts_help_url)){
-    $help_url = $default->scripts_help_url;
-} else {
-    $help_url = '';
-}
+$help_url = SmartSieve::getConf('scripts_help_url', '');
 $slist = SmartSieve::getScriptList();
 $i = 0;
 
-include $default->include_dir . '/common-head.inc';
-include $default->include_dir . '/menu.inc';
-include $default->include_dir . '/common_status.inc';
-include $default->include_dir . '/scripts.inc';
+include SmartSieve::getConf('include_dir', 'include') . '/common-head.inc';
+include SmartSieve::getConf('include_dir', 'include') . '/menu.inc';
+include SmartSieve::getConf('include_dir', 'include') . '/common_status.inc';
+include SmartSieve::getConf('include_dir', 'include') . '/scripts.inc';
 include SmartSieve::getConf('include_dir', 'include') . '/common-footer.inc';
 
 SmartSieve::close();
