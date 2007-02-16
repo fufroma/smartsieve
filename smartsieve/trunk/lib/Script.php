@@ -39,6 +39,7 @@ class Script {
     $sizebit = 2;
     $anyofbit = 4;
     $keepbit = 8;
+    $stopbit = 16;
     $regexbit = 128;
  
     if (!isset($this->name)){
@@ -104,6 +105,7 @@ class Script {
                     $rule['gthan'] = ($bits[8] & $sizebit); // use 'greater than'
                     $rule['anyof'] = ($bits[8] & $anyofbit);
                     $rule['keep'] = ($bits[8] & $keepbit);
+                    $rule['stop'] = ($bits[8] & $stopbit);
                     $rule['regexp'] = ($bits[8] & $regexbit);
                     $rule['unconditional'] = 0;
                     if ((!$rule['from'] && !$rule['to'] && !$rule['subject'] &&
@@ -293,6 +295,7 @@ class Script {
             $newruletext .= ((!$rule['unconditional']) ? "\t" : '') . "discard;\n";
         }
         if ($rule['keep']) $newruletext .= ((!$rule['unconditional']) ? "\t" : '') . "keep;\n";
+        if ($rule['stop']) $newruletext .= ((!$rule['unconditional']) ? "\t" : '') . "stop;\n";
         if (!$rule['unconditional']) $newruletext .= "}\n";
 
         if (preg_match("/custom/i",$rule['action'])) {

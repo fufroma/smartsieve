@@ -1,6 +1,9 @@
 Smartsieve - ChangeLog
 ----------------------
 
+16 Feb 2007 S Grier
+* Add support for "stop" sieve control.
+
 15 Feb 2007 S Grier
 * Add new spam filter GUI and merge forward.php functionality into rule.php.
 

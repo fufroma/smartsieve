@@ -270,6 +270,7 @@ function getRulePOSTValues ($ruleID)
     if (SmartSieve::getFormValue('anyof')) $rule['anyof'] = 4;
     $rule['keep'] = 0;
     if (SmartSieve::getFormValue('keep')) $rule['keep'] = 8;
+    $rule['stop'] = (SmartSieve::getFormValue('stop')) ? 16 : 0;
     $rule['regexp'] = 0;
     if (SmartSieve::getFormValue('regexp')) $rule['regexp'] = 128;
     $rule['unconditional'] = 0;
@@ -279,7 +280,7 @@ function getRulePOSTValues ($ruleID)
        ($rule['action'] == 'custom' && !preg_match("/^ *(els)?if/i", $rule['action_arg']))) {
         $rule['unconditional'] = 1;
     }
-    $rule['flg'] = $rule['continue'] | $rule['gthan'] | $rule['anyof'] | $rule['keep'] | $rule['regexp'];
+    $rule['flg'] = $rule['continue'] | $rule['gthan'] | $rule['anyof'] | $rule['keep'] | $rule['stop'] | $rule['regexp'];
 
     return $rule;
 }
@@ -308,9 +309,9 @@ function checkRule(&$rule)
     /* remove colon from end of header field. */
     if ($rule['field'] && preg_match("/:$/",$rule['field']))
         $rule['field'] = rtrim($rule['field'], ":");
-    if (!$rule['action'] && !$rule['keep'])
+    if (!$rule['action'] && !$rule['keep'] && !$rule['stop'])
         return SmartSieve::text("please supply an action");
-    if ($rule['action'] != 'discard' && !$rule['keep'] && !$rule['action_arg'])
+    if ($rule['action'] != 'discard' && !$rule['keep'] && !$rule['stop'] && !$rule['action_arg'])
         return SmartSieve::text("you must supply an argument for this action");
     /* if this is a forward rule, forward address must be a valid email. */
     if ($rule['action'] == 'address' && !preg_match("/\@/",$rule['action_arg']))

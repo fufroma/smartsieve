@@ -55,6 +55,13 @@
         &nbsp;
       </TD>
     </TR>
+      <TD>
+        <INPUT TYPE="checkbox" NAME="stop" VALUE="stop"<?php echo (!empty($rule['stop'])) ? ' CHECKED="checked"' : '';?>> <?php echo SmartSieve::text('Stop processing filter rules');?>
+      </TD>
+      <TD>
+        &nbsp;
+      </TD>
+    </TR>
     </TABLE>
 
   </TD>
