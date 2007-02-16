@@ -323,6 +323,7 @@ function getSummaries() {
         if (preg_match("/discard/i",$rule['action']))
             $complete .= SmartSieve::text("discard;");
         if ($rule['keep']) $complete .= " [".SmartSieve::text('Keep a copy')."]";
+        if ($rule['stop']) $complete .= " [".SmartSieve::text('Stop processing')."]";
         if (preg_match("/custom/i",$rule['action'])){
             $complete = '[' . SmartSieve::text('Custom Rule') . '] ' . SmartSieve::utf8Decode($rule['action_arg']);
         }

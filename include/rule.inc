@@ -157,6 +157,16 @@
       <TD>
         <INPUT TYPE="checkbox" NAME="keep" VALUE="keep"<?php echo (!empty($rule['keep'])) ? ' CHECKED="checked"' : '';?>> <?php echo SmartSieve::text('Keep a copy in your Inbox');?> 
       </TD>
+      <TD>
+        &nbsp;
+      </TD>
+    </TR>
+      <TD>
+        <INPUT TYPE="checkbox" NAME="stop" VALUE="stop"<?php echo (!empty($rule['stop'])) ? ' CHECKED="checked"' : '';?>> <?php echo SmartSieve::text('Stop processing filter rules');?>
+      </TD>
+      <TD>
+        &nbsp;
+      </TD>
     </TR>
     </TABLE>
 
