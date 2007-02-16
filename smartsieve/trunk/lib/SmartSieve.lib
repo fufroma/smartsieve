@@ -166,7 +166,6 @@ class SmartSieve {
     */
     function setSession($auth, $passwd, $authz='', $server)
     {
-        global $default, $servers;
         if (empty($auth)) {
             return 'setSession: no auth name supplied';
         }
@@ -224,7 +223,6 @@ class SmartSieve {
     */
     function authenticate()
     {
-        global $default;
         if (!isset($_SESSION['smartsieve']) || !is_array($_SESSION['smartsieve'])) {
             return 'authenticate: no session started';
         }
@@ -308,7 +306,6 @@ class SmartSieve {
     */
     function text($string = '', $args = array())
     {
-        global $default;
         static $lang, $phrase;
 
         if (!isset($lang)) {
@@ -316,7 +313,7 @@ class SmartSieve {
         }
 
         if (!isset($phrase)) {
-            @include "$default->lang_dir/$lang/strings.php";
+            @include SmartSieve::getConf('lang_dir', 'conf/locale') . "/$lang/strings.php";
         }
 
         if (!empty($phrase[$string])) {
@@ -350,8 +347,6 @@ class SmartSieve {
     */
     function getLang()
     {
-        global $default;
-
         /* get lang if login form submitted. */
         if (isset($_POST['lang']))
             return SmartSieve::getFormValue('lang');
@@ -365,7 +360,7 @@ class SmartSieve {
             return $_SESSION['smartsieve_lang'];
 
         /* if none of the above, use the default. */
-        return $default->language;
+        return SmartSieve::getConf('language', 'en_GB');
     }
 
    /*

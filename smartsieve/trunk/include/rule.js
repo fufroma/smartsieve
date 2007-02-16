@@ -17,7 +17,7 @@ function Submit(a)
                 return true;
         }
     }
-<?php if (!empty($default->websieve_auto_matches)){ ?>
+<?php if (SmartSieve::getConf('websieve_auto_matches') === true):?>
     for (i = 0; i < document.thisRule.elements.length; i++) {
         if (window.document.thisRule.elements[i].value.indexOf('*') != -1 ||
             window.document.thisRule.elements[i].value.indexOf('?') != -1){
@@ -25,7 +25,7 @@ function Submit(a)
                 return false;
         }
     }
-<?php } ?>
+<?php endif;?>
     document.thisRule.thisAction.value = a;
     document.thisRule.submit();
 }

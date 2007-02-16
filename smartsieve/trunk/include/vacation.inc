@@ -43,7 +43,7 @@
       </TD>
       <TD NOWRAP="nowrap">
         <TEXTAREA NAME="text" ROWS="3" COLS="<?php echo $wrap_width;?>" WRAP="hard" TABINDEX="1">
-<?php if ($vacation['text']) print SmartSieve::utf8Decode($vacation['text']); ?>
+<?php if ($vacation['text']) echo SmartSieve::utf8Decode($vacation['text']); ?>
 </TEXTAREA>
       </TD>
     </TR>
@@ -53,13 +53,10 @@
       </TD>
       <TD>
         <SELECT NAME="days">
-          <OPTION VALUE="0"<?php if (!$vacation['days']) echo ' SELECTED';?>></OPTION>
-<?php
-$max_days = !empty($default->max_vacation_days) ? $default->max_vacation_days : 30;
-for ($i = 1; $i <= $max_days; $i++){
-?>
-          <OPTION VALUE="<?php echo $i;?>"<?php if ($vacation['days']==$i) echo ' SELECTED';?>><?php echo $i;?></OPTION>
-<?php } ?>
+          <OPTION VALUE="0"<?php echo (!$vacation['days']) ? ' SELECTED' : '';?>></OPTION>
+<?php for ($i = 1; $i <= $max_days; $i++):?>
+          <OPTION VALUE="<?php echo $i;?>"<?php echo ($vacation['days']==$i) ? ' SELECTED' : '';?>><?php echo $i;?></OPTION>
+<?php endfor;?>
         </SELECT>
       </TD>
     </TR>
@@ -68,18 +65,7 @@ for ($i = 1; $i <= $max_days; $i++){
 <?php echo SmartSieve::text('Your e-mail addresses');?>:
       </TD>
       <TD>
-        <INPUT TYPE="text" NAME="addresses" <?php
-if (is_array($vacation['addresses'])) {
-    print "VALUE=\"";
-    $first = 1;
-    foreach ($vacation['addresses'] as $address) {
-      if (!$first) print ", ";
-      print SmartSieve::utf8Decode($address);
-      $first = 0;
-    }
-    print "\"";
-}
-?> SIZE="50">
+        <INPUT TYPE="text" NAME="addresses" VALUE="<?php echo $addrs_display;?>" SIZE="50">
       </TD>
     </TR>
     </TABLE>

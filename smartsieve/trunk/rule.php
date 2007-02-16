@@ -14,8 +14,8 @@ require SmartSieve::getConf('lib_dir', 'lib') . "/Managesieve.php";
 require SmartSieve::getConf('lib_dir', 'lib') . "/Script.php";
 
 ini_set('session.use_trans_sid', 0);
-session_set_cookie_params(0, $default->cookie_path, $default->cookie_domain);
-session_name($default->session_name);
+session_set_cookie_params(0, SmartSieve::getConf('cookie_path', ''), SmartSieve::getConf('cookie_domain', ''));
+session_name(SmartSieve::getConf('session_name', session_name()));
 @session_start();
 
 // Rule modes.
@@ -220,16 +220,16 @@ $wrap_width = (SmartSieve::getConf('wrap_width')) ? SmartSieve::getConf('wrap_wi
 
 switch ($mode) {
     case (SMARTSIEVE_RULE_MODE_SPAM):
-        $help_url = ($url = SmartSieve::getConf('spam_help_url')) ? $url : '';
+        $help_url = SmartSieve::getConf('spam_help_url', '');
         $config = SmartSieve::getConf('spam_filter', array());
         $template = '/spam.inc';
         break;
     case (SMARTSIEVE_RULE_MODE_FORWARD):
-        $help_url = ($url = SmartSieve::getConf('forward_help_url')) ? $url : '';
+        $help_url = SmartSieve::getConf('forward_help_url', '');
         $template = '/forward.inc';
         break;
     default:
-        $help_url = ($url = SmartSieve::getConf('rule_help_url')) ? $url : '';
+        $help_url = SmartSieve::getConf('rule_help_url', '');
         $template = '/rule.inc';
         break;
 }

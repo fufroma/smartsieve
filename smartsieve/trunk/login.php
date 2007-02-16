@@ -16,8 +16,8 @@ require SmartSieve::getConf('lib_dir', 'lib') . "/Managesieve.php";
 require SmartSieve::getConf('lib_dir', 'lib') . "/Script.php";
 
 ini_set('session.use_trans_sid', 0);
-session_set_cookie_params(0, $default->cookie_path, $default->cookie_domain);
-session_name($default->session_name);
+session_set_cookie_params(0, SmartSieve::getConf('cookie_path', ''), SmartSieve::getConf('cookie_domain', ''));
+session_name(SmartSieve::getConf('session_name', session_name()));
 @session_start();
 
 $reason = SmartSieve::getFormValue('reason');
@@ -79,8 +79,8 @@ if (isset($proxyusers[0]) && $proxyusers[0] == 'all') {
     $proxyall = true;
 }
 
-include $default->include_dir . '/common-head.inc';
-include $default->include_dir . '/login.inc';
+include SmartSieve::getConf('include_dir', 'include') . '/common-head.inc';
+include SmartSieve::getConf('include_dir', 'include') . '/login.inc';
 include SmartSieve::getConf('include_dir', 'include') . '/common-footer.inc';
 
 ?>

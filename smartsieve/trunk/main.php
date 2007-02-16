@@ -15,8 +15,8 @@ require SmartSieve::getConf('lib_dir', 'lib') . "/Script.php";
 require SmartSieve::getConf('config_dir', 'conf') . "/style.php";
 
 ini_set('session.use_trans_sid', 0);
-session_set_cookie_params(0, $default->cookie_path, $default->cookie_domain);
-session_name($default->session_name);
+session_set_cookie_params(0, SmartSieve::getConf('cookie_path', ''), SmartSieve::getConf('cookie_domain', ''));
+session_name(SmartSieve::getConf('session_name', session_name()));
 @session_start();
 
 SmartSieve::checkAuthentication();
@@ -213,18 +213,14 @@ if ($script->mode == 'advanced'){
     $jsfile = 'main.js';
 }
 $jsonload = '';
-if (!empty($default->main_help_url)){
-    $help_url = $default->main_help_url;
-} else {
-    $help_url = '';
-}
+$help_url = SmartSieve::getConf('main_help_url', '');
 
-include $default->include_dir . '/common-head.inc';
-include $default->include_dir . '/menu.inc';
-include $default->include_dir . '/common_status.inc';
+include SmartSieve::getConf('include_dir', 'include') . '/common-head.inc';
+include SmartSieve::getConf('include_dir', 'include') . '/menu.inc';
+include SmartSieve::getConf('include_dir', 'include') . '/common_status.inc';
 
 if ($script->mode == 'advanced' || $script->so == false){
-    include $default->include_dir . '/script-direct.inc';
+    include SmartSieve::getConf('include_dir', 'include') . '/script-direct.inc';
 } else {
     $summaries = getSummaries();
     $rows = array();
@@ -260,7 +256,7 @@ if ($script->mode == 'advanced' || $script->so == false){
         $vRow['onmouseout'] = $css['.enabledrule']['background-color'];
         $vRow['status'] = SmartSieve::text('ENABLED');
     }
-    include $default->include_dir . '/script-gui.inc';
+    include SmartSieve::getConf('include_dir', 'include') . '/script-gui.inc';
 }
 include SmartSieve::getConf('include_dir', 'include') . '/common-footer.inc';
 
@@ -369,7 +365,7 @@ function setMatchType (&$matchstr, $regex = false)
     if (preg_match("/\s*!/", $matchstr)) 
         $match = SmartSieve::text('does not contain');
     if (preg_match("/\*|\?/", $matchstr) &&
-        !empty($GLOBALS['default']->websieve_auto_matches)){
+        SmartSieve::getConf('websieve_auto_matches') === true) {
         $match = SmartSieve::text('matches');
         if (preg_match("/\s*!/", $matchstr))
             $match = SmartSieve::text('does not match');
