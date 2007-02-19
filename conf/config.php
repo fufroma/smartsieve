@@ -127,7 +127,7 @@ $default->max_vacation_days = '30';
 // conf/servers.php we will demand the user supply at least one address. If false, 
 // we will not include the :addresses argument at all if the user does not supply 
 // any extra vacation addresses.
-$default->require_vacation_addresses = true;
+$default->require_vacation_addresses = false;
 
 // If this is anything other than empty this will be used as the default text 
 // to send in vacation auto-responses when the user doesn't supply any. If empty, 
@@ -260,5 +260,58 @@ $default->scripts_help_url = '';
 // must return an array of the form expected by the SmartSieve::getLoginDetails
 // function.
 $default->get_login_details_hook = null;
+
+// If you have an external source of email addresses you want your users 
+// to see on the vacation settings page, set the following to the name 
+// of a function that will retrieve these. SmartSieve will then include 
+// these in the list of addresses the user might include in their vacation 
+// addresses. The function should return an array of addresses.
+$default->get_email_addresses_hook = null;
+
+/**
+ * Example get_login_details_hook function.
+ *
+ * This example looks for credentials set by a single-sign-on 
+ * system. If set, the user will not need to log in again.
+ *
+ * @return array Login details
+ */
+//function getSSODetails()
+//{
+//    $details = array();
+//    if (isset($_SERVER['REMOTE_USER']) && isset($_SERVER['AUTH_TYPE']) &&
+//        $_SERVER['AUTH_TYPE'] == 'sso' && isset($_COOKIE['sso'])) {
+//        $details['auth'] = $_SERVER['REMOTE_USER'];
+//        $details['passwd'] = $_COOKIE['sso'];
+//        $details['authz'] = '';
+//        $details['server'] = 'example';
+//    }
+//    return $details;
+//}
+
+/**
+ * Example get_email_addresses_hook function.
+ *
+ * @return array The list of email addresses
+ */
+//function getEmailAddresses()
+//{
+//    $addresses = array();
+//    if (extension_loaded('ldap')) {
+//        $ds = ldap_connect('ldap.example.com');
+//        if ($ds) {
+//            // Anonymous bind.
+//            $r = ldap_bind($ds);
+//            $sr = ldap_search($ds, "ou=people,dc=example,dc=com", 
+//                              "uid=".$_SESSION['smartsieve']['authz']);
+//            $entries = ldap_get_entries($ds, $sr);
+//            for ($i=0; $i<$entries['count']; $i++) {
+//                $addresses[] = $entries[$i]['mail'][0];
+//            }
+//        }
+//        ldap_close($ds);
+//    }
+//    return $addresses;
+//}
 
 ?>
