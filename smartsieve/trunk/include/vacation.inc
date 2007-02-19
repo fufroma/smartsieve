@@ -65,7 +65,20 @@
 <?php echo SmartSieve::text('Your e-mail addresses');?>:
       </TD>
       <TD>
-        <INPUT TYPE="text" NAME="addresses" VALUE="<?php echo $addrs_display;?>" SIZE="50">
+        <TABLE WIDTH="100%" CELLPADDING="5" BORDER="0" CELLSPACING="0">
+<?php foreach ($addresses as $addr=>$checked):?>
+        <TR>
+          <TD>
+           <INPUT TYPE="checkbox" NAME="address[]" VALUE="<?php echo $addr;?>"<?php echo ($checked === true) ? ' CHECKED="checked"' : '';?>>&nbsp;<?php echo $addr;?> 
+          </TD>
+        </TR>
+<?php endforeach;?>
+        <TR>
+          <TD>
+            <INPUT TYPE="text" NAME="newaddresses" VALUE="" SIZE="50">
+          <TD>
+        <TR>
+        <TABLE>
       </TD>
     </TR>
     </TABLE>

@@ -35,10 +35,22 @@ $vacation = array();   /* $script->vacation. */
  * the vacation values from POST data. if not, use $script->vacation.
  */
 if (isset($_POST['submitted'])) {
-    $address = SmartSieve::utf8Encode(SmartSieve::getFormValue('addresses'));
-    $address = preg_replace("/\"|\\\/","",$address);
+    $addrs = SmartSieve::getFormValue('address');
     $addresses = array();
-    $addresses = preg_split("/\s*,\s*|\s+/",$address);
+    if (is_array($addrs)) {
+        foreach ($addrs as $addr) {
+            $addresses[] = SmartSieve::utf8Encode($addr);
+        }
+    }
+    $newAddrs = SmartSieve::utf8Encode(SmartSieve::getFormValue('newaddresses'));
+    $newAddrs = preg_replace("/\"|\\\/","",$newAddrs);
+    $addrs = preg_split("/\s*,\s*|\s+/",$newAddrs);
+    foreach ($addrs as $addr) {
+        if (!empty($addr)) {
+            $addresses[] = $addr;
+        }
+    }
+    $addresses = array_unique($addresses);
     $vacation['text'] = SmartSieve::utf8Encode(SmartSieve::getFormValue('text'));
     $vacation['days'] = SmartSieve::getFormValue('days');
     $vacation['addresses'] = $addresses;
@@ -148,9 +160,19 @@ $help_url = SmartSieve::getConf('vacation_help_url', '');
 $wrap_width = (SmartSieve::getConf('wrap_width')) ? SmartSieve::getConf('wrap_width') : 80;
 $max_days = SmartSieve::getConf('max_vacation_days', 30);
 $addrs_display = '';
+$addresses = array();
 if (is_array($vacation['addresses'])) {
     foreach ($vacation['addresses'] as $address) {
-        $addrs_display .= sprintf("%s%s", (!empty($addrs_display)) ? ', ' : '', SmartSieve::utf8Decode($address));
+        $addresses[SmartSieve::utf8Decode($address)] = true;
+    }
+}
+if (($func = SmartSieve::getConf('get_email_addresses_hook')) !== null &&
+    function_exists($func)) {
+    $extra_addresses = call_user_func($func);
+    foreach ($extra_addresses as $addr) {
+        if (!in_array($addr, $vacation['addresses'])) {
+            $addresses[SmartSieve::utf8Decode($addr)] = false;
+        }
     }
 }
 

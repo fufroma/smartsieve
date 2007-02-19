@@ -1,6 +1,12 @@
 Smartsieve - ChangeLog
 ----------------------
 
+19 Feb 2007 S Grier
+* Vacation addresses now displayed as a checkbox list.
+* Add get_email_addresses_hook config option to allow pulling in addresses 
+  from an external source.
+* require_vacation_addresses option now defaults to false.
+
 16 Feb 2007 S Grier
 * Add support for "stop" sieve control.
 * Replace existing occurrences of $default with call to SmartSieve::getConf().
