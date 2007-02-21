@@ -61,28 +61,30 @@ if (!isset($_SESSION['smartsieve']['mailboxes'])) {
     }
 }
 
-/* if one of the save, enable etc options was selected from rule.php, 
- * then get the rule values from POST data. if rule selected from main.php 
- * $ruleID will be set in GET data. if $ruleID not set in POST or GET, or 
- * if $script->rules[$ruleID] does not exist, this will be a new rule page.
- */
+// Get values for this rule.
 $ruleID = null;
 $rule = array();
+// Get form values from POST data.
 if (isset($_POST['ruleID'])) {
     $ruleID = SmartSieve::getFormValue('ruleID');
-    $rule = getRulePOSTValues($ruleID);
+    $rule = getRulePOSTValues();
 }
+// Use values from an existing rule.
 elseif (isset($_GET['ruleID'])) {
     $ruleID = SmartSieve::getFormValue('ruleID');
     if (isset($script->rules[$ruleID])) {
         $rule = $script->rules[$ruleID];
     }
-} elseif ($mode == SMARTSIEVE_RULE_MODE_SPAM) {
+}
+// If using spam mode, look for an existing spam rule.
+elseif ($mode == SMARTSIEVE_RULE_MODE_SPAM) {
     $ruleID = getSpamRule();
     if ($ruleID !== null) {
         $rule = $script->rules[$ruleID];
     }
-} elseif ($mode == SMARTSIEVE_RULE_MODE_FORWARD) {
+}
+// If using forward mode, look for an existing forward rule.
+elseif ($mode == SMARTSIEVE_RULE_MODE_FORWARD) {
     $ruleID = getForwardRule();
     if ($ruleID !== null) {
         $rule = $script->rules[$ruleID];
@@ -96,8 +98,7 @@ $action = SmartSieve::getFormValue('thisAction');
 switch ($action) {
 
     case ('enable'):
-        $ret = checkRule($rule);
-        if ($ret === true) {
+        if (isSane($rule)) {
             if (isset($script->rules[$ruleID])){
                 $oldrule = $script->rules[$ruleID];
                 $script->rules[$ruleID] = $rule;
@@ -119,14 +120,11 @@ switch ($action) {
             } else {
                 SmartSieve::setError(SmartSieve::text('ERROR: rule does not exist.'));
             }
-        } else {
-            SmartSieve::setError(SmartSieve::text('ERROR: ') . $ret);
         }
         break;
 
     case ('disable'):
-        $ret = checkRule($rule);
-        if ($ret === true) {
+        if (isSane($rule) === true) {
             if (isset($script->rules[$ruleID])){
                 $oldrule = $script->rules[$ruleID];
                 $script->rules[$ruleID] = $rule;
@@ -148,8 +146,6 @@ switch ($action) {
             } else {
                 SmartSieve::setError(SmartSieve::text('ERROR: rule does not exist.'));
             }
-        } else {
-            SmartSieve::setError(SmartSieve::text('ERROR: ') . $ret);
         }
         break;
 
@@ -176,8 +172,7 @@ switch ($action) {
         break;
 
     case ('save'):
-        $ret = checkRule($rule);
-        if ($ret === true) {
+        if (isSane($rule)) {
             // if existing rule, update. add new if not.
             if (isset($script->rules[$ruleID])){
                 $oldrule = $script->rules[$ruleID];
@@ -207,8 +202,6 @@ switch ($action) {
                     exit;
                 }
             }
-        } else {
-            SmartSieve::setError(SmartSieve::text('ERROR: ') . $ret);
         }
         break;
 }
@@ -243,10 +236,12 @@ include SmartSieve::getConf('include_dir', 'include') . '/common-footer.inc';
 SmartSieve::close();
 
 
-/* if rule values supplied from form on rule.php, get rule values 
- * from POST data.
+/**
+ * Get POST data supplied from the rule edit form.
+ *
+ * @return array The filter rule
  */
-function getRulePOSTValues ($ruleID)
+function getRulePOSTValues()
 {
     $rule = array();
     $rule['priority'] = SmartSieve::getFormValue('priority');
@@ -260,19 +255,18 @@ function getRulePOSTValues ($ruleID)
         $rule['action_arg'] = SmartSieve::utf8Encode($rule['action_arg']);
     }
     $rule['field'] = SmartSieve::utf8Encode(SmartSieve::getFormValue('field'));
+    // Remove trailing colon if present.
+    if ($rule['field'] && substr($rule['field'], -1) == ':') {
+        $rule['field'] = rtrim($rule['field'], ':');
+    }
     $rule['field_val'] = SmartSieve::utf8Encode(SmartSieve::getFormValue('field_val'));
     $rule['size'] = SmartSieve::getFormValue('size');
-    $rule['continue'] = 0;
-    if (SmartSieve::getFormValue('continue')) $rule['continue'] = 1;
-    $rule['gthan'] = 0;
-    if (SmartSieve::getFormValue('gthan')) $rule['gthan'] = 2;
-    $rule['anyof'] = 0;
-    if (SmartSieve::getFormValue('anyof')) $rule['anyof'] = 4;
-    $rule['keep'] = 0;
-    if (SmartSieve::getFormValue('keep')) $rule['keep'] = 8;
+    $rule['continue'] = (SmartSieve::getFormValue('continue')) ? 1 : 0;
+    $rule['gthan'] = (SmartSieve::getFormValue('gthan')) ? 2 : 0;
+    $rule['anyof'] = (SmartSieve::getFormValue('anyof')) ? 4 : 0;
+    $rule['keep'] = (SmartSieve::getFormValue('keep')) ? 8 : 0;
     $rule['stop'] = (SmartSieve::getFormValue('stop')) ? 16 : 0;
-    $rule['regexp'] = 0;
-    if (SmartSieve::getFormValue('regexp')) $rule['regexp'] = 128;
+    $rule['regexp'] = (SmartSieve::getFormValue('regexp')) ? 128 : 0;
     $rule['unconditional'] = 0;
     if ((!$rule['from'] && !$rule['to'] && !$rule['subject'] &&
        !$rule['field'] && $rule['size'] === '' && 
@@ -281,49 +275,67 @@ function getRulePOSTValues ($ruleID)
         $rule['unconditional'] = 1;
     }
     $rule['flg'] = $rule['continue'] | $rule['gthan'] | $rule['anyof'] | $rule['keep'] | $rule['stop'] | $rule['regexp'];
-
     return $rule;
 }
 
 
-function checkRule(&$rule)
+/**
+ * Is this rule sane.
+ *
+ * Performs basic sanity/integrity checks.
+ *
+ * @param array $rule Rule values
+ * @return boolean true if sane, false if not
+ */
+function isSane($rule)
 {
-    /* check values do not exceed acceptible sizes. */
-    $conds = array('from','to','subject','field','field_val');
+    $max_field_chars = SmartSieve::getConf('max_field_chars', 500);
+    $max_textbox_chars = SmartSieve::getConf('max_textbox_chars', 50000);
+
+    // Check values do not exceed acceptable sizes.
+    $conds = array('from', 'to', 'subject', 'field', 'field_val');
     foreach ($conds as $cond) {
-        if (strlen($rule[$cond]) > SmartSieve::getConf('max_field_chars', 50)) {
-            return SmartSieve::text('the condition value you supplied is too long. it should not exceed %d characters.', array(SmartSieve::getConf('max_field_chars', 50)));
+        if (strlen($rule[$cond]) > $max_field_chars) {
+            SmartSieve::setError(SmartSieve::text('the condition value you supplied is too long. it should not exceed %d characters.', array($max_field_chars)));
+            return false;
         }
     }
-    if ($rule['action'] == 'address' &&
-        strlen($rule['action_arg']) > SmartSieve::getConf('max_field_chars', 50)) {
-        return SmartSieve::text('the forward address you supplied is too long. it should not exceed %d characters.', array(SmartSieve::getConf('max_field_chars', 50)));
+    if ($rule['action'] == 'address') {
+        if (strlen($rule['action_arg']) > $max_field_chars) {
+            SmartSieve::setError(SmartSieve::text('the forward address you supplied is too long. it should not exceed %d characters.', array($max_field_chars)));
+            return false;
+        }
+        if (!preg_match("/^[\x21-\x7E]+@([0-9a-zA-Z-]+\.)+[0-9a-zA-Z]{2,}$/i", $rule['action_arg'])) {
+            SmartSieve::setError(SmartSieve::text('"%s" is not a valid email address',
+                array(htmlspecialchars($rule['action_arg']))));
+            return false;
+        }
     }
     if ($rule['action'] == 'reject' &&
-        strlen($rule['action_arg']) > SmartSieve::getConf('max_textbox_chars', 500)) {
-        return SmartSieve::text('your reject message is too long. it should not exceed %d characters.', array(SmartSieve::getConf('max_textbox_chars', 500)));
+        strlen($rule['action_arg']) > $max_textbox_chars) {
+        SmartSieve::setError(SmartSieve::text('your reject message is too long. it should not exceed %d characters.', array($max_textbox_chars)));
+        return false;
     }
-
-    if ($rule['field'] && !$rule['field_val'])
-        return SmartSieve::text("you must supply a value for the field \"%s\".", array($rule['field']));
-    /* remove colon from end of header field. */
-    if ($rule['field'] && preg_match("/:$/",$rule['field']))
-        $rule['field'] = rtrim($rule['field'], ":");
-    if (!$rule['action'] && !$rule['keep'] && !$rule['stop'])
-        return SmartSieve::text("please supply an action");
-    if ($rule['action'] != 'discard' && !$rule['keep'] && !$rule['stop'] && !$rule['action_arg'])
-        return SmartSieve::text("you must supply an argument for this action");
-    /* if this is a forward rule, forward address must be a valid email. */
-    if ($rule['action'] == 'address' && !preg_match("/\@/",$rule['action_arg']))
-        return SmartSieve::text("'%s' is not a valid email address", array($rule['action_arg']));
-    /* complain if msg size contains non-digits. */
-    if (preg_match("/\D/",$rule['size']))
-        return SmartSieve::text("message size value must be a positive integer");
-
-    /* apply alternative namespacing to mailbox if necessary. */
-    if ($rule['action'] == 'folder')
-        $rule['action_arg'] = SmartSieve::getMailboxName($rule['action_arg']);
-
+    if ($rule['field'] && !$rule['field_val']) {
+        SmartSieve::setError(SmartSieve::text("you must supply a value for the field \"%s\".",
+            array($rule['field'])));
+        return false;
+    }
+    // Rule must have an action.
+    if (!$rule['action'] && !$rule['keep'] && !$rule['stop']) {
+        SmartSieve::setError(SmartSieve::text("please supply an action"));
+        return false;
+    }
+    // Actions other than discard, keep and stop must have a corresponding value.
+    if ($rule['action'] != 'discard' && !$rule['keep'] && !$rule['stop'] && !$rule['action_arg']) {
+        SmartSieve::setError(SmartSieve::text("you must supply an argument for this action"));
+        return false;
+    }
+    // Message size must not contain non-digits.
+    if (preg_match("/\D/", $rule['size'])) {
+        SmartSieve::setError(SmartSieve::text("message size value must be a positive integer"));
+        return false;
+    }
     return true;
 }
 

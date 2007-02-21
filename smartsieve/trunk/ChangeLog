@@ -1,6 +1,15 @@
 Smartsieve - ChangeLog
 ----------------------
 
+21 Feb 2007 S Grier
+* Code cleanups.
+* Small behaviour changes:
+* - Drop alt_namespace mailbox name massaging. This was broken behaviour.
+* - Don't do vacation checks during Script::updateScript().
+* - No longer use fully-qualified username or maildomain to force a vacation address
+*   without the user knowing.
+* - Don't set vacation days without the user knowing.
+
 19 Feb 2007 S Grier
 * Vacation addresses now displayed as a checkbox list.
 * Add get_email_addresses_hook config option to allow pulling in addresses 

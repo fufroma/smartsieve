@@ -29,11 +29,9 @@ if ($script->mode == 'advanced' || $script->so == false) {
     exit;
 }
 
-$vacation = array();   /* $script->vacation. */
+$vacation = array();
 
-/* if save, enable or disable was selected from vacation.php, then get 
- * the vacation values from POST data. if not, use $script->vacation.
- */
+// Get form values from POST data.
 if (isset($_POST['submitted'])) {
     $addrs = SmartSieve::getFormValue('address');
     $addresses = array();
@@ -43,8 +41,8 @@ if (isset($_POST['submitted'])) {
         }
     }
     $newAddrs = SmartSieve::utf8Encode(SmartSieve::getFormValue('newaddresses'));
-    $newAddrs = preg_replace("/\"|\\\/","",$newAddrs);
-    $addrs = preg_split("/\s*,\s*|\s+/",$newAddrs);
+    $newAddrs = preg_replace("/\"|\\\/", "", $newAddrs);
+    $addrs = preg_split("/\s*,\s*|\s+/", $newAddrs);
     foreach ($addrs as $addr) {
         if (!empty($addr)) {
             $addresses[] = $addr;
@@ -55,24 +53,28 @@ if (isset($_POST['submitted'])) {
     $vacation['days'] = SmartSieve::getFormValue('days');
     $vacation['addresses'] = $addresses;
     $vacation['status'] = SmartSieve::getFormValue('status');
-} elseif (!empty($script->vacation)) {
+}
+// Use existing vacation values, if any.
+elseif (!empty($script->vacation)) {
     $vacation = $script->vacation;
-} else {
+}
+// Otherwise, initialize some default values.
+else {
     $vacation = array();
     $vacation['status'] = 'on';
     $vacation['text'] = SmartSieve::getConf('vacation_text', '');
-    $vacation['days'] = SmartSieve::getConf('vacation_days', 0);
+    $vacation['days'] = SmartSieve::getConf('vacation_days', 7);
     $vacation['addresses'] = array();
 }
 
-/* save vacation settings if requested. */
+// Perform actions.
 
 $action = SmartSieve::getFormValue('thisAction');
 
 switch ($action) {
 
     case ('enable'):
-        if (($ret = checkRule($vacation)) === true){
+        if (isSane($vacation) === true) {
             if ($script->vacation) {
                 $oldvacation = $script->vacation;
                 $script->vacation = $vacation;
@@ -93,13 +95,11 @@ switch ($action) {
             } else {
                 SmartSieve::setError(SmartSieve::text('ERROR: vacation settings not yet saved.'));
             }
-        } else {
-            SmartSieve::setError(SmartSieve::text('ERROR: ') . $ret);
         }
         break;
 
     case ('disable'):
-        if (($ret = checkRule($vacation)) === true){
+        if (isSane($vacation) === true) {
             if ($script->vacation) {
                 $oldvacation = $script->vacation;
                 $script->vacation = $vacation;
@@ -120,13 +120,11 @@ switch ($action) {
             } else {
                 SmartSieve::setError(SmartSieve::text('ERROR: vacation settings not yet saved.'));
             }
-        } else {
-            SmartSieve::setError(SmartSieve::text('ERROR: ') . $ret);
         }
         break;
 
     case ('save'):
-        if (($ret = checkRule($vacation)) === true){
+        if (isSane($vacation) === true) {
             if (isset($script->vacation)) {
                 $oldvacation = $script->vacation;
             }
@@ -147,8 +145,6 @@ switch ($action) {
                     exit;
                 }
             }
-        } else {
-            SmartSieve::setError(SmartSieve::text('ERROR: ') . $ret);
         }
         break;
 }
@@ -175,6 +171,15 @@ if (($func = SmartSieve::getConf('get_email_addresses_hook')) !== null &&
         }
     }
 }
+if (empty($addresses)) {
+    // If username is fully qualified, suggest that.
+    if (strpos($_SESSION['smartsieve']['authz'],'@') !== false) {
+        $addresses[$_SESSION['smartsieve']['authz']] = false;
+    }
+    if (!empty($_SESSION['smartsieve']['maildomain'])) {
+        $addresses[$_SESSION['smartsieve']['authz'] . '@' . $_SESSION['smartsieve']['maildomain']] = false;
+    }
+}
 
 include SmartSieve::getConf('include_dir', 'include') . '/common-head.inc';
 include SmartSieve::getConf('include_dir', 'include') . '/menu.inc';
@@ -185,46 +190,53 @@ include SmartSieve::getConf('include_dir', 'include') . '/common-footer.inc';
 SmartSieve::close();
 
 
-/* basic sanity checks on vacation rule.
- * any value returned will be an error msg.
- * note: we will only demand a value from user if no default is set in config.
+/**
+ * Is this vacation rule sane.
+ *
+ * Performs basic sanity/integrity checks.
+ *
+ * @param array $vacation Vacation rule
+ * @return boolean true if sane, false if not
  */
-function checkRule($vacation)
+function isSane($vacation)
 {
-    if (!$vacation['text'] && !SmartSieve::getConf('vacation_text')) {
-	return SmartSieve::text("please supply the message to send with auto-responses");
+    // User must set a vacation message.
+    if (!$vacation['text']) {
+        SmartSieve::setError(SmartSieve::text("please supply the message to send with auto-responses"));
+        return false;
     }
-    if (!$vacation['days'] && SmartSieve::getConf('require_vacation_days') && !SmartSieve::getConf('vacation_days')) {
-        return SmartSieve::text("please select the number of days to wait between responses");
+    if (!$vacation['days'] && SmartSieve::getConf('require_vacation_days')) {
+        SmartSieve::setError(SmartSieve::text("please select the number of days to wait between responses"));
+        return false;
     }
-    // does $vacation['addresses'] contain any valid addresses?
-    $a = false;
-    foreach ($vacation['addresses'] as $addr){
-        $tokens = explode('@',$addr);
-        if (count($tokens) == 2 && $tokens[0] != '' && strpos($tokens[1],'.') !== false){
-            $a = true;
+    // Reject invalid email addresses.
+    foreach ($vacation['addresses'] as $addr) {
+        if (!preg_match("/^[\x21-\x7E]+@([0-9a-zA-Z-]+\.)+[0-9a-zA-Z]{2,}$/i", $addr)) {
+            SmartSieve::setError(SmartSieve::text('"%s" is not a valid email address',
+                array(htmlspecialchars($addr))));
+            return false;
+        }
+        if (strlen($addr) > SmartSieve::getConf('max_field_chars', 500)) {
+            SmartSieve::setError(SmartSieve::text('vacation address should not exceed %d characters.',
+                array(SmartSieve::getConf('max_field_chars', 500))));
+            return false;
         }
     }
-    if ($a == false && SmartSieve::getConf('require_vacation_addresses') && !$_SESSION['smartsieve']['maildomain']) {
-        return SmartSieve::text("please supply at least one valid vacation address");
+    if (empty($vacation['addresses']) && SmartSieve::getConf('require_vacation_addresses')) {
+        SmartSieve::setError(SmartSieve::text("please supply at least one valid vacation address"));
+        return false;
     }
-
-    /* check values don't exceed acceptible sizes. */
-    foreach ($vacation['addresses'] as $addr){
-        if (strlen($addr) > SmartSieve::getConf('max_field_chars', 50)) {
-            return SmartSieve::text('vacation address should not exceed %d characters.', array(SmartSieve::getConf('max_field_chars', 50)));
-        }
+    if (strlen($vacation['text']) > SmartSieve::getConf('max_textbox_chars', 50000)) {
+        SmartSieve::setError(SmartSieve::text('vacation message should not exceed %d characters.',
+            array(SmartSieve::getConf('max_textbox_chars', 50000))));
+        return false;
     }
-    if (strlen($vacation['text']) > SmartSieve::getConf('max_textbox_chars', 500)) {
-	return SmartSieve::text('vacation message should not exceed %d characters.', array(SmartSieve::getConf('max_textbox_chars', 500)));
+    // Reject vacation days value containing non-digits.
+    if (preg_match("/\D/", $vacation['days'])) {
+        SmartSieve::setError(SmartSieve::text('vacation days must be a positive integer'));
+        return false;
     }
-
-    /* complain if vacation days contains non-digits. */
-    if (preg_match("/\D/",$vacation['days']))
-	return SmartSieve::text('vacation days must be a positive integer');
-
     return true;
 }
-
 
 ?>
