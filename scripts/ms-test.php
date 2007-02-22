@@ -3,7 +3,7 @@
 /**
  * $Id$
  *
- * Copyright 2002-2006 Stephen Grier <stephengrier@users.sourceforge.net>
+ * Copyright (C) 2002-2007 Stephen Grier <stephengrier@users.sourceforge.net>
  *
  * A script to test the Managesieve class.
  * 

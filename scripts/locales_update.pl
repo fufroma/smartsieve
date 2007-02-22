@@ -9,7 +9,7 @@
 #              locales under conf/locales. This scripts extracts the 
 #              necessary strings from the source files and creates new 
 #              translation files as conf/locales/*/strings.php.new.
-# Copyright 2002-2006 Stephen Grier <stephengrier@users.sourceforge.net>
+# Copyright (C) 2002-2007 Stephen Grier <stephengrier@users.sourceforge.net>
 # See the inclosed NOTICE file for conditions of use and distribution.
 ######################################################################
 
