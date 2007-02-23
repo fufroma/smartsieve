@@ -31,7 +31,7 @@
           &nbsp;<?php echo SmartSieve::text('User');?>: <?php echo $_SESSION['smartsieve']['authz']; ?> 
         </TD>
         <TD>
-          &nbsp;<?php echo SmartSieve::text('Server');?>: <?php echo $_SESSION['smartsieve']['server_display']; ?> 
+          &nbsp;<?php echo SmartSieve::text('Server');?>: <?php echo $_SESSION['smartsieve']['server']['display']; ?> 
         </TD>
         <TD>
           &nbsp;<?php echo SmartSieve::text('Script');?>: <?php echo $_SESSION['smartsieve']['workingScript']; ?> 

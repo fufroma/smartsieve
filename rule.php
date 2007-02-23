@@ -57,7 +57,7 @@ if (!isset($_SESSION['smartsieve']['mailboxes'])) {
     } else {
         SmartSieve::setError(SmartSieve::text('ERROR: ') . $mboxes);
         SmartSieve::writeToLog(sprintf('failed getting mailbox list for %s from %s: %s', 
-            $_SESSION['smartsieve']['auth'], $_SESSION['smartsieve']['server'], $mboxes), LOG_ERR);
+            $_SESSION['smartsieve']['auth'], $_SESSION['smartsieve']['server']['host'], $mboxes), LOG_ERR);
     }
 }
 

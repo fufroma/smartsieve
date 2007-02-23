@@ -27,12 +27,6 @@
  * php-4.1.2 or later with imap-ssl enabled, you will need to 
  * set this to '143/imap/notls' if you do not want imap-ssl.
  *
- * alt_namespace: set this to true if the server is using the 
- * alternative namespace. You should also set namespace_user_prefix 
- * and namespace_shared_prefix to the prefixes the server uses 
- * for the other users namespace and the shared namespaces 
- * respectively.
- *
  * maildomain: ie. username@maildomain. You should not include 
  * the @ character. if require_vacation_addresses is true in 
  * conf/config.php, this will be used in the :addresses vacation 
@@ -56,7 +50,6 @@ $servers['example'] = array(
     'server' => '127.0.0.1',
     'sieveport' => '2000',
     'imapport' => '143/imap/notls',
-    'alt_namespace' => false,
     'maildomain' => 'localhost'
 );
 
@@ -65,9 +58,6 @@ $servers['example2'] = array(
     'server' => 'imap.example.co.uk',
     'sieveport' => '2000',
     'imapport' => '143',
-    'alt_namespace' => true,
-    'namespace_user_prefix' => 'user',
-    'namespace_shared_prefix' => 'shared',
     'maildomain' => ''
 );
 
