@@ -8,35 +8,66 @@
  */
 
 
-/*
- * class SmartSieveCryptMCRYPT extends the SmartSieveCrypt class.
- * It allows SmartSieve to use the mcrypt library for encryption.
+/**
+ * Class Crypto_MCRYPT extends the Crypto class and is a wrapper for
+ * the mcrypt library.
+ *
+ * @author  Stephen Grier <stephengrier@users.sourceforge.net>
+ * @version $Revision$
  */
+class Crypto_MCRYPT extends Crypto {
 
-class SmartSieveCryptMCRYPT extends SmartSieveCrypt {
 
+   /**
+    * The mcrypt module descriptor.
+    * @var resource descriptor
+    * @access private
+    */
+    var $_td;
 
-    /* The mcrypt module descriptor. */
-    var $td;
-
-    /* secret key. */
+   /**
+    * Secret key
+    * @var string
+    * @access public
+    */
     var $key;
 
-    /* mcrypt mode. */
+   /**
+    * mcrypt mode
+    * @var string
+    * @access public
+    */
     var $mode;
 
-    /* location of mode module. */
+   /**
+    * mcrypt modes directory
+    * @var string
+    * @access public
+    */
     var $mode_dir;
 
-    /* mcrypt cipher. */
+   /**
+    * mcrypt cipher
+    * @var string
+    * @access public
+    */
     var $cipher;
 
-    /* location of algorithm module. */
+   /**
+    * mcrypt ciphers directory
+    * @var string
+    * @access public
+    */
     var $cipher_dir;
 
 
-    /* constructor. */
-    function SmartSieveCryptMCRYPT ($args = array()) 
+   /**
+    * Constructor
+    *
+    * @param array $args Additional parameters. Will use $args['key'].
+    * @return void
+    */
+    function Crypto_MCRYPT($args=array())
     {
         $this->key = $args['key'];
         // FIXME: we currently only support the ECB mode, because the same IV
@@ -45,35 +76,43 @@ class SmartSieveCryptMCRYPT extends SmartSieveCrypt {
         $this->cipher = isset($args['cipher']) ? $args['cipher'] : MCRYPT_BLOWFISH;
         $this->cipher_dir = isset($args['cipher_dir']) ? $args['cipher_dir'] : '';
         $this->mode_dir = isset($args['mode_dir']) ? $args['mode_dir'] : '';
-        $this->td = mcrypt_module_open($this->cipher,$this->cipher_dir,$this->mode,$this->mode_dir);
+        $this->_td = mcrypt_module_open($this->cipher, $this->cipher_dir, $this->mode, $this->mode_dir);
     }
 
-
-    function encrypt ($string) 
+   /**
+    * Encrypt a string.
+    *
+    * @param string $string Item to be encrypted
+    * @return string The encrypted string
+    */
+    function encrypt($string)
     {
         // An IV is not needed with the ECB mode, but...
-        $iv = mcrypt_create_iv(mcrypt_enc_get_iv_size($this->td), MCRYPT_DEV_RANDOM);
-        mcrypt_generic_init($this->td, $this->key, $iv);
-        $encrypted_data = mcrypt_generic($this->td, $string);
-        mcrypt_generic_deinit($this->td);
+        $iv = mcrypt_create_iv(mcrypt_enc_get_iv_size($this->_td), MCRYPT_DEV_RANDOM);
+        mcrypt_generic_init($this->_td, $this->key, $iv);
+        $encrypted_data = mcrypt_generic($this->_td, $string);
+        mcrypt_generic_deinit($this->_td);
         return $encrypted_data;
     }
 
-
-    function decrypt ($encrypted_data) 
+   /**
+    * Decrypt a string.
+    *
+    * @param string $encrypted_data The encrypted data to decrypt
+    * @return string The decrypted string
+    */
+    function decrypt($encrypted_data)
     {
         // FIXME: can only use ECB mode until we can get the IV encrypt creates.
-        $iv = mcrypt_create_iv(mcrypt_enc_get_iv_size($this->td), MCRYPT_DEV_RANDOM);
+        $iv = mcrypt_create_iv(mcrypt_enc_get_iv_size($this->_td), MCRYPT_DEV_RANDOM);
         // Reinitialize the encryption buffer before decrypt.
-        mcrypt_generic_init($this->td, $this->key, $iv);
-        $decrypted = mdecrypt_generic($this->td, $encrypted_data);
-        mcrypt_generic_deinit($this->td);
+        mcrypt_generic_init($this->_td, $this->key, $iv);
+        $decrypted = mdecrypt_generic($this->_td, $encrypted_data);
+        mcrypt_generic_deinit($this->_td);
         // strip null chars added by mcrypt_generic.
         return rtrim($decrypted, "\0");
     }
 
-
 }
-
 
 ?>

@@ -8,41 +8,60 @@
  */
 
 
-/*
- * class SmartSieveCryptHCEMD5 extends the SmartSieveCrypt class.
- * It allows SmartSieve to use the PEAR HCEMD5 library for encryption.
+/**
+ * Class Crypto_HCEMD5 extends the Crypto class and is a wrapper for
+ * the PEAR Crypt_HCEMD5 encryption library.
+ *
+ * @author  Stephen Grier <stephengrier@users.sourceforge.net>
+ * @version $Revision$
  */
-
-class SmartSieveCryptHCEMD5 extends SmartSieveCrypt {
-
-
-    /* The hcemd5 object reference. */
-    var $hcemd5;
+class Crypto_HCEMD5 extends Crypto {
 
 
-    /* constructor. */
-    function SmartSieveCryptHCEMD5 ($args = array()) 
+   /**
+    * The hcemd5 object reference.
+    * @var object reference
+    * @access private
+    */
+    var $_hcemd5;
+
+
+   /**
+    * Constructor
+    *
+    * @param array $args Additional parameters. Will use $args['key'].
+    * @return void
+    */
+    function Crypto_HCEMD5($args=array())
     {
         require_once 'Crypt/HCEMD5.php';
-        $this->hcemd5 = new Crypt_HCEMD5($args['key']);
+        $this->_hcemd5 = new Crypt_HCEMD5($args['key']);
     }
 
-
-    function encrypt ($string) 
+   /**
+    * Encrypt a string.
+    *
+    * @param string $string Item to be encrypted
+    * @return string The encrypted string
+    */
+    function encrypt($string)
     {
-	$encrypted = $this->hcemd5->encodeMimeSelfRand($string);
-	return $encrypted;
+        $encrypted = $this->_hcemd5->encodeMimeSelfRand($string);
+        return $encrypted;
     }
 
-
-    function decrypt ($string) 
+   /**
+    * Decrypt a string.
+    *
+    * @param string $string The encrypted string to decrypt
+    * @return string The decrypted string
+    */
+    function decrypt($string)
     {
-	$decrypted = $this->hcemd5->decodeMimeSelfRand($string);
-	return $decrypted;
+        $decrypted = $this->_hcemd5->decodeMimeSelfRand($string);
+        return $decrypted;
     }
-
 
 }
-
 
 ?>
