@@ -3,15 +3,15 @@ SmartSieve - TODO
 
 TODO for 1.0
 
+Rewrite class Log:: and SmartSieve::writeToLog().
+Move generateKey(), retrieveKey(), getCryptLib(), encrypt() and decrypt() to Crypt::.
+
 TODO for 1.1
 
 * fix mcrypt.php: MCRYPT_DEV_RANDOM->MCRYPT_RAND, keep IV, and mcrypt_generic_deinit
 * fix mailbox list for proxy authorization
 * do HAVESPACE before doing a PUTSCRIPT as the spec demands. HAVESPACE is broken up to 
   cyrus-2.0.16, so will need to handle this according to timsieved version
-* write a getScriptLine function to do rtrim, stripslashes, etc. to read script safely
-* add checks to make sure no HTML/javascript is written to a sieve script (htmlspecialchars strip_tags())
-* make checkRule() checkVacation() more generic and call from updateScript()
 * include file/line number to log messages
 
 TODO for 2.0

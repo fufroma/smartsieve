@@ -176,8 +176,8 @@ if (empty($addresses)) {
     if (strpos($_SESSION['smartsieve']['authz'],'@') !== false) {
         $addresses[$_SESSION['smartsieve']['authz']] = false;
     }
-    if (!empty($_SESSION['smartsieve']['maildomain'])) {
-        $addresses[$_SESSION['smartsieve']['authz'] . '@' . $_SESSION['smartsieve']['maildomain']] = false;
+    if (!empty($_SESSION['smartsieve']['server']['maildomain'])) {
+        $addresses[$_SESSION['smartsieve']['authz'] . '@' . $_SESSION['smartsieve']['server']['maildomain']] = false;
     }
 }
 

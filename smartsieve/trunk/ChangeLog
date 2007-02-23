@@ -1,6 +1,12 @@
 Smartsieve - ChangeLog
 ----------------------
 
+23 Feb 2007 S Grier
+* Code cleanups.
+* SmartSieve::setSession() now takes one array parameter.
+* Remove defunct SmartSieve::getMailboxName().
+* Add removeMagicQuotes(), getPOST() and getGET() to SmartSieve class.
+
 22 Feb 2007 S Grier
 * Update Copyright for 2007.
 
