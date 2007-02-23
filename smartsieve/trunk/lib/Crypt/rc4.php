@@ -8,47 +8,70 @@
  */
 
 
-/*
- * class SmartSieveCryptRC4 extends the SmartSieveCrypt class.
- * It allows SmartSieve to use the PEAR Rc4.php library for encryption.
+/**
+ * Class Crypto_RC4 extends the Crypto class and is a wrapper for 
+ * the PEAR Crypt_Rc4 encryption library.
+ *
+ * @author  Stephen Grier <stephengrier@users.sourceforge.net>
+ * @version $Revision$
  */
+class Crypto_RC4 extends Crypto {
 
-class SmartSieveCryptRC4 extends SmartSieveCrypt {
 
+   /**
+    * The rc4 object reference.
+    * @var object reference
+    * @access private
+    */
+    var $_rc4;
 
-    /* The rc4 object reference. */
-    var $rc4;
-
-    /* secret key. */
+   /**
+    * The secret key.
+    * @var string
+    * @access public
+    */
     var $key;
 
 
-    /* constructor. */
-    function SmartSieveCryptRC4 ($args = array()) 
+   /**
+    * Constructor
+    *
+    * @param array $args Additional parameters. Will use $args['key'].
+    * @return void
+    */
+    function Crypto_RC4($args=array())
     {
         require_once 'Crypt/Rc4.php';
         $this->key = $args['key'];
-        $this->rc4 = new Crypt_RC4($this->key);
+        $this->_rc4 = new Crypt_RC4($this->key);
     }
 
-
-    function encrypt ($string) 
+   /**
+    * Encrypt a string.
+    *
+    * @param string $string Item to be encrypted
+    * @return string The encrypted string
+    */
+    function encrypt($string)
     {
-        $this->rc4->key($this->key);
-        $this->rc4->crypt($string);
+        $this->_rc4->key($this->key);
+        $this->_rc4->crypt($string);
         return $string;
     }
 
-
-    function decrypt ($string) 
+   /**
+    * Decrypt a string.
+    *
+    * @param string $string The encrypted string to decrypt
+    * @return string The decrypted string
+    */
+    function decrypt($string)
     {
-        $this->rc4->key($this->key);
-        $this->rc4->decrypt($string);
+        $this->_rc4->key($this->key);
+        $this->_rc4->decrypt($string);
         return $string;
     }
-
 
 }
-
 
 ?>

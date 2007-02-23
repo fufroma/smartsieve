@@ -4,7 +4,6 @@ SmartSieve - TODO
 TODO for 1.0
 
 Rewrite class Log:: and SmartSieve::writeToLog().
-Move generateKey(), retrieveKey(), getCryptLib(), encrypt() and decrypt() to Crypt::.
 
 TODO for 1.1
 
