@@ -114,6 +114,7 @@ class SmartSieve {
             $_SERVER['REMOTE_ADDR'], $credentials['server'], $ret), LOG_ERR);
 
         SmartSieve::destroy();
+        session_start();
         return false;
     }
 
@@ -151,6 +152,7 @@ class SmartSieve {
                 header(sprintf('Location: %s', $uri));
                 exit;
             }
+            session_start();
         }
     }
 
