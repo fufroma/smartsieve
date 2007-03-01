@@ -1,6 +1,9 @@
 Smartsieve - ChangeLog
 ----------------------
 
+01 Mar 2007 S Grier
+* Fix bug #1638329: "ReLogin doesn't workt With firefox".
+
 23 Feb 2007 S Grier
 * Code cleanups.
 * SmartSieve::setSession() now takes one array parameter.

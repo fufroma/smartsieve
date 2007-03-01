@@ -47,6 +47,7 @@ if (isset($_SESSION['smartsieve']) && is_array($_SESSION['smartsieve'])) {
         exit;
     }
     SmartSieve::destroy();
+    session_start();
 }
 
 // If login details have been submitted, create new session and redirect.
