@@ -89,14 +89,10 @@ class SmartSieve {
 
             $smartsieve = &$_SESSION['smartsieve'];
 
-            $ret = SmartSieve::writeToLog(sprintf('login: %s%s [%s] {%s:%s}', 
-                ($smartsieve['auth'] != $smartsieve['authz']) ? 
-                    sprintf('%s as ', $smartsieve['auth']) : '',
-                $smartsieve['authz'], $_SERVER['REMOTE_ADDR'],
-                $smartsieve['server']['host'], $smartsieve['server']['sieveport']), LOG_INFO);
-            if ($ret !== true) {
-                SmartSieve::setError($ret);
-            }
+            SmartSieve::log(sprintf('login: %s%s [%s] {%s:%s}',
+                ($smartsieve['auth'] != $smartsieve['authz']) ? sprintf('%s as ', $smartsieve['auth']) : '',
+                $smartsieve['authz'], $_SERVER['REMOTE_ADDR'], $smartsieve['server']['host'],
+                $smartsieve['server']['sieveport']), LOG_INFO);
             // Set the array of script objects in the PHP session.
             $_SESSION['scripts'] = array();
             // Set which script to edit first.
@@ -106,10 +102,9 @@ class SmartSieve {
             }
             return true;
         }
-        SmartSieve::writeToLog(sprintf('FAILED LOGIN: %s%s [%s] {%s}: %s',
+        SmartSieve::log(sprintf('FAILED LOGIN: %s%s [%s] {%s}: %s',
             $credentials['auth'],
-            (!empty($credentials['authz']) && 
-                $credentials['authz'] != $credentials['auth']) ? 
+            (!empty($credentials['authz']) && $credentials['authz'] != $credentials['auth']) ?
                 sprintf(' as %s', $credentials['authz']) : '',
             $_SERVER['REMOTE_ADDR'], $credentials['server'], $ret), LOG_ERR);
 
@@ -144,7 +139,7 @@ class SmartSieve {
     function logout()
     {
         if (isset($_SESSION['smartsieve']) && is_array($_SESSION['smartsieve'])) {
-            SmartSieve::writeToLog(sprintf('logout: %s',
+            SmartSieve::log(sprintf('logout: %s',
                 $_SESSION['smartsieve']['authz']), LOG_INFO);
             SmartSieve::close();
             SmartSieve::destroy();
@@ -474,39 +469,25 @@ class SmartSieve {
     *
     * @param string $msg The message to log
     * @param integer $level One of the LOG_* contants
-    * @return mixed boolean true on success, string error if not
+    * @return boolean True on success, false if not
     */
-    function writeToLog($msg, $level=LOG_DEBUG)
+    function log($msg, $level=LOG_INFO)
     {
-        static $log;
-        if (SmartSieve::getConf('logging') == false) {
+        if (SmartSieve::getConf('logging') !== true) {
+            return true;
+        } if ($level > SmartSieve::getConf('logging_level', LOG_INFO)) {
             return true;
         }
-        if ($level > SmartSieve::getConf('logging_level')) {
-            return true;
+        include_once 'Log.php';
+        $log = &Log::singleton(SmartSieve::getConf('logging_method', 'syslog'),
+                               SmartSieve::getConf('logging_facility', 'LOG_LOCAL4'),
+                               SmartSieve::getConf('logging_ident', 'smartsieve'),
+                               SmartSieve::getConf('logging_args'));
+        if ($log === null) {
+            SmartSieve::setError(SmartSieve::text('Failed writing to log'));
+            return false;
         }
-
-        if (!is_object($log)) {
-            include_once SmartSieve::getConf('lib_dir') . "/Log.php";
-
-            if (SmartSieve::getConf('logging_method') === null ||
-                SmartSieve::getConf('logging_facility') === null ||
-                SmartSieve::getConf('logging_ident') === null) {
-                return 'writeToLog: logging not configured correctly';
-            }
-            $log = new Log(SmartSieve::getConf('logging_method'),
-                           SmartSieve::getConf('logging_facility'),
-                           SmartSieve::getConf('logging_ident'));
-
-            if ($log->errstr){
-                return $log->errstr;
-            }
-            if (!is_object($log)){
-                return 'writeToLog: failed to create log object';
-            }
-        }
-
-        return ($log->writetoLog($msg, $level)) ? true : $log->errstr;
+        return $log->log($msg, $level);
     }
 
    /**
@@ -631,7 +612,7 @@ class SmartSieve {
                     return true;
                 }
             }
-            SmartSieve::writeToLog('handleReferral: ' . $managesieve->getError(), LOG_ERR);
+            SmartSieve::log(sprintf('handleReferral: %s', $managesieve->getError()), LOG_ERR);
             SmartSieve::close();
             header('Location: ' . SmartSieve::setUrl('login.php?reason=failure'),true);
             exit;
@@ -670,7 +651,7 @@ class SmartSieve {
                 }
             } else {
                 SmartSieve::setError(SmartSieve::text('Failed reading script list: %s', $slist));
-                SmartSieve::writeToLog("setWorkingScript: failed reading script list: $slist", LOG_ERR);
+                SmartSieve::log("setWorkingScript: failed reading script list: $slist", LOG_ERR);
             }
         }
         // If all else fails, select the default.
@@ -689,7 +670,7 @@ class SmartSieve {
             SmartSieve::setError(SmartSieve::text('ERROR: ') . $s->errstr);
             $logmsg = sprintf('failed reading rules from script "%s" for %s: %s',
                 $s->name, $_SESSION['smartsieve']['authz'], $s->errstr);
-            SmartSieve::writeToLog($logmsg, LOG_ERR);
+            SmartSieve::log($logmsg, LOG_ERR);
         }
     }
 
