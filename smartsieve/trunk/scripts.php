@@ -72,7 +72,7 @@ if ($action == 'createscript')
             }
             if (!$scripts[$newscript]->updateScript()) {
                 SmartSieve::setError(SmartSieve::text('ERROR: ') . $scripts[$newscript]->errstr);
-                SmartSieve::writeToLog(sprintf('failed writing script "%s" for %s: %s',
+                SmartSieve::log(sprintf('failed writing script "%s" for %s: %s',
                     $scripts[$newscript]->name, $_SESSION['smartsieve']['authz'], $scripts[$newscript]->errstr), LOG_ERR);
             }
             if (SmartSieve::scriptExists($newscript)) {

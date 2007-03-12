@@ -57,7 +57,7 @@ switch ($action) {
                 SmartSieve::setError(SmartSieve::text('ERROR: ') . $script->errstr);
                 $logmsg = sprintf('failed writing script "%s" for %s: %s',
                   $script->name, $_SESSION['smartsieve']['authz'], $script->errstr);
-                SmartSieve::writeToLog($logmsg, LOG_ERR);
+                SmartSieve::log($logmsg, LOG_ERR);
             } else {
                 SmartSieve::setNotice(SmartSieve::text('rule successfully enabled.'));
             }
@@ -83,7 +83,7 @@ switch ($action) {
                 SmartSieve::setError(SmartSieve::text('ERROR: ') . $script->errstr);
                 $logmsg = sprintf('failed writing script "%s" for %s: %s',
                   $script->name, $_SESSION['smartsieve']['authz'], $script->errstr);
-                SmartSieve::writeToLog($logmsg, LOG_ERR);
+                SmartSieve::log($logmsg, LOG_ERR);
             } else {
                 SmartSieve::setNotice(SmartSieve::text('rule successfully disabled.'));
             }
@@ -110,7 +110,7 @@ switch ($action) {
                 SmartSieve::setError(SmartSieve::text('ERROR: ') . $script->errstr);
                 $logmsg = sprintf('failed writing script "%s" for %s: %s',
                   $script->name, $_SESSION['smartsieve']['authz'], $script->errstr);
-                SmartSieve::writeToLog($logmsg, LOG_ERR);
+                SmartSieve::log($logmsg, LOG_ERR);
             } else {
                 SmartSieve::setNotice(SmartSieve::text('Rule successfully deleted.'));
             }
@@ -123,7 +123,7 @@ switch ($action) {
             SmartSieve::setError(SmartSieve::text('ERROR: ') . $script->errstr);
             $logmsg = sprintf('failed writing script "%s" for %s: %s',
               $script->name, $_SESSION['smartsieve']['authz'], $script->errstr);
-            SmartSieve::writeToLog($logmsg, LOG_ERR);
+            SmartSieve::log($logmsg, LOG_ERR);
         } else {
             SmartSieve::setNotice(SmartSieve::text('your changes have been successfully saved.'));
         }
@@ -141,7 +141,7 @@ switch ($action) {
                 SmartSieve::setError(SmartSieve::text('ERROR: ') . $script->errstr);
                 $logmsg = sprintf('failed writing script "%s" for %s: %s',
                   $script->name, $_SESSION['smartsieve']['authz'], $script->errstr);
-                SmartSieve::writeToLog($logmsg, LOG_ERR);
+                SmartSieve::log($logmsg, LOG_ERR);
             }
         }
         break;
@@ -158,7 +158,7 @@ switch ($action) {
                 SmartSieve::setError(SmartSieve::text('ERROR: ') . $script->errstr);
                 $logmsg = sprintf('failed writing script "%s" for %s: %s',
                   $script->name, $_SESSION['smartsieve']['authz'], $script->errstr);
-                SmartSieve::writeToLog($logmsg, LOG_ERR);
+                SmartSieve::log($logmsg, LOG_ERR);
             }
         }
         break;
@@ -169,7 +169,7 @@ switch ($action) {
             SmartSieve::setError(SmartSieve::text('ERROR: ') . $script->errstr);
             $logmsg = sprintf('failed writing script "%s" for %s: %s',
               $script->name, $_SESSION['smartsieve']['authz'], $script->errstr);
-            SmartSieve::writeToLog($logmsg, LOG_ERR);
+            SmartSieve::log($logmsg, LOG_ERR);
         } else {
             SmartSieve::setNotice(SmartSieve::text('You are now in direct edit mode.'));
         }
@@ -181,7 +181,7 @@ switch ($action) {
             SmartSieve::setError(SmartSieve::text('ERROR: ') . $script->errstr);
             $logmsg = sprintf('failed writing script "%s" for %s: %s',
               $script->name, $_SESSION['smartsieve']['authz'], $script->errstr);
-            SmartSieve::writeToLog($logmsg, LOG_ERR);
+            SmartSieve::log($logmsg, LOG_ERR);
         } else {
             SmartSieve::setNotice(SmartSieve::text('You are now in GUI mode.'));
         }
@@ -198,7 +198,7 @@ switch ($action) {
 $ret = $script->retrieveRules();
 if ($ret === false) {
     SmartSieve::setError(SmartSieve::text('ERROR: ') . $script->errstr);
-    SmartSieve::writeToLog(sprintf('failed reading rules from script "%s" for %s: %s',
+    SmartSieve::log(sprintf('failed reading rules from script "%s" for %s: %s',
         $script->name, $_SESSION['smartsieve']['authz'], $script->errstr), LOG_ERR);
 }
 if (isset($_POST['text'])) {

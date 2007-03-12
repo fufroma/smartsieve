@@ -1,6 +1,9 @@
 Smartsieve - ChangeLog
 ----------------------
 
+12 Mar 2007 S Grier
+* Drop class Log:: in favour of the pear Log class.
+
 01 Mar 2007 S Grier
 * Fix bug #1638329: "ReLogin doesn't workt With firefox".
 

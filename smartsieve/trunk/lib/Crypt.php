@@ -32,7 +32,7 @@ class Crypto {
     */
     function Crypto($args=array())
     {
-        SmartSieve::writeToLog('Crypto: Crypto parent class does not provide encryption', LOG_WARNING);
+        SmartSieve::log('Crypto: Crypto parent class does not provide encryption', LOG_WARNING);
         SmartSieve::setError(SmartSieve::text('The cryptographic library used is not providing adequate encryption'));
     }
 
@@ -174,10 +174,10 @@ class Crypto {
                 in_array($cLib, $libs)) {
                 $lib = $cLib;
             }
-            SmartSieve::writeToLog('getCryptLib: using ' . $lib, LOG_DEBUG);
+            SmartSieve::log(sprintf('getCryptLib: using %s', $lib), LOG_DEBUG);
             return $lib;
         }
-        SmartSieve::writeToLog('getCryptLib: no usable cryptographic library', LOG_WARNING);
+        SmartSieve::log('getCryptLib: no usable cryptographic library', LOG_WARNING);
         return null;
     }
 

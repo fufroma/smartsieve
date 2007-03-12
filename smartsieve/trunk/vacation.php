@@ -81,9 +81,9 @@ switch ($action) {
                 $script->vacation['status'] = 'on';
                 if (!$script->updateScript()) {
                     SmartSieve::setError(SmartSieve::text('ERROR: ') . $script->errstr);
-                    SmartSieve::writeToLog(sprintf('failed writing script "%s" for %s: %s',
+                    SmartSieve::log(sprintf('failed writing script "%s" for %s: %s',
                         $script->name, $_SESSION['smartsieve']['authz'], $script->errstr), LOG_ERR);
-                        $script->vacation = $oldvacation;
+                    $script->vacation = $oldvacation;
                 } else {
                     SmartSieve::setNotice(SmartSieve::text('vacation settings successfully enabled.'));
                     $vacation['status'] = 'on';
@@ -106,9 +106,9 @@ switch ($action) {
                 $script->vacation['status'] = 'off';
                 if (!$script->updateScript()) {
                     SmartSieve::setError(SmartSieve::text('ERROR: ') . $script->errstr);
-                    SmartSieve::writeToLog(sprintf('failed writing script "%s" for %s: %s',
+                    SmartSieve::log(sprintf('failed writing script "%s" for %s: %s',
                         $script->name, $_SESSION['smartsieve']['authz'], $script->errstr), LOG_ERR);
-                        $script->vacation = $oldvacation;
+                    $script->vacation = $oldvacation;
                 } else {
                     SmartSieve::setNotice(SmartSieve::text('vacation settings successfully disabled.'));
                     $vacation['status'] = 'off';
@@ -131,7 +131,7 @@ switch ($action) {
             $script->vacation = $vacation;
             if (!$script->updateScript()) {
                 SmartSieve::setError(SmartSieve::text('ERROR: ') . $script->errstr);
-                SmartSieve::writeToLog(sprintf('failed writing script "%s" for %s: %s',
+                SmartSieve::log(sprintf('failed writing script "%s" for %s: %s',
                     $script->name, $_SESSION['smartsieve']['authz'], $script->errstr), LOG_ERR);
                 if (isset($oldvacation)) {
                     $script->vacation = $oldvacation;
