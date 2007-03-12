@@ -4,6 +4,7 @@ SmartSieve - TODO
 TODO for 1.0
 
 Rewrite class Log:: and SmartSieve::writeToLog().
+Feature request #1679018: "Insert rule at position" and "move rule to position" option
 
 TODO for 1.1
 
