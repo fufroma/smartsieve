@@ -1,6 +1,9 @@
 Smartsieve - ChangeLog
 ----------------------
 
+26 May 2007 S Grier
+* Fix SmartSieve::removeMagicQuotes(). get_magic_quotes_gpc returns 1 not true.
+
 12 Mar 2007 S Grier
 * Drop class Log:: in favour of the pear Log class.
 

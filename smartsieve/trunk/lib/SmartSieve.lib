@@ -753,7 +753,7 @@ class SmartSieve {
         if (!isset($magicQuotes)) {
             $magicQuotes = get_magic_quotes_gpc();
         }
-        if ($magicQuotes === true) {
+        if ($magicQuotes == true) {
             if (is_array($var)) {
                 $new = array();
                 foreach ($var as $key=>$val) {
