@@ -10,8 +10,8 @@
 <?php if (isset($ruleID) && $ruleID !== 'new'): ?>
         <?php echo SmartSieve::text('Edit mail forwarding');?> 
       </TD>
-      <TD CLASS="<?php echo (isset($rule['status']) && $rule['status'] == 'ENABLED') ? 'enabled' : 'disabled';?>">
-        <?php echo (isset($rule['status']) && $rule['status'] == 'ENABLED') ? SmartSieve::text('ENABLED') : SmartSieve::text('DISABLED');?> 
+      <TD CLASS="<?php echo ($display['status'] == 'ENABLED') ? 'enabled' : 'disabled';?>">
+        <?php echo ($display['status'] == 'ENABLED') ? SmartSieve::text('ENABLED') : SmartSieve::text('DISABLED');?>
 <?php else: ?>
         <?php echo SmartSieve::text('Set mail forwarding');?> 
       </TD>
@@ -33,7 +33,7 @@
         <?php echo SmartSieve::text('Forward mail to address:');?> 
       </TD>
       <TD>
-        <INPUT TYPE="text" NAME="address" VALUE="<?php echo (isset($rule['action_arg']) && $rule['action'] == 'address') ? SmartSieve::utf8Decode($rule['action_arg']) : '';?>" SIZE="40">
+        <INPUT TYPE="text" NAME="address" VALUE="<?php echo  $display['action']['address'];?>" SIZE="40">
       </TD>
     </TR>
     <TR>
@@ -41,7 +41,7 @@
         <?php echo SmartSieve::text('Keep a copy in Inbox:');?> 
       </TD>
       <TD>
-        <INPUT TYPE="checkbox" NAME="keep" VALUE="keep"<?php echo (!empty($rule['keep'])) ? ' CHECKED="checked"' : '';?>>
+        <INPUT TYPE="checkbox" NAME="keep" VALUE="keep"<?php echo ($display['keep'] == true) ? ' CHECKED="checked"' : '';?>>
       </TD>
     </TR>
     </TABLE>
@@ -73,23 +73,16 @@
 </TABLE>
 
 
-<INPUT TYPE="hidden" NAME="priority" VALUE="<?php echo (isset($rule['priority'])) ? $rule['priority'] : $script->pcount+1;?>">
-<INPUT TYPE="hidden" NAME="status" VALUE="<?php echo (isset($rule['status'])) ? $rule['status'] : 'ENABLED';?>">
-<INPUT TYPE="hidden" NAME="flg" VALUE="<?php echo (isset($rule['flg'])) ? $rule['flg'] : '';?>">
+<INPUT TYPE="hidden" NAME="priority" VALUE="<?php echo $display['priority'];?>">
+<INPUT TYPE="hidden" NAME="status" VALUE="<?php echo ($display['status'] == 'ENABLED') ? 'ENABLED' : 'DISABLED';?>">
+<INPUT TYPE="hidden" NAME="flg" VALUE="<?php echo $display['flg'];?>">
 <INPUT TYPE="hidden" NAME="thisAction" VALUE="">
 <INPUT TYPE="hidden" NAME="ruleID" VALUE="<?php echo (isset($ruleID)) ? $ruleID : 'new';?>">
 <INPUT TYPE="hidden" NAME="anyof" VALUE="">
-<INPUT TYPE="hidden" NAME="from" VALUE="">
-<INPUT TYPE="hidden" NAME="to" VALUE="">
-<INPUT TYPE="hidden" NAME="subject" VALUE="">
-<INPUT TYPE="hidden" NAME="gthan" VALUE="">
-<INPUT TYPE="hidden" NAME="size" VALUE="">
-<INPUT TYPE="hidden" NAME="field" VALUE="">
-<INPUT TYPE="hidden" NAME="field_val" VALUE="">
 <INPUT TYPE="hidden" NAME="action" VALUE="address">
-<INPUT TYPE="hidden" NAME="folder" VALUE="">
-<INPUT TYPE="hidden" NAME="reject" VALUE="">
-<INPUT TYPE="hidden" NAME="discard" VALUE="">
+<INPUT TYPE="hidden" NAME="regexp" VALUE="">
+<INPUT TYPE="hidden" NAME="continue" VALUE="">
+<INPUT TYPE="hidden" NAME="stop" VALUE="">
 <INPUT TYPE="hidden" NAME="custom" VALUE="">
 <INPUT TYPE="hidden" NAME="mode" VALUE="<?php echo $mode;?>">
 
