@@ -1,6 +1,13 @@
 Smartsieve - ChangeLog
 ----------------------
 
+09 Jul 2007 S Grier
+* Rule creation GUI changes:
+* - add and remove conditions.
+* - only show chosen action.
+* - forward.php merged with rule.php.
+* - custom rule now has separate GUI.
+
 26 May 2007 S Grier
 * Fix SmartSieve::removeMagicQuotes(). get_magic_quotes_gpc returns 1 not true.
 
