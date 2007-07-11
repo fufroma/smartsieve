@@ -4,6 +4,7 @@ SmartSieve - TODO
 TODO for 1.0
 
 Feature request #1679018: "Insert rule at position" and "move rule to position" option
+* Handle string lists as a way of matching various strings against the same field.
 
 TODO for 1.1
 
