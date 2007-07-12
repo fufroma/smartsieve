@@ -101,6 +101,7 @@ elseif (isset($_GET['ruleID'])) {
 // If using spam mode, look for an existing spam rule.
 elseif ($mode == SMARTSIEVE_RULE_MODE_SPAM) {
     $ruleID = getSpamRule();
+var_dump($ruleID);
     if ($ruleID !== null) {
         $display = getDisplayValues($script->rules[$ruleID]);
     }
@@ -287,8 +288,8 @@ function getPOSTValues()
             case ('new'):
                 break;
             case ('header'):
-                $values['header'] = SmartSieve::getPOST('field');
-                $values['matchStr'] = SmartSieve::getPOST('field_val');
+                $values['header'] = SmartSieve::getPOST('field'.$i);
+                $values['matchStr'] = SmartSieve::getPOST('field_val'.$i);
                 break;
             case ('size'):
                 $values['gthan'] = (SmartSieve::getPOST('gthan')) ? true : false;
@@ -298,7 +299,7 @@ function getPOSTValues()
             case ('to');
             case ('subject');
             default:
-                $values['matchStr'] = SmartSieve::getPOST($type);
+                $values['matchStr'] = SmartSieve::getPOST($type.$i);
                 break;
         }
         // If delete value set, ignore this condition.
@@ -345,21 +346,29 @@ function getDisplayValues($rule)
     $conditions = array();
     $usedConditions = array();
     if (!empty($rule['from'])) {
-        $conditions[] = array('type' => 'from', 'matchStr' => SmartSieve::utf8Decode($rule['from']));
-        $usedConditions[] = 'from';
+        foreach ($rule['from'] as $from) {
+            $conditions[] = array('type' => 'from', 'matchStr' => SmartSieve::utf8Decode($from));
+            $usedConditions[] = 'from';
+        }
     } if (!empty($rule['to'])) {
-        $conditions[] = array('type' => 'to', 'matchStr' => SmartSieve::utf8Decode($rule['to']));
-        $usedConditions[] = 'to';
+        foreach ($rule['to'] as $to) {
+            $conditions[] = array('type' => 'to', 'matchStr' => SmartSieve::utf8Decode($to));
+            $usedConditions[] = 'to';
+        }
     } if (!empty($rule['subject'])) {
-        $conditions[] = array('type' => 'subject', 'matchStr' => SmartSieve::utf8Decode($rule['subject']));
-        $usedConditions[] = 'subject';
+        foreach ($rule['subject'] as $subject) {
+            $conditions[] = array('type' => 'subject', 'matchStr' => SmartSieve::utf8Decode($subject));
+            $usedConditions[] = 'subject';
+        }
     } if (!empty($rule['size'])) {
         $conditions[] = array('type' => 'size', 'size' => $rule['size'], 'gthan' => (empty($rule['gthan'])) ? false : true);
         $usedConditions[] = 'size';
     } if (!empty($rule['field'])) {
-        $conditions[] = array('type' => 'header', 'header' => SmartSieve::utf8Decode($rule['field']),
-                                        'matchStr' => (isset($rule['field_val'])) ? SmartSieve::utf8Decode($rule['field_val']) : '');
-        $usedConditions[] = 'header';
+        for ($i=0; $i<count($rule['field']); $i++) {
+            $conditions[] = array('type' => 'header', 'header' => SmartSieve::utf8Decode($rule['field'][$i]),
+                                  'matchStr' => (isset($rule['field_val'][$i])) ? SmartSieve::utf8Decode($rule['field_val'][$i]) : '');
+            $usedConditions[] = 'header';
+        }
     }
     $conditions[] = array('type' => 'new');
     $display['conditions'] = $conditions;
@@ -405,19 +414,21 @@ function buildRule($display)
     $rule = array();
     $rule['priority'] = $display['priority'];
     $rule['status'] = $display['status'];
-    foreach (array('from', 'to', 'subject', 'field', 'field_val', 'size') as $cond) {
-        $rule[$cond] = '';
+    foreach (array('from', 'to', 'subject', 'field', 'field_val') as $cond) {
+        $rule[$cond] = array();
     }
+    $rule['size'] = '';
     foreach ($display['conditions'] as $cond) {
         switch ($cond['type']) {
             case ('new'):
                 break;
             case ('header'):
-                $rule['field'] = SmartSieve::utf8Encode($cond['header']);
-                if (substr($rule['field'], -1) == ':') {
-                    $rule['field'] = rtrim($rule['field'], ':');
+                $field = SmartSieve::utf8Encode($cond['header']);
+                if (substr($field, -1) == ':') {
+                    $field = rtrim($field, ':');
                 }
-                $rule['field_val'] = SmartSieve::utf8Encode($cond['matchStr']);
+                $rule['field'][] = SmartSieve::utf8Encode($field);
+                $rule['field_val'][] = SmartSieve::utf8Encode($cond['matchStr']);
                 break;
             case ('size'):
                 $rule['gthan'] = ($cond['gthan'] == true) ? 2 : 0;
@@ -427,7 +438,7 @@ function buildRule($display)
             case ('to');
             case ('subject');
             default:
-                $rule[$cond['type']] = SmartSieve::utf8Encode($cond['matchStr']);
+                $rule[$cond['type']][] = SmartSieve::utf8Encode($cond['matchStr']);
                 break;
         }
     }
@@ -457,8 +468,8 @@ function buildRule($display)
     $rule['stop'] = ($display['stop'] == true) ? 16 : 0;
     $rule['regexp'] = ($display['useRegex'] == true) ? 128 : 0;
     $rule['unconditional'] = 0;
-    if ((!$rule['from'] && !$rule['to'] && !$rule['subject'] &&
-       !$rule['field'] && $rule['size'] === '' &&
+    if ((empty($rule['from']) && empty($rule['to']) && empty($rule['subject']) &&
+       empty($rule['field']) && $rule['size'] === '' &&
        $rule['action'] != 'custom') OR
        ($rule['action'] == 'custom' && !preg_match("/^ *(els)?if/i", $rule['action_arg']))) {
         $rule['unconditional'] = 1;
@@ -484,9 +495,11 @@ function isSane($rule)
     // Check values do not exceed acceptable sizes.
     $conds = array('from', 'to', 'subject', 'field', 'field_val');
     foreach ($conds as $cond) {
-        if (strlen($rule[$cond]) > $max_field_chars) {
-            SmartSieve::setError(SmartSieve::text('the condition value you supplied is too long. it should not exceed %d characters.', array($max_field_chars)));
-            return false;
+        for ($i=0; $i<count($rule[$cond]); $i++) {
+            if (strlen($rule[$cond][$i]) > $max_field_chars) {
+                SmartSieve::setError(SmartSieve::text('the condition value you supplied is too long. it should not exceed %d characters.', array($max_field_chars)));
+                return false;
+            }
         }
     }
     if ($rule['action'] == 'address') {
@@ -505,10 +518,12 @@ function isSane($rule)
         SmartSieve::setError(SmartSieve::text('your reject message is too long. it should not exceed %d characters.', array($max_textbox_chars)));
         return false;
     }
-    if ($rule['field'] && !$rule['field_val']) {
-        SmartSieve::setError(SmartSieve::text("you must supply a value for the field \"%s\".",
-            array($rule['field'])));
-        return false;
+    for ($i=0; $i<count($rule['field']); $i++) {
+        if (!isset($rule['field_val'][$i]) || !$rule['field_val'][$i]) {
+            SmartSieve::setError(SmartSieve::text("you must supply a value for the field \"%s\".",
+                array($rule['field'][$i])));
+            return false;
+        }
     }
     // Rule must have an action.
     if (!$rule['action'] && !$rule['keep'] && !$rule['stop']) {
@@ -537,8 +552,8 @@ function getForwardRule()
 {
     for ($i=0;$i<count($GLOBALS['script']->rules);$i++) {
         $rule = $GLOBALS['script']->rules[$i];
-        if ($rule['action'] == 'address' && !$rule['from'] && !$rule['to'] &&
-            !$rule['subject'] && !$rule['field'] && !$rule['size']) {
+        if ($rule['action'] == 'address' && empty($rule['from']) && empty($rule['to']) &&
+            empty($rule['subject']) && empty($rule['field']) && !$rule['size']) {
             return $i;
         }
     }
@@ -562,10 +577,10 @@ function getSpamRule()
     }
     for ($i=0;$i<count($GLOBALS['script']->rules);$i++) {
         $rule = $GLOBALS['script']->rules[$i];
-        if ($rule['field'] == $config['header'] &&
-            $rule['field_val'] == $config['value'] &&
-            !$rule['from'] && !$rule['to'] &&
-            !$rule['subject'] && !$rule['size']) {
+        if (count($rule['field']) == 1 && $rule['field'][0] == $config['header'] &&
+            $rule['field_val'][0] == $config['value'] &&
+            empty($rule['from']) && empty($rule['to']) &&
+            empty($rule['subject']) && !$rule['size']) {
             return $i;
         }
     }

@@ -165,14 +165,14 @@ class Script {
                 $rule = array();
                 $rule['priority'] = $bits[1];
                 $rule['status'] = $bits[2];
-                $rule['from'] = $this->unescapeChars($bits[3]);
-                $rule['to'] = $this->unescapeChars($bits[4]);
-                $rule['subject'] = $this->unescapeChars($bits[5]);
+                $rule['from'] = $this->splitValues($bits[3]);
+                $rule['to'] = $this->splitValues($bits[4]);
+                $rule['subject'] = $this->splitValues($bits[5]);
                 $rule['action'] = $bits[6];
                 $rule['action_arg'] = $this->unescapeChars($bits[7]);
                 $rule['flg'] = $bits[8];   // bitwise flag
-                $rule['field'] = $this->unescapeChars($bits[9]);
-                $rule['field_val'] = $this->unescapeChars($bits[10]);
+                $rule['field'] = $this->splitValues($bits[9]);
+                $rule['field_val'] = $this->splitValues($bits[10]);
                 $rule['size'] = $this->unescapeChars($bits[11]);
                 $rule['continue'] = ($bits[8] & $continuebit);
                 $rule['gthan'] = ($bits[8] & $sizebit); // use 'greater than'
@@ -181,8 +181,8 @@ class Script {
                 $rule['stop'] = ($bits[8] & $stopbit);
                 $rule['regexp'] = ($bits[8] & $regexbit);
                 $rule['unconditional'] = 0;
-                if ((!$rule['from'] && !$rule['to'] && !$rule['subject'] &&
-                   !$rule['field'] && $rule['size'] === '' && 
+                if ((empty($rule['from']) && empty($rule['to']) && empty($rule['subject']) &&
+                   empty($rule['field']) && $rule['size'] === '' && 
                    $rule['action'] != 'custom') OR
                    ($rule['action'] == 'custom' && !preg_match("/^ *(els)?if/i", $rule['action_arg']))) {
                     $rule['unconditional'] = 1;
@@ -275,68 +275,83 @@ class Script {
                 if (!$rule['unconditional']) {
                     if (!$continue) $newruletext .= "els";
                     $newruletext .= "if " . $anyall . " (";
-                    if ($rule['from']) {
-                        if (preg_match("/^\s*!/", $rule['from'])){
-                            $newruletext .= 'not ';
-                            $rule['from'] = preg_replace("/^\s*!/","",$rule['from']);
+                    if (!empty($rule['from'])) {
+                        foreach ($rule['from'] as $from) {
+                            $newruletext .= ($started) ? ', ' : '';
+                            if (preg_match("/^\s*!/", $from)) {
+                                $newruletext .= 'not ';
+                                $from = preg_replace("/^\s*!/", '', $from);
+                            }
+                            $match = ':contains';
+                            if (preg_match("/\*|\?/", $from) &&
+                                SmartSieve::getConf('websieve_auto_matches') === true) {
+                                $match = ':matches';
+                            }
+                            if ($rule['regexp']) {
+                                $match = ':regex';
+                            }
+                            $newruletext .= sprintf("address %s [\"From\"] \"%s\"", $match, $from);
+                            $started = 1;
                         }
-                        $match = ':contains';
-                        if (preg_match("/\*|\?/", $rule['from']) && 
-                            SmartSieve::getConf('websieve_auto_matches') === true) {
-                            $match = ':matches';
-                        }
-                        if ($rule['regexp']) $match = ':regex';
-                        $newruletext .= "address " . $match . " [\"From\"]";
-                        $newruletext .= " \"" . $rule['from'] . "\"";
-                        $started = 1;
                     }
-                    if ($rule['to']) {
-                        if ($started) $newruletext .= ", ";
-                        if (preg_match("/^\s*!/", $rule['to'])){
-                            $newruletext .= 'not ';
-                            $rule['to'] = preg_replace("/^\s*!/","",$rule['to']);
+                    if (!empty($rule['to'])) {
+                        foreach ($rule['to'] as $to) {
+                            $newruletext .= ($started) ? ', ' : '';
+                            if (preg_match("/^\s*!/", $to)) {
+                                $newruletext .= 'not ';
+                                $to = preg_replace("/^\s*!/", '', $to);
+                            }
+                            $match = ':contains';
+                            if (preg_match("/\*|\?/", $to) &&
+                                SmartSieve::getConf('websieve_auto_matches') === true) {
+                                $match = ':matches';
+                            }
+                            if ($rule['regexp']) {
+                                $match = ':regex';
+                            }
+                            $newruletext .= sprintf("address %s [\"To\",\"Cc\"] \"%s\"", $match, $to);
+                            $started = 1;
                         }
-                        $match = ':contains';
-                        if (preg_match("/\*|\?/", $rule['to']) && 
-                            SmartSieve::getConf('websieve_auto_matches') === true) {
-                            $match = ':matches';
-                        }
-                        if ($rule['regexp']) $match = ':regex';
-                        $newruletext .= "address " . $match . " [\"To\",\"Cc\"]";
-                        $newruletext .= " \"" . $rule['to'] . "\"";
-                        $started = 1;
                     }
-                    if ($rule['subject']) {
-                        if ($started) $newruletext .= ", ";
-                        if (preg_match("/^\s*!/", $rule['subject'])){
-                            $newruletext .= 'not ';
-                            $rule['subject'] = preg_replace("/^\s*!/","",$rule['subject']);
+                    if (!empty($rule['subject'])) {
+                        foreach ($rule['subject'] as $subject) {
+                            $newruletext .= ($started) ? ', ' : '';
+                            if (preg_match("/^\s*!/", $subject)) {
+                                $newruletext .= 'not ';
+                                $subject = preg_replace("/^\s*!/", '', $subject);
+                            }
+                            $match = ':contains';
+                            if (preg_match("/\*|\?/", $subject) && 
+                                SmartSieve::getConf('websieve_auto_matches') === true) {
+                                $match = ':matches';
+                            }
+                            if ($rule['regexp']) {
+                                $match = ':regex';
+                            }
+                            $newruletext .= sprintf("header %s \"subject\" \"%s\"", $match, $subject);
+                            $started = 1;
                         }
-                        $match = ':contains';
-                        if (preg_match("/\*|\?/", $rule['subject']) && 
-                            SmartSieve::getConf('websieve_auto_matches') === true) {
-                            $match = ':matches';
-                        }
-                        if ($rule['regexp']) $match = ':regex';
-                        $newruletext .= "header " . $match . " \"subject\"";
-                        $newruletext .= " \"" . $rule['subject'] . "\"";
-                        $started = 1;
                     }
-                    if ($rule['field'] && $rule['field_val']) {
-                        if ($started) $newruletext .= ", ";
-                        if (preg_match("/^\s*!/", $rule['field_val'])){
-                            $newruletext .= 'not ';
-                            $rule['field_val'] = preg_replace("/^\s*!/","",$rule['field_val']);
+                    if (!empty($rule['field']) && !empty($rule['field_val'])) {
+                        for ($i=0; $i<count($rule['field']); $i++) {
+                            $field = $rule['field'][$i];
+                            $field_val = $rule['field_val'][$i];
+                            $newruletext .= ($started) ? ', ' : '';
+                            if (preg_match("/^\s*!/", $field_val)) {
+                                $newruletext .= 'not ';
+                                $field_val = preg_replace("/^\s*!/", '', $field_val);
+                            }
+                            $match = ':contains';
+                            if (preg_match("/\*|\?/", $field_val) && 
+                                SmartSieve::getConf('websieve_auto_matches') === true) {
+                                $match = ':matches';
+                            }
+                            if ($rule['regexp']) {
+                                $match = ':regex';
+                            }
+                            $newruletext .= sprintf("header %s \"%s\" \"%s\"", $match, $field, $field_val);
+                            $started = 1;
                         }
-                        $match = ':contains';
-                        if (preg_match("/\*|\?/", $rule['field_val']) && 
-                            SmartSieve::getConf('websieve_auto_matches') === true) {
-                            $match = ':matches';
-                        }
-                        if ($rule['regexp']) $match = ':regex';
-                        $newruletext .= "header " . $match . " \"" . $rule['field'] . "\"";
-                        $newruletext .= " \"" . $rule['field_val'] . "\"";
-                        $started = 1;
                     }
                     if (isset($rule['size']) && $rule['size'] !== '') {
                         $xthan = " :under ";
@@ -465,10 +480,10 @@ class Script {
                 // compatibility with Websieve. SmartSieve never uses it.
                 $rule['priority'] = $pcount;
                 $newscriptfoot .= sprintf("#rule&&%s&&%s&&%s&&%s&&%s&&%s&&%s&&%s&&%s&&%s&&%s\n",
-                    $rule['priority'], $this->escapeChars($rule['status']), $this->escapeChars($rule['from']),
-                    $this->escapeChars($rule['to']), $this->escapeChars($rule['subject']), $rule['action'],
-                    $this->escapeChars($rule['action_arg']), $rule['flg'], $this->escapeChars($rule['field']),
-                    $this->escapeChars($rule['field_val']), $rule['size']);
+                    $rule['priority'], $this->escapeChars($rule['status']), $this->concatenateValues($rule['from']),
+                    $this->concatenateValues($rule['to']), $this->concatenateValues($rule['subject']), $rule['action'],
+                    $this->escapeChars($rule['action_arg']), $rule['flg'], $this->concatenateValues($rule['field']),
+                    $this->concatenateValues($rule['field_val']), $rule['size']);
                 $pcount = $pcount+2;
             }
         }
@@ -552,8 +567,10 @@ class Script {
     */
     function escapeChars($string)
     {
+        $string = preg_replace('/\\\\/', '\\\\\\', $string);
         $string = preg_replace("/\r\n/", "\\n", $string);
         $string = preg_replace("/&/", "\&", $string);
+        $string = preg_replace("/\|/", "\|", $string);
         return $string;
     }
 
@@ -567,7 +584,51 @@ class Script {
     {
         $string = preg_replace("/\\\\n/", "\r\n", $string);
         $string = preg_replace("/\\\&/", "&", $string);
+        $string = preg_replace("/\\\\\|/", "|", $string);
+        $string = preg_replace('/\\\\\\\\/', '\\', $string);
         return $string;
+    }
+
+   /**
+    * Concatenate an array of string values together, separated by a pipe char.
+    *
+    * @param array $values An array of string values to be concatenated together
+    * @return string The concatenated values
+    */
+    function concatenateValues($values)
+    {
+        $string = '';
+        foreach ($values as $value) {
+            $value = $this->escapeChars($value);
+            $string .= sprintf("%s%s", (strlen($string) != 0) ? '|' : '', $value);
+        }
+        return $string;
+    }
+
+   /**
+    * Split a string on pipe characters.
+    *
+    * @param string $string The string to split
+    * @return array The values
+    */
+    function splitValues($string)
+    {
+        $values = array();
+        $buf = '';
+        for ($i=0; $i<strlen($string); $i++) {
+            // Split on un-escaped pipe chars.
+            if ($string[$i] == '|' &&
+                isset($string[$i-1]) && $string[$i-1] != '\\') {
+                $values[] = $this->unescapeChars($buf);
+                $buf = '';
+            } else {
+                $buf .= $string[$i];
+            }
+        }
+        if (!empty($buf)) {
+            $values[] = $this->unescapeChars($buf);
+        }
+        return $values;
     }
 
 }

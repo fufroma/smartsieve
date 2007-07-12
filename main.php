@@ -279,28 +279,39 @@ function getSummaries() {
         }
         if ($rule['unconditional']) $complete = '[' . SmartSieve::text('Unconditional') . '] ';
 
-        if ($rule['from']) {
-            $match = setMatchType($rule['from'],$rule['regexp']);
-        $complete .= "'From:' " . $match . " '" . SmartSieve::utf8Decode($rule['from']) . "'";
-        $started = 1;
+        if (!empty($rule['from'])) {
+            foreach ($rule['from'] as $from) {
+                $match = setMatchType($from, $rule['regexp']);
+                $complete .= sprintf("%s'From:' %s '%s'",
+                                     ($started) ? $andor : '', $match, SmartSieve::utf8Decode($from));
+                $started = 1;
+            }
         }
-        if ($rule['to']) {
-        if ($started) $complete .= $andor;
-            $match = setMatchType($rule['to'],$rule['regexp']);
-        $complete .= "'To:' " . $match . " '" . SmartSieve::utf8Decode($rule['to']) . "'";
-        $started = 1;
+        if (!empty($rule['to'])) {
+            foreach ($rule['to'] as $to) {
+                $match = setMatchType($to, $rule['regexp']);
+                $complete .= sprintf("%s'To:' %s '%s'", 
+                                     ($started) ? $andor : '', $match, SmartSieve::utf8Decode($to));
+                $started = 1;
+            }
         }
-        if ($rule['subject']) {
-        if ($started) $complete .= $andor;
-            $match = setMatchType($rule['subject'],$rule['regexp']);
-        $complete .= "'Subject:' " . $match . " '" . SmartSieve::utf8Decode($rule['subject']) . "'";
-        $started = 1;
+        if (!empty($rule['subject'])) {
+            foreach ($rule['subject'] as $subject) {
+                $match = setMatchType($subject, $rule['regexp']);
+                $complete .= sprintf("%s'Subject:' %s '%s'", 
+                                     ($started) ? $andor : '', $match, SmartSieve::utf8Decode($subject));
+                $started = 1;
+            }
         }
-        if ($rule['field'] && $rule['field_val']) {
-        if ($started) $complete .= $andor;
-            $match = setMatchType($rule['field_val'],$rule['regexp']);
-        $complete .= "'" . SmartSieve::utf8Decode($rule['field']) . "' " . $match . " '" . SmartSieve::utf8Decode($rule['field_val']) . "'";
-        $started = 1;
+        if (!empty($rule['field']) && !empty($rule['field_val'])) {
+            for ($i=0; $i<count($rule['field']); $i++) {
+                $field = $rule['field'][$i];
+                $field_val = $rule['field_val'][$i];
+                $match = setMatchType($field_val, $rule['regexp']);
+                $complete .= sprintf("%s'%s' %s '%s'", ($started) ? $andor : '', SmartSieve::utf8Decode($field),
+                                     $match, SmartSieve::utf8Decode($field_val));
+                $started = 1;
+            }
         }
         if (isset($rule['size']) && $rule['size'] !== '') {
         $xthan = SmartSieve::text('less than');
