@@ -1,6 +1,10 @@
 Smartsieve - ChangeLog
 ----------------------
 
+12 Jul 2007 S Grier
+* Handle multiple values for each of the from, to, subject and header match conditions.
+* Added Script::concatenateValues() and Script::splitValues() to achieve this.
+
 09 Jul 2007 S Grier
 * Rule creation GUI changes:
 * - add and remove conditions.
