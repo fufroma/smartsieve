@@ -3,6 +3,7 @@ Smartsieve - ChangeLog
 
 16 Jul 2007 S Grier
 * Parse client version information.
+* Don't unescape '\' and '|' chars or split values for scripts created older versions of SmartSieve.
 
 12 Jul 2007 S Grier
 * Handle multiple values for each of the from, to, subject and header match conditions.

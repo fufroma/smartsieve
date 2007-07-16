@@ -613,8 +613,11 @@ class Script {
     {
         $string = preg_replace("/\\\\n/", "\r\n", $string);
         $string = preg_replace("/\\\&/", "&", $string);
-        $string = preg_replace("/\\\\\|/", "|", $string);
-        $string = preg_replace('/\\\\\\\\/', '\\', $string);
+        // 1.0.0-RC2 and newer escape '\' and '|'.
+        if ($this->checkVersion(1, 0, 0, 'RC2') >= 0) {
+            $string = preg_replace("/\\\\\|/", "|", $string);
+            $string = preg_replace('/\\\\\\\\/', '\\', $string);
+        }
         return $string;
     }
 
@@ -643,21 +646,56 @@ class Script {
     function splitValues($string)
     {
         $values = array();
-        $buf = '';
-        for ($i=0; $i<strlen($string); $i++) {
-            // Split on un-escaped pipe chars.
-            if ($string[$i] == '|' &&
-                isset($string[$i-1]) && $string[$i-1] != '\\') {
+        // Version 1.0.0-RC2 and newer supports concatenated values.
+        if ($this->checkVersion(1, 0, 0, 'RC2') >= 0) {
+            $buf = '';
+            for ($i=0; $i<strlen($string); $i++) {
+                // Split on un-escaped pipe chars.
+                if ($string[$i] == '|' &&
+                    isset($string[$i-1]) && $string[$i-1] != '\\') {
+                    $values[] = $this->unescapeChars($buf);
+                    $buf = '';
+                } else {
+                    $buf .= $string[$i];
+                }
+            }
+            if (!empty($buf)) {
                 $values[] = $this->unescapeChars($buf);
-                $buf = '';
-            } else {
-                $buf .= $string[$i];
+            }
+        } else {
+            if (!empty($string)) {
+                $values[] = $this->unescapeChars($string);
             }
         }
-        if (!empty($buf)) {
-            $values[] = $this->unescapeChars($buf);
-        }
         return $values;
+    }
+
+   /**
+    * Check what version of SmartSieve this script was created by.
+    *
+    * @param integer $major Major version number
+    * @param integer $minor Minor version number
+    * @param integer $bugfix Bugfix version number
+    * @param string $tag, Version tag
+    * @return integer < 0 if version is earlier, 0 if the same, or > 0 if newer
+    */
+    function checkVersion($major=null, $minor=null, $bugfix=null, $tag=null)
+    {
+        // If called without parameters use current version.
+        if (is_null($major)) {
+            include_once SmartSieve::getConf('lib_dir', 'lib') . '/version.php';
+            list($major, $minor, $bugfix) = explode('.', VERSION);
+            if (strpos($bugfix, '-') !== false) {
+                list($bugfix, $tag) = explode('-', $bugfix);
+            }
+        }
+        $scriptVer = sprintf("%s%s%s%s",
+                             (isset($this->version['major'])) ? $this->version['major'] : '',
+                             (isset($this->version['minor'])) ? $this->version['minor'] : '',
+                             (isset($this->version['bugfix'])) ? $this->version['bugfix'] : '',
+                             (isset($this->version['tag'])) ? $this->version['tag'] : 'ZZZ');
+        $checkVer = sprintf("%s%s%s%s", $major, $minor, $bugfix, (isset($tag)) ? $tag : 'ZZZ');
+        return strcmp($scriptVer, $checkVer);
     }
 
 }
