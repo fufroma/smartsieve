@@ -1,6 +1,9 @@
 Smartsieve - ChangeLog
 ----------------------
 
+16 Jul 2007 S Grier
+* Parse client version information.
+
 12 Jul 2007 S Grier
 * Handle multiple values for each of the from, to, subject and header match conditions.
 * Added Script::concatenateValues() and Script::splitValues() to achieve this.
