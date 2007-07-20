@@ -10,8 +10,8 @@
 <?php if (isset($ruleID) && $ruleID !== 'new'): ?>
         <?php echo SmartSieve::text("Edit Mail Filter Rule");?> 
       </TD>
-      <TD CLASS="<?php echo ($display['status'] == 'ENABLED') ? 'enabled' : 'disabled';?>">
-        <?php echo ($display['status'] == 'ENABLED') ? SmartSieve::text('ENABLED') : SmartSieve::text('DISABLED');?> 
+      <TD CLASS="<?php echo ($rule['status'] == 'ENABLED') ? 'enabled' : 'disabled';?>">
+        <?php echo ($rule['status'] == 'ENABLED') ? SmartSieve::text('ENABLED') : SmartSieve::text('DISABLED');?> 
 <?php else: ?>
         <?php echo SmartSieve::text("New Mail Filter Rule");?> 
       </TD>
@@ -30,9 +30,9 @@
     <TABLE WIDTH="100%" CELLPADDING="2" BORDER="0" CELLSPACING="0">
     <TR>
       <TD>
-    <INPUT TYPE="checkbox" NAME="continue" VALUE="continue"<?php echo ($display['startNewBlock'] == true) ? ' CHECKED="checked"' : '';?>><?php echo SmartSieve::text('Next rule starts a new if/elseif/else block');?> 
+    <INPUT TYPE="checkbox" NAME="startNewBlock" VALUE="<?php echo CONTINUE_BIT;?>"<?php echo ($rule['startNewBlock']) ? ' CHECKED="checked"' : '';?>><?php echo SmartSieve::text('Next rule starts a new if/elseif/else block');?> 
 <?php if (SmartSieve::getConf('allow_regex')): ?>
-    <INPUT TYPE="checkbox" NAME="regexp" VALUE="regexp"<?php echo ($display['useRegex'] == true) ? ' CHECKED="checked"' : '';?>><?php echo SmartSieve::text('Use regular expression matching');?> 
+    <INPUT TYPE="checkbox" NAME="regexp" VALUE="<?php echo REGEX_BIT;?>"<?php echo ($rule['useRegex']) ? ' CHECKED="checked"' : '';?>><?php echo SmartSieve::text('Use regular expression matching');?> 
 <?php endif; ?>
       </TD>
     </TR>
@@ -56,15 +56,15 @@
       <TD NOWRAP="nowrap">
         <?php echo SmartSieve::text('Match');?> 
         <SELECT NAME="anyof">
-          <OPTION VALUE="0"<?php echo (empty($display['matchAny'])) ? ' SELECTED="selected"' : '';?>><?php echo SmartSieve::text('all of');?></OPTION>
-          <OPTION VALUE="1"<?php echo (!empty($display['matchAny'])) ? ' SELECTED="selected"' : '';?>><?php echo SmartSieve::text('any of');?></OPTION>
+          <OPTION VALUE="0"<?php echo (empty($rule['matchAny'])) ? ' SELECTED="selected"' : '';?>><?php echo SmartSieve::text('all of');?></OPTION>
+          <OPTION VALUE="<?php echo ANYOF_BIT;?>"<?php echo (!empty($rule['matchAny'])) ? ' SELECTED="selected"' : '';?>><?php echo SmartSieve::text('any of');?></OPTION>
         </SELECT>
       </TD>
       <TD NOWRAP="nowrap">
         &nbsp;
       </TD>
     </TR>
-<?php $i = 0; foreach ($display['conditions'] as $condition):?>
+<?php $i = 0; foreach ($rule['conditions'] as $condition):?>
     <TR>
       <TD>
         &nbsp;
@@ -72,38 +72,38 @@
 <?php if ($condition['type'] == 'new'):?>
           <OPTION VALUE="new" SELECTED="selected">Add condition</OPTION>
 <?php endif;?>
-          <OPTION VALUE="from"<?php echo ($condition['type'] == 'from') ? ' SELECTED="selected"' : '';?>><?php echo SmartSieve::text("If message 'From:' contains");?></OPTION>
-          <OPTION VALUE="to"<?php echo ($condition['type'] == 'to') ? ' SELECTED="selected"' : '';?>><?php echo SmartSieve::text("If message 'To:' contains");?></OPTION>
-          <OPTION VALUE="subject"<?php echo ($condition['type'] == 'subject') ? ' SELECTED="selected"' : '';?>><?php echo SmartSieve::text("If message 'Subject:' contains");?></OPTION>
-          <OPTION VALUE="size"<?php echo ($condition['type'] == 'size') ? ' SELECTED="selected"' : ((in_array('size', $display['usedConditions'])) ? ' DISABLED="disabled"' : '');?>><?php echo SmartSieve::text("If message size is");?></OPTION>
-          <OPTION VALUE="header"<?php echo ($condition['type'] == 'header') ? ' SELECTED="selected"' : '';?>><?php echo SmartSieve::text("If mail header");?></OPTION>
+          <OPTION VALUE="from"<?php echo ($condition['type'] == TEST_ADDRESS && $condition['header'] == 'from') ? ' SELECTED="selected"' : '';?>><?php echo SmartSieve::text("If message 'From:' contains");?></OPTION>
+          <OPTION VALUE="to"<?php echo ($condition['type'] == TEST_ADDRESS && $condition['header'] == 'to') ? ' SELECTED="selected"' : '';?>><?php echo SmartSieve::text("If message 'To:' contains");?></OPTION>
+          <OPTION VALUE="subject"<?php echo ($condition['type'] == TEST_HEADER && $condition['header'] == 'subject') ? ' SELECTED="selected"' : '';?>><?php echo SmartSieve::text("If message 'Subject:' contains");?></OPTION>
+          <OPTION VALUE="size"<?php echo ($condition['type'] == TEST_SIZE) ? ' SELECTED="selected"' : (($sizeUsed == true) ? ' DISABLED="disabled"' : '');?>><?php echo SmartSieve::text("If message size is");?></OPTION>
+          <OPTION VALUE="header"<?php echo ($condition['type'] == TEST_HEADER && $condition['header'] !== 'subject') ? ' SELECTED="selected"' : '';?>><?php echo SmartSieve::text("If mail header");?></OPTION>
         </SELECT>
       </TD>
       <TD>
 <?php if ($condition['type'] == 'new'):?>
         &nbsp;
-<?php elseif ($condition['type'] == 'header'):?>
-        <INPUT TYPE="text" NAME="field<?php echo $i;?>" VALUE="<?php echo $condition['header'];?>" SIZE="20">
+<?php elseif ($condition['type'] == TEST_HEADER && $condition['header'] !== 'subject'):?>
+        <INPUT TYPE="text" NAME="header<?php echo $i;?>" VALUE="<?php echo SmartSieve::utf8Decode($condition['header']);?>" SIZE="20">
         <?php echo SmartSieve::text("contains");?>:
-        <INPUT TYPE="text" NAME="field_val<?php echo $i;?>" VALUE="<?php echo $condition['matchStr'];?>" SIZE="30">
+        <INPUT TYPE="text" NAME="headerMatchStr<?php echo $i;?>" VALUE="<?php echo SmartSieve::utf8Decode($condition['matchStr']);?>" SIZE="30">
         <INPUT TYPE="hidden" NAME="delete<?php echo $i;?>" VALUE="">
-        &nbsp;<A HREF="" onclick="document.forms.thisRule.field<?php echo $i;?>.value=''; document.forms.thisRule.field_val<?php echo $i;?>.value=''; document.forms.thisRule.delete<?php echo $i;?>.value='1'; document.forms.thisRule.submit(); return false;">
+        &nbsp;<A HREF="" onclick="document.forms.thisRule.header<?php echo $i;?>.value=''; document.forms.thisRule.headerMatchStr<?php echo $i;?>.value=''; document.forms.thisRule.delete<?php echo $i;?>.value='1'; document.forms.thisRule.submit(); return false;">
           <IMG SRC="<?php echo SmartSieve::getConf('image_dir', 'images');?>/delete.gif" ALT="<?php echo SmartSieve::text('Delete condition');?>'" BORDER="0" onmouseover="window.status='<?php echo SmartSieve::text('Delete condition');?>'; return true;" onmouseout="window.status='';">
         </a>
-<?php elseif ($condition['type'] == 'size'):?>
+<?php elseif ($condition['type'] == TEST_SIZE):?>
         <SELECT NAME="gthan">
           <OPTION VALUE="0"<?php echo (empty($condition['gthan'])) ? ' SELECTED="selected"' : '';?>><?php echo SmartSieve::text("less than");?></OPTION>
-          <OPTION VALUE="1"<?php echo (!empty($condition['gthan'])) ? ' SELECTED="selected"' : '';?>><?php echo SmartSieve::text("greater than");?></OPTION>
+          <OPTION VALUE="<?php echo SIZE_BIT;?>"<?php echo (!empty($condition['gthan'])) ? ' SELECTED="selected"' : '';?>><?php echo SmartSieve::text("greater than");?></OPTION>
         </SELECT>
-        <INPUT TYPE="text" NAME="size" VALUE="<?php echo $condition['size'];?>" SIZE="5"> <?php echo SmartSieve::text("KiloBytes");?>
+        <INPUT TYPE="text" NAME="size" VALUE="<?php echo $condition['kbytes'];?>" SIZE="5"> <?php echo SmartSieve::text("KiloBytes");?>
         <INPUT TYPE="hidden" NAME="delete<?php echo $i;?>" VALUE="">
         &nbsp;<A HREF="" onclick="document.forms.thisRule.size.value=''; document.forms.thisRule.delete<?php echo $i;?>.value='1'; document.forms.thisRule.submit(); return false;">
           <IMG SRC="<?php echo SmartSieve::getConf('image_dir', 'images');?>/delete.gif" ALT="<?php echo SmartSieve::text('Delete condition');?>'" BORDER="0" onmouseover="window.status='<?php echo SmartSieve::text('Delete condition');?>'; return true;" onmouseout="window.status='';">
         </a>
 <?php else:?>
-        <INPUT TYPE="text" NAME="<?php echo $condition['type'] . $i;?>" VALUE="<?php echo $condition['matchStr'];?>" SIZE="50">
+        <INPUT TYPE="text" NAME="<?php echo $condition['header'] . $i;?>" VALUE="<?php echo SmartSieve::utf8Decode($condition['matchStr']);?>" SIZE="50">
         <INPUT TYPE="hidden" NAME="delete<?php echo $i;?>" VALUE="">
-        &nbsp;<A HREF="" onclick="document.forms.thisRule.<?php echo $condition['type'] . $i;?>.value=''; document.forms.thisRule.delete<?php echo $i;?>.value='1'; document.forms.thisRule.submit(); return false;">
+        &nbsp;<A HREF="" onclick="document.forms.thisRule.<?php echo $condition['header'] . $i;?>.value=''; document.forms.thisRule.delete<?php echo $i;?>.value='1'; document.forms.thisRule.submit(); return false;">
           <IMG SRC="<?php echo SmartSieve::getConf('image_dir', 'images');?>/delete.gif" ALT="<?php echo SmartSieve::text('Delete condition');?>'" BORDER="0" onmouseover="window.status='<?php echo SmartSieve::text('Delete condition');?>'; return true;" onmouseout="window.status='';">
         </a>
 <?php endif;?>
@@ -126,59 +126,38 @@
         &nbsp;
       </TD>
     </TR>
+<?php $i = 0; foreach ($rule['actions'] as $action):?>
     <TR>
       <TD>
-        <SELECT NAME="action" onchange="document.thisRule.submit(); return true;">
-          <OPTION VALUE="folder"<?php echo ($display['action']['type'] == 'folder') ? ' SELECTED="selected"' : '';?>><?php echo SmartSieve::text("File Into");?></OPTION>
-          <OPTION VALUE="address"<?php echo ($display['action']['type'] == 'address') ? ' SELECTED="selected"' : '';?>><?php echo SmartSieve::text("Forward to address");?></OPTION>
-          <OPTION VALUE="reject"<?php echo ($display['action']['type'] == 'reject') ? ' SELECTED="selected"' : '';?>><?php echo SmartSieve::text("Send a reject message");?></OPTION>
-          <OPTION VALUE="discard"<?php echo ($display['action']['type'] == 'discard') ? ' SELECTED="selected"' : '';?>><?php echo SmartSieve::text("Discard the message");?></OPTION>
+        <SELECT NAME="action<?php echo $i;?>" onchange="document.thisRule.submit(); return true;">
+<?php if ($action['type'] == 'new'):?>
+          <OPTION VALUE="new" SELECTED="selected">Add action</OPTION>
+<?php endif;?>
+          <OPTION VALUE="<?php echo ACTION_FILEINTO;?>"<?php echo ($action['type'] == ACTION_FILEINTO) ? ' SELECTED="selected"' : '';?>><?php echo SmartSieve::text("File Into");?></OPTION>
+          <OPTION VALUE="<?php echo ACTION_REDIRECT;?>"<?php echo ($action['type'] == ACTION_REDIRECT) ? ' SELECTED="selected"' : '';?>><?php echo SmartSieve::text("Forward to address");?></OPTION>
+          <OPTION VALUE="<?php echo ACTION_REJECT;?>"<?php echo ($action['type'] == ACTION_REJECT) ? ' SELECTED="selected"' : '';?>><?php echo SmartSieve::text("Send a reject message");?></OPTION>
+          <OPTION VALUE="<?php echo ACTION_DISCARD;?>"<?php echo ($action['type'] == ACTION_DISCARD) ? ' SELECTED="selected"' : '';?>><?php echo SmartSieve::text("Discard the message");?></OPTION>
+          <OPTION VALUE="<?php echo ACTION_KEEP;?>"<?php echo ($action['type'] == ACTION_KEEP) ? ' SELECTED="selected"' : '';?>><?php echo SmartSieve::text('Keep a copy in your Inbox');?></OPTION>
+          <OPTION VALUE="<?php echo ACTION_STOP;?>"<?php echo ($action['type'] == ACTION_STOP) ? ' SELECTED="selected"' : '';?>><?php echo SmartSieve::text('Stop processing filter rules');?></OPTION>
         </SELECT>
       </TD>
       <TD>
         &nbsp;
-<?php if ($display['action']['type'] == 'folder'):?>
-        <SELECT NAME="folder">
+<?php if ($action['type'] == ACTION_FILEINTO):?>
+        <SELECT NAME="<?php echo ACTION_FILEINTO . $i;?>">
 <?php foreach ($_SESSION['smartsieve']['mailboxes'] as $mbox): ?>
-          <OPTION VALUE="<?php echo $mbox;?>"<?php echo ($display['action']['folder'] == $mbox) ? ' SELECTED="selected"' : '';?>><?php echo SmartSieve::mutf7Decode($mbox);?></OPTION>
+          <OPTION VALUE="<?php echo $mbox;?>"<?php echo ($action['folder'] == $mbox) ? ' SELECTED="selected"' : '';?>><?php echo SmartSieve::mutf7Decode($mbox);?></OPTION>
 <?php endforeach; ?>
         </SELECT>
-        <INPUT TYPE="hidden" NAME="address" VALUE="<?php echo (!empty($display['action']['address'])) ? $display['action']['address'] : '';?>">
-        <INPUT TYPE="hidden" NAME="reject" VALUE="<?php echo (!empty($display['action']['message'])) ? $display['action']['message'] : '';?>">
-        <INPUT TYPE="hidden" NAME="custom" VALUE="<?php echo (!empty($display['action']['sieve'])) ? $display['action']['sieve'] : '';?>">
-<?php elseif ($display['action']['type'] == 'address'):?>
-        <INPUT TYPE="hidden" NAME="folder" VALUE="<?php echo (!empty($display['action']['folder'])) ? $display['action']['folder'] : '';?>">
-        <INPUT TYPE="text" NAME="address" VALUE="<?php echo (!empty($display['action']['address'])) ? $display['action']['address'] : '';?>" SIZE="40">
-        <INPUT TYPE="hidden" NAME="reject" VALUE="<?php echo (!empty($display['action']['message'])) ? $display['action']['message'] : '';?>">
-        <INPUT TYPE="hidden" NAME="custom" VALUE="<?php echo (!empty($display['action']['sieve'])) ? $display['action']['sieve'] : '';?>">
-<?php elseif ($display['action']['type'] == 'reject'):?>
-        <INPUT TYPE="hidden" NAME="folder" VALUE="<?php echo (!empty($display['action']['folder'])) ? $display['action']['folder'] : '';?>">
-        <INPUT TYPE="hidden" NAME="address" VALUE="<?php echo (!empty($display['action']['address'])) ? $display['action']['address'] : '';?>">
-        <TEXTAREA NAME="reject" ROWS="3" COLS="<?php echo $wrap_width;?>" WRAP="hard"><?php echo $display['action']['message'];?></TEXTAREA>
-        <INPUT TYPE="hidden" NAME="custom" VALUE="<?php echo (!empty($display['action']['sieve'])) ? $display['action']['sieve'] : '';?>">
-<?php elseif ($display['action']['type'] == 'discard'):?>
-        <INPUT TYPE="hidden" NAME="folder" VALUE="<?php echo (!empty($display['action']['folder'])) ? $display['action']['folder'] : '';?>">
-        <INPUT TYPE="hidden" NAME="address" VALUE="<?php echo (!empty($display['action']['address'])) ? $display['action']['address'] : '';?>">
-        <INPUT TYPE="hidden" NAME="reject" VALUE="<?php echo (!empty($display['action']['message'])) ? $display['action']['message'] : '';?>">
-        <INPUT TYPE="hidden" NAME="custom" VALUE="<?php echo (!empty($display['action']['sieve'])) ? $display['action']['sieve'] : '';?>">
+<?php elseif ($action['type'] == ACTION_REDIRECT):?>
+        <INPUT TYPE="text" NAME="<?php echo ACTION_REDIRECT . $i;?>" VALUE="<?php echo (!empty($action['address'])) ? SmartSieve::utf8Decode($action['address']) : '';?>" SIZE="40">
+<?php elseif ($action['type'] == ACTION_REJECT):?>
+        <TEXTAREA NAME="<?php echo ACTION_REJECT . $i;?>" ROWS="3" COLS="<?php echo $wrap_width;?>" WRAP="hard"><?php echo SmartSieve::utf8Decode($action['message']);?></TEXTAREA>
+<?php elseif ($action['type'] == ACTION_DISCARD || $action['type'] == ACTION_KEEP || $action['type'] == ACTION_STOP):?>
 <?php endif;?>
       </TD>
     </TR>
-    <TR>
-      <TD>
-        <INPUT TYPE="checkbox" NAME="keep" VALUE="keep"<?php echo ($display['keep'] == true) ? ' CHECKED="checked"' : '';?>> <?php echo SmartSieve::text('Keep a copy in your Inbox');?> 
-      </TD>
-      <TD>
-        &nbsp;
-      </TD>
-    </TR>
-      <TD>
-        <INPUT TYPE="checkbox" NAME="stop" VALUE="stop"<?php echo ($display['stop'] == true) ? ' CHECKED="checked"' : '';?>> <?php echo SmartSieve::text('Stop processing filter rules');?>
-      </TD>
-      <TD>
-        &nbsp;
-      </TD>
-    </TR>
+<?php $i++; endforeach;?>
     </TABLE>
 
   </TD>
@@ -210,9 +189,9 @@
 </TABLE>
 
 
-<INPUT TYPE="hidden" NAME="priority" VALUE="<?php echo $display['priority'];?>">
-<INPUT TYPE="hidden" NAME="status" VALUE="<?php echo ($display['status'] == 'ENABLED') ? 'ENABLED' : 'DISABLED';?>">
-<INPUT TYPE="hidden" NAME="flg" VALUE="<?php echo $display['flg'];?>">
+<INPUT TYPE="hidden" NAME="priority" VALUE="<?php echo $rule['priority'];?>">
+<INPUT TYPE="hidden" NAME="status" VALUE="<?php echo ($rule['status'] == 'ENABLED') ? 'ENABLED' : 'DISABLED';?>">
+<INPUT TYPE="hidden" NAME="flg" VALUE="<?php echo $rule['flg'];?>">
 <INPUT TYPE="hidden" NAME="thisAction" VALUE="">
 <INPUT TYPE="hidden" NAME="ruleID" VALUE="<?php echo (isset($ruleID)) ? $ruleID : 'new';?>">
 <INPUT TYPE="hidden" NAME="mode" VALUE="<?php echo $mode;?>">

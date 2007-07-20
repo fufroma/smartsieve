@@ -1,6 +1,10 @@
 Smartsieve - ChangeLog
 ----------------------
 
+20 Jul 2007 S Grier
+* Store script metadata as serialized PHP data.
+* Handle multiple sieve actions.
+
 16 Jul 2007 S Grier
 * Parse client version information.
 * Don't unescape '\' and '|' chars or split values for scripts created older versions of SmartSieve.

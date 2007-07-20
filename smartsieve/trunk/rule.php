@@ -67,50 +67,40 @@ if (!isset($_SESSION['smartsieve']['mailboxes'])) {
 
 // Get values for this rule.
 $ruleID = null;
-$display = array('priority' => $script->pcount+1,
-                 'status' => 'ENABLED',
-                 'startNewBlock' => false,
-                 'useRegex' => false,
-                 'matchAny' => false,
-                 'keep' => false,
-                 'conditions' => array(array('type' => 'new')),
-                 'usedConditions' => array(),
-                 'action' => array('type' => 'folder',
-                                   'folder' => '',
-                                   'address' => '',
-                                   'message' => '',
-                                   'sieve' => '',
-                                   'custom' => ''
-                                  ),
-                 'keep' => false,
-                 'stop' => false,
-                 'flg' => 0
-                );
+$rule = array('priority' => $script->pcount+1,
+              'status' => 'ENABLED',
+              'startNewBlock' => 0,
+              'useRegex' => 0,
+              'matchAny' => 0,
+              'conditions' => array(),
+              'actions' => array(),
+              'flg' => 0,
+              'unconditional' => 0
+              );
 // Get form values from POST data.
 if (isset($_POST['ruleID'])) {
     $ruleID = SmartSieve::getFormValue('ruleID');
-    $display = getPOSTValues();
+    $rule = getPOSTValues();
 }
 // Use values from an existing rule.
 elseif (isset($_GET['ruleID'])) {
     $ruleID = SmartSieve::getFormValue('ruleID');
     if (isset($script->rules[$ruleID])) {
-        $display = getDisplayValues($script->rules[$ruleID]);
+        $rule = $script->rules[$ruleID];
     }
 }
 // If using spam mode, look for an existing spam rule.
 elseif ($mode == SMARTSIEVE_RULE_MODE_SPAM) {
     $ruleID = getSpamRule();
-var_dump($ruleID);
     if ($ruleID !== null) {
-        $display = getDisplayValues($script->rules[$ruleID]);
+        $rule = $script->rules[$ruleID];
     }
 }
 // If using forward mode, look for an existing forward rule.
 elseif ($mode == SMARTSIEVE_RULE_MODE_FORWARD) {
     $ruleID = getForwardRule();
     if ($ruleID !== null) {
-        $display = getDisplayValues($script->rules[$ruleID]);
+        $rule = $script->rules[$ruleID];
     }
 }
 
@@ -121,7 +111,6 @@ $action = SmartSieve::getFormValue('thisAction');
 switch ($action) {
 
     case ('enable'):
-        $rule = buildRule($display);
         if (isSane($rule)) {
             if (isset($script->rules[$ruleID])){
                 $oldrule = $script->rules[$ruleID];
@@ -135,7 +124,7 @@ switch ($action) {
                     $script->rules[$ruleID] = $oldrule;
                 } else {
                     SmartSieve::setNotice(SmartSieve::text('rule successfully enabled.'));
-                    $display['status'] = 'ENABLED';
+                    $rule['status'] = 'ENABLED';
                     if (SmartSieve::getConf('return_after_update') === true) {
                         header('Location: ' . SmartSieve::setUrl('main.php'),true);
                         exit;
@@ -148,7 +137,6 @@ switch ($action) {
         break;
 
     case ('disable'):
-        $rule = buildRule($display);
         if (isSane($rule) === true) {
             if (isset($script->rules[$ruleID])){
                 $oldrule = $script->rules[$ruleID];
@@ -162,7 +150,7 @@ switch ($action) {
                     $script->rules[$ruleID] = $oldrule;
                 } else {
                     SmartSieve::setNotice(SmartSieve::text('rule successfully disabled.'));
-                    $display['status'] = 'DISABLED';
+                    $rule['status'] = 'DISABLED';
                     if (SmartSieve::getConf('return_after_update') === true) {
                         header('Location: ' . SmartSieve::setUrl('main.php'),true);
                         exit;
@@ -197,7 +185,6 @@ switch ($action) {
         break;
 
     case ('save'):
-        $rule = buildRule($display);
         if (isSane($rule)) {
             // if existing rule, update. add new if not.
             if (isset($script->rules[$ruleID])){
@@ -236,6 +223,15 @@ switch ($action) {
 $jsfile = 'rule.js';
 $jsonload = '';
 $wrap_width = (SmartSieve::getConf('wrap_width')) ? SmartSieve::getConf('wrap_width') : 80;
+$sizeUsed = false;
+foreach ($rule['conditions'] as $condition) {
+    if ($condition['type'] == TEST_SIZE) {
+        $sizeUsed = true;
+    }
+}
+// Add dummy condition and action for "Add action" widgits.
+$rule['conditions'][] = array('type' => 'new');
+$rule['actions'][] = array('type' => 'new');
 
 switch ($mode) {
     case (SMARTSIEVE_RULE_MODE_SPAM):
@@ -269,212 +265,95 @@ SmartSieve::close();
 /**
  * Get values from the rule edit form.
  *
- * @return
+ * @return array Rule values
  */
 function getPOSTValues()
 {
-    $display = array();
-    $display['priority'] = SmartSieve::getPOST('priority', '0');
-    $display['status'] = SmartSieve::getPOST('status', 'ENABLED');
-    $display['startNewBlock'] = (SmartSieve::getPOST('continue')) ? true : false;
-    $display['useRegex'] = (SmartSieve::getPOST('regexp')) ? true : false;
-    $display['matchAny'] = (SmartSieve::getPOST('anyof')) ? true : false;
-    $conditions = array();
-    $usedConditions = array();
+    $rule = array();
+    $rule['priority'] = SmartSieve::getPOST('priority', '0');
+    $rule['status'] = SmartSieve::getPOST('status', 'ENABLED');
+    $rule['startNewBlock'] = SmartSieve::getPOST('startNewBlock');
+    $rule['useRegex'] = SmartSieve::getPOST('regexp');
+    $rule['matchAny'] = SmartSieve::getPOST('anyof');
+    $rule['conditions'] = array();
     $i = 0;
     while (($type = SmartSieve::getPOST('condition' . $i)) !== null) {
-        $values = array();
+        $condition = array();
         switch ($type) {
             case ('new'):
                 break;
-            case ('header'):
-                $values['header'] = SmartSieve::getPOST('field'.$i);
-                $values['matchStr'] = SmartSieve::getPOST('field_val'.$i);
+            case ('from'):
+                $condition['type'] = TEST_ADDRESS;
+                $condition['header'] = 'from';
+                $condition['matchStr'] = SmartSieve::utf8Encode(SmartSieve::getPOST('from'.$i));
+                break;
+            case ('to'):
+                $condition['type'] = TEST_ADDRESS;
+                $condition['header'] = 'to';
+                $condition['matchStr'] = SmartSieve::utf8Encode(SmartSieve::getPOST('to'.$i));
+                break;
+            case ('subject'):
+                $condition['type'] = TEST_HEADER;
+                $condition['header'] = 'subject';
+                $condition['matchStr'] = SmartSieve::utf8Encode(SmartSieve::getPOST('subject'.$i));
                 break;
             case ('size'):
-                $values['gthan'] = (SmartSieve::getPOST('gthan')) ? true : false;
-                $values['size'] = SmartSieve::getPOST('size');
+                $condition['type'] = TEST_SIZE;
+                $condition['gthan'] = SmartSieve::getPOST('gthan');
+                $condition['kbytes'] = SmartSieve::getPOST('size');
                 break;
-            case ('from');
-            case ('to');
-            case ('subject');
-            default:
-                $values['matchStr'] = SmartSieve::getPOST($type.$i);
+            case ('header'):
+                $condition['type'] = TEST_HEADER;
+                $condition['header'] = SmartSieve::utf8Encode(SmartSieve::getPOST('header'.$i));
+                $condition['matchStr'] = SmartSieve::utf8Encode(SmartSieve::getPOST('headerMatchStr'.$i));
                 break;
         }
         // If delete value set, ignore this condition.
         if (SmartSieve::getPOST('delete' . $i++) == '1' || $type == 'new') {
             continue;
         }
-        $values['type'] = $type;
-        $conditions[] = $values;
-        $usedConditions[] = $type;
+        $rule['conditions'][] = $condition;
     }
-    $conditions[] = array('type' => 'new');
-    $display['conditions'] = $conditions;
-    $display['usedConditions'] = $usedConditions;
-    $action = array();
-    $action['type'] = SmartSieve::getPOST('action');
-    foreach (array('folder', 'address', 'message', 'sieve') as $a) {
-        $action[$a] = '';
-    }
-    $action['folder'] = SmartSieve::getPOST('folder', '');
-    $action['address'] = SmartSieve::getPOST('address');
-    $action['message'] = SmartSieve::getPOST('reject');
-    $action['sieve'] = SmartSieve::getPOST('custom');
-    $display['action'] = $action;
-    $display['keep'] = (SmartSieve::getPOST('keep')) ? true : false;
-    $display['stop'] = (SmartSieve::getPOST('stop')) ? true : false;
-    $display['flg'] = SmartSieve::getPOST('flg', '0');
-    return $display;
-}
-
-/**
- * Get dislay values for an existing rule.
- *
- * @param array $rule The rule to display
- * @return Array containing values to display
- */
-function getDisplayValues($rule)
-{
-    $display = array();
-    $display['priority'] = (isset($rule['priority'])) ? $rule['priority'] : $script->pcount+1;
-    $display['status'] = (isset($rule['status']) && $rule['status'] == 'ENABLED') ? 'ENABLED' : 'DISABLED';
-    $display['startNewBlock'] = (empty($rule['continue'])) ? false : true;
-    $display['useRegex'] = (empty($rule['regexp'])) ? false : true;
-    $display['matchAny'] = (empty($rule['anyof'])) ? false : true;
-    $conditions = array();
-    $usedConditions = array();
-    if (!empty($rule['from'])) {
-        foreach ($rule['from'] as $from) {
-            $conditions[] = array('type' => 'from', 'matchStr' => SmartSieve::utf8Decode($from));
-            $usedConditions[] = 'from';
-        }
-    } if (!empty($rule['to'])) {
-        foreach ($rule['to'] as $to) {
-            $conditions[] = array('type' => 'to', 'matchStr' => SmartSieve::utf8Decode($to));
-            $usedConditions[] = 'to';
-        }
-    } if (!empty($rule['subject'])) {
-        foreach ($rule['subject'] as $subject) {
-            $conditions[] = array('type' => 'subject', 'matchStr' => SmartSieve::utf8Decode($subject));
-            $usedConditions[] = 'subject';
-        }
-    } if (!empty($rule['size'])) {
-        $conditions[] = array('type' => 'size', 'size' => $rule['size'], 'gthan' => (empty($rule['gthan'])) ? false : true);
-        $usedConditions[] = 'size';
-    } if (!empty($rule['field'])) {
-        for ($i=0; $i<count($rule['field']); $i++) {
-            $conditions[] = array('type' => 'header', 'header' => SmartSieve::utf8Decode($rule['field'][$i]),
-                                  'matchStr' => (isset($rule['field_val'][$i])) ? SmartSieve::utf8Decode($rule['field_val'][$i]) : '');
-            $usedConditions[] = 'header';
-        }
-    }
-    $conditions[] = array('type' => 'new');
-    $display['conditions'] = $conditions;
-    $display['usedConditions'] = $usedConditions;
-    $action = array();
-    $type = (isset($rule['action'])) ? $rule['action'] : '';
-    switch ($type) {
-        case ('folder'):
-            $action['type'] = 'folder';
-            $action['folder'] = $rule['action_arg'];
-            break;
-        case ('address'):
-            $action['type'] = 'address';
-            $action['address'] = SmartSieve::utf8Decode($rule['action_arg']);
-            break;
-        case ('reject'):
-            $action['type'] = 'reject';
-            $action['message'] = SmartSieve::utf8Decode($rule['action_arg']);
-            break;
-        case ('discard'):
-            $action['type'] = 'discard';
-            break;
-        case ('custom'):
-            $action['type'] = 'custom';
-            $action['sieve'] = SmartSieve::utf8Decode($rule['action_arg']);
-            $GLOBALS['mode'] = SMARTSIEVE_RULE_MODE_CUSTOM;
-            break;
-    }
-    $display['action'] = $action;
-    $display['keep'] = (empty($rule['keep'])) ? false : true;
-    $display['stop'] = (empty($rule['stop'])) ? false : true;
-    $display['flg'] = (isset($rule['flg'])) ? $rule['flg'] : '';
-    return $display;
-}
-
-/**
- * Get POST data supplied from the rule edit form.
- *
- * @return array The filter rule
- */
-function buildRule($display)
-{
-    $rule = array();
-    $rule['priority'] = $display['priority'];
-    $rule['status'] = $display['status'];
-    foreach (array('from', 'to', 'subject', 'field', 'field_val') as $cond) {
-        $rule[$cond] = array();
-    }
-    $rule['size'] = '';
-    foreach ($display['conditions'] as $cond) {
-        switch ($cond['type']) {
+    $rule['actions'] = array();
+    $i = 0;
+    while (($type = SmartSieve::getPOST('action' . $i)) !== null) {
+        $action = array();
+        switch ($type) {
             case ('new'):
                 break;
-            case ('header'):
-                $field = SmartSieve::utf8Encode($cond['header']);
-                if (substr($field, -1) == ':') {
-                    $field = rtrim($field, ':');
-                }
-                $rule['field'][] = SmartSieve::utf8Encode($field);
-                $rule['field_val'][] = SmartSieve::utf8Encode($cond['matchStr']);
+            case (ACTION_FILEINTO):
+                $action['type'] = ACTION_FILEINTO;
+                $action['folder'] = SmartSieve::getPOST(ACTION_FILEINTO . $i);
                 break;
-            case ('size'):
-                $rule['gthan'] = ($cond['gthan'] == true) ? 2 : 0;
-                $rule['size'] = $cond['size'];
+            case (ACTION_REDIRECT):
+                $action['type'] = ACTION_REDIRECT;
+                $action['address'] = SmartSieve::utf8Encode(SmartSieve::getPOST(ACTION_REDIRECT . $i));
                 break;
-            case ('from');
-            case ('to');
-            case ('subject');
-            default:
-                $rule[$cond['type']][] = SmartSieve::utf8Encode($cond['matchStr']);
+            case (ACTION_REJECT):
+                $action['type'] = ACTION_REJECT;
+                $action['message'] = SmartSieve::utf8Encode(SmartSieve::getPOST(ACTION_REJECT . $i));
+                break;
+            case (ACTION_DISCARD):
+                $action['type'] = ACTION_DISCARD;
+                break;
+            case (ACTION_KEEP):
+                $action['type'] = ACTION_KEEP;
+                break;
+            case (ACTION_STOP):
+                $action['type'] = ACTION_STOP;
+                break;
+            case (ACTION_CUSTOM):
+                $action['type'] = ACTION_CUSTOM;
+                $action['sieve'] = SmartSieve::utf8Encode(SmartSieve::getPOST('sieve'));
                 break;
         }
+        // If delete value set, ignore this condition.
+        if (SmartSieve::getPOST('deleteAction' . $i++) == '1' || $type == 'new') {
+            continue;
+        }
+        $rule['actions'][] = $action;
     }
-    $action = $display['action'];
-    $rule['action'] = $action['type'];
-    $rule['action_arg'] = '';
-    switch ($action['type']) {
-        case ('folder'):
-            $rule['action_arg'] = $action['folder'];
-            break;
-        case ('address'):
-            $rule['action_arg'] = SmartSieve::utf8Encode($action['address']);
-            break;
-        case ('discard'):
-            break;
-        case ('reject'):
-            $rule['action_arg'] = SmartSieve::utf8Encode($action['message']);
-            break;
-        case ('custom'):
-            $rule['action_arg'] = SmartSieve::utf8Encode($action['sieve']);
-            break;
-    }
-    $rule['continue'] = ($display['startNewBlock'] == true) ? 1 : 0;
-    $rule['gthan'] = (isset($rule['gthan'])) ?  $rule['gthan'] : 0;
-    $rule['anyof'] = ($display['matchAny'] == true) ? 4 : 0;
-    $rule['keep'] = ($display['keep'] == true) ? 8 : 0;
-    $rule['stop'] = ($display['stop'] == true) ? 16 : 0;
-    $rule['regexp'] = ($display['useRegex'] == true) ? 128 : 0;
-    $rule['unconditional'] = 0;
-    if ((empty($rule['from']) && empty($rule['to']) && empty($rule['subject']) &&
-       empty($rule['field']) && $rule['size'] === '' &&
-       $rule['action'] != 'custom') OR
-       ($rule['action'] == 'custom' && !preg_match("/^ *(els)?if/i", $rule['action_arg']))) {
-        $rule['unconditional'] = 1;
-    }
-    $rule['flg'] = $rule['continue'] | $rule['gthan'] | $rule['anyof'] | $rule['keep'] | $rule['stop'] | $rule['regexp'];
+    $rule['flg'] = SmartSieve::getPOST('flg', '0');
     return $rule;
 }
 
@@ -492,54 +371,73 @@ function isSane($rule)
     $max_field_chars = SmartSieve::getConf('max_field_chars', 500);
     $max_textbox_chars = SmartSieve::getConf('max_textbox_chars', 50000);
 
-    // Check values do not exceed acceptable sizes.
-    $conds = array('from', 'to', 'subject', 'field', 'field_val');
-    foreach ($conds as $cond) {
-        for ($i=0; $i<count($rule[$cond]); $i++) {
-            if (strlen($rule[$cond][$i]) > $max_field_chars) {
+    // Condition checks.
+
+    foreach ($rule['conditions'] as $condition) {
+        // Check values do not exceed acceptable sizes.
+        if ($condition['type'] == TEST_ADDRESS || $condition['type'] == TEST_HEADER) {
+            if (($condition['type'] == TEST_HEADER && strlen($condition['header']) > $max_field_chars) ||
+                strlen($condition['matchStr']) > $max_field_chars) {
                 SmartSieve::setError(SmartSieve::text('the condition value you supplied is too long. it should not exceed %d characters.', array($max_field_chars)));
                 return false;
             }
         }
-    }
-    if ($rule['action'] == 'address') {
-        if (strlen($rule['action_arg']) > $max_field_chars) {
-            SmartSieve::setError(SmartSieve::text('the forward address you supplied is too long. it should not exceed %d characters.', array($max_field_chars)));
-            return false;
+        if ($condition['type'] == TEST_SIZE) {
+            // Message size must not contain non-digits.
+            if (preg_match("/\D/", $condition['kbytes'])) {
+                SmartSieve::setError(SmartSieve::text("message size value must be a positive integer"));
+                return false;
+            }
         }
-        if (!preg_match("/^[\x21-\x7E]+@([0-9a-zA-Z-]+\.)+[0-9a-zA-Z]{2,}$/i", $rule['action_arg'])) {
-            SmartSieve::setError(SmartSieve::text('"%s" is not a valid email address',
-                array(htmlspecialchars($rule['action_arg']))));
-            return false;
-        }
-    }
-    if ($rule['action'] == 'reject' &&
-        strlen($rule['action_arg']) > $max_textbox_chars) {
-        SmartSieve::setError(SmartSieve::text('your reject message is too long. it should not exceed %d characters.', array($max_textbox_chars)));
-        return false;
-    }
-    for ($i=0; $i<count($rule['field']); $i++) {
-        if (!isset($rule['field_val'][$i]) || !$rule['field_val'][$i]) {
-            SmartSieve::setError(SmartSieve::text("you must supply a value for the field \"%s\".",
-                array($rule['field'][$i])));
-            return false;
+        if ($condition['type'] == TEST_HEADER) {
+            if (empty($condition['header'])) {
+                SmartSieve::setError(SmartSieve::text('Please supply a message header to match on'));
+                return false;
+            }
+            if (empty($condition['matchStr'])) {
+                SmartSieve::setError(SmartSieve::text("you must supply a value for the field \"%s\".",
+                    array($rule['field'][$i])));
+                return false;
+            }
         }
     }
+
+    // Action checks.
+
     // Rule must have an action.
-    if (!$rule['action'] && !$rule['keep'] && !$rule['stop']) {
+    if (empty($rule['actions'])) {
         SmartSieve::setError(SmartSieve::text("please supply an action"));
         return false;
     }
-    // Actions other than discard, keep and stop must have a corresponding value.
-    if ($rule['action'] != 'discard' && !$rule['keep'] && !$rule['stop'] && !$rule['action_arg']) {
-        SmartSieve::setError(SmartSieve::text("you must supply an argument for this action"));
-        return false;
+    foreach ($rule['actions'] as $action) {
+        // Actions that require a value.
+        if (($action['type'] == ACTION_FILEINTO && empty($action['folder'])) ||
+            ($action['type'] == ACTION_REDIRECT && empty($action['address'])) ||
+            ($action['type'] == ACTION_REJECT && empty($action['message'])) ||
+            ($action['type'] == ACTION_CUSTOM && empty($action['sieve']))) {
+            SmartSieve::setError(SmartSieve::text("you must supply an argument for this action"));
+            return false;
+        }
+        if ($action['type'] == ACTION_REDIRECT) {
+            if (strlen($action['address']) > $max_field_chars) {
+                SmartSieve::setError(SmartSieve::text('the forward address you supplied is too long. it should not exceed %d characters.', array($max_field_chars)));
+                return false;
+            }
+            if (!preg_match("/^[\x21-\x7E]+@([0-9a-zA-Z-]+\.)+[0-9a-zA-Z]{2,}$/i", $action['address'])) {
+            SmartSieve::setError(SmartSieve::text('"%s" is not a valid email address',
+                array(htmlspecialchars($action['address']))));
+                return false;
+            }
+        }
+        if ($action['type'] == ACTION_REJECT) {
+            if (strlen($action['message']) > $max_textbox_chars) {
+                SmartSieve::setError(SmartSieve::text('your reject message is too long. it should not exceed %d characters.', array($max_textbox_chars)));
+                return false;
+            }
+        }
     }
-    // Message size must not contain non-digits.
-    if (preg_match("/\D/", $rule['size'])) {
-        SmartSieve::setError(SmartSieve::text("message size value must be a positive integer"));
-        return false;
-    }
+
+    // All values sane.
     return true;
 }
 
@@ -551,9 +449,9 @@ function isSane($rule)
 function getForwardRule()
 {
     for ($i=0;$i<count($GLOBALS['script']->rules);$i++) {
-        $rule = $GLOBALS['script']->rules[$i];
-        if ($rule['action'] == 'address' && empty($rule['from']) && empty($rule['to']) &&
-            empty($rule['subject']) && empty($rule['field']) && !$rule['size']) {
+        $conditions = $GLOBALS['script']->rules[$i]['conditions'];
+        $actions = $GLOBALS['script']->rules[$i]['actions'];
+        if (count($actions) === 1 && $actions[0]['type'] == ACTION_REDIRECT && empty($conditions)) {
             return $i;
         }
     }
@@ -577,10 +475,10 @@ function getSpamRule()
     }
     for ($i=0;$i<count($GLOBALS['script']->rules);$i++) {
         $rule = $GLOBALS['script']->rules[$i];
-        if (count($rule['field']) == 1 && $rule['field'][0] == $config['header'] &&
-            $rule['field_val'][0] == $config['value'] &&
-            empty($rule['from']) && empty($rule['to']) &&
-            empty($rule['subject']) && !$rule['size']) {
+        $conditions = $GLOBALS['script']->rules[$i]['conditions'];
+        $actions = $GLOBALS['script']->rules[$i]['actions'];
+        if (count($conditions) == 1 && $conditions[0]['type'] == TEST_HEADER &&
+            $conditions[0]['header'] == $config['header'] && $conditions[0]['headerMatchStr'] == $config['value']) {
             return $i;
         }
     }
