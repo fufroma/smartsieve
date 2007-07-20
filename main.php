@@ -195,7 +195,7 @@ switch ($action) {
 }
 
 
-$ret = $script->retrieveRules();
+$ret = $script->getContent();
 if ($ret === false) {
     SmartSieve::setError(SmartSieve::text('ERROR: ') . $script->errstr);
     SmartSieve::log(sprintf('failed reading rules from script "%s" for %s: %s',
@@ -268,75 +268,96 @@ function getSummaries() {
     $summaries = array();
     $useif = 1;
     foreach ($script->rules as $rule) {
-        $andor = ' ' . SmartSieve::text('AND') . ' ';
         $started = 0;
-        if ($rule['anyof']) $andor = ' ' . SmartSieve::text('OR') . ' ';
+        $andor = sprintf(" %s ", ($rule['matchAny']) ? SmartSieve::text('OR') : SmartSieve::text('AND'));
 
-        if ($useif) {
-            $complete = SmartSieve::text('IF') . ' ';
+        if (Script::hasCondition($rule) == false) {
+            $complete = sprintf("[%s] ", SmartSieve::text('Unconditional'));
+        } elseif ($useif) {
+            $complete = sprintf("%s ", SmartSieve::text('IF'));
         } else {
-            $complete = SmartSieve::text('ELSE IF') . ' ';
+            $complete = sprintf("%s ", SmartSieve::text('ELSE IF'));
         }
-        if ($rule['unconditional']) $complete = '[' . SmartSieve::text('Unconditional') . '] ';
 
-        if (!empty($rule['from'])) {
-            foreach ($rule['from'] as $from) {
-                $match = setMatchType($from, $rule['regexp']);
-                $complete .= sprintf("%s'From:' %s '%s'",
-                                     ($started) ? $andor : '', $match, SmartSieve::utf8Decode($from));
+        foreach ($rule['conditions'] as $condition) {
+            if ($condition['type'] == TEST_ADDRESS) {
+                $match = setMatchType($condition['matchStr'], $rule['useRegex']);
+                if ($condition['header'] == 'from') {
+                    $complete .= sprintf("%s'From:' %s '%s'",
+                        ($started) ? $andor : '', $match, SmartSieve::utf8Decode($condition['matchStr']));
+                    $started = 1;
+                } if ($condition['header'] == 'to') {
+                    $complete .= sprintf("%s'To:' %s '%s'",
+                        ($started) ? $andor : '', $match, SmartSieve::utf8Decode($condition['matchStr']));
+                    $started = 1;
+                } else {
+                    $complete .= sprintf("%s'%s' %s '%s'", ($started) ? $andor : '', $condition['header'],
+                        $match, SmartSieve::utf8Decode($condition['matchStr']));
+                    $started = 1;
+                }
+            }
+            if ($condition['type'] == TEST_HEADER) {
+                $match = setMatchType($condition['matchStr'], $rule['useRegex']);
+                if ($condition['header'] == 'subject') {
+                    $complete .= sprintf("%s'Subject:' %s '%s'",
+                        ($started) ? $andor : '', $match, SmartSieve::utf8Decode($condition['matchStr']));
+                } else {
+                    $complete .= sprintf("%s'%s' %s '%s'", ($started) ? $andor : '',
+                        SmartSieve::utf8Decode($condition['header']), $match,
+                        SmartSieve::utf8Decode($condition['matchStr']));
+                }
+                $started = 1;
+            }
+            if ($condition['type'] == TEST_SIZE) {
+                $complete .= sprintf("%s", ($started) ? $andor : '');
+                $complete .= SmartSieve::text("message %s '%sKB'", array(
+                    ($condition['gthan']) ? SmartSieve::text('greater than') : SmartSieve::text('less than'),
+                    $condition['kbytes']));
                 $started = 1;
             }
         }
-        if (!empty($rule['to'])) {
-            foreach ($rule['to'] as $to) {
-                $match = setMatchType($to, $rule['regexp']);
-                $complete .= sprintf("%s'To:' %s '%s'", 
-                                     ($started) ? $andor : '', $match, SmartSieve::utf8Decode($to));
-                $started = 1;
+        if (Script::hasCondition($rule)) {
+            $complete .= sprintf(" %s ", SmartSieve::text('THEN'));
+        }
+        $started = false;
+        foreach ($rule['actions'] as $action) {
+            if ($started) {
+                $complete .= sprintf(" %s ", SmartSieve::text('AND'));
             }
-        }
-        if (!empty($rule['subject'])) {
-            foreach ($rule['subject'] as $subject) {
-                $match = setMatchType($subject, $rule['regexp']);
-                $complete .= sprintf("%s'Subject:' %s '%s'", 
-                                     ($started) ? $andor : '', $match, SmartSieve::utf8Decode($subject));
-                $started = 1;
+            switch ($action['type']) {
+                case (ACTION_FILEINTO):
+                    $complete .= sprintf("%s '%s'", SmartSieve::text('file into'),
+                                         SmartSieve::mutf7Decode($action['folder']));
+                    break;
+                case (ACTION_REDIRECT):
+                    $complete .= sprintf("%s '%s'", SmartSieve::text('forward to'),
+                                         SmartSieve::utf8Decode($action['address']));
+                    break;
+                case (ACTION_REJECT):
+                    $complete .= sprintf("%s '%s'", SmartSieve::text('reject'),
+                                         SmartSieve::utf8Decode($action['message']));
+                    break;
+                case (ACTION_DISCARD):
+                    $complete .= SmartSieve::text('discard');
+                    break;
+                case (ACTION_KEEP):
+                    $complete .= SmartSieve::text('Keep a copy');
+                    break;
+                case (ACTION_STOP):
+                    $complete .= SmartSieve::text('Stop processing');
+                    break;
+                case (ACTION_CUSTOM):
+                    // Scrap the above and just display the custom text.
+                    $complete = sprintf("[%s] %s", SmartSieve::text('Custom Rule'),
+                                        SmartSieve::utf8Decode($action['sieve']));
+                    continue 2;
+                    break;
             }
-        }
-        if (!empty($rule['field']) && !empty($rule['field_val'])) {
-            for ($i=0; $i<count($rule['field']); $i++) {
-                $field = $rule['field'][$i];
-                $field_val = $rule['field_val'][$i];
-                $match = setMatchType($field_val, $rule['regexp']);
-                $complete .= sprintf("%s'%s' %s '%s'", ($started) ? $andor : '', SmartSieve::utf8Decode($field),
-                                     $match, SmartSieve::utf8Decode($field_val));
-                $started = 1;
-            }
-        }
-        if (isset($rule['size']) && $rule['size'] !== '') {
-        $xthan = SmartSieve::text('less than');
-        if ($rule['gthan']) $xthan = SmartSieve::text('greater than');
-        if ($started) $complete .= $andor;
-        $complete .= SmartSieve::text("message %s '%sKB'", array($xthan,$rule['size']));
-        $started = 1;
-        }
-        if (!$rule['unconditional']) $complete .= " ".SmartSieve::text('THEN')." ";
-        if (preg_match("/folder/i",$rule['action']))
-        $complete .= SmartSieve::text("file into '%s';",array(SmartSieve::mutf7Decode($rule['action_arg'])));
-        if (preg_match("/reject/i",$rule['action']))
-        $complete .= SmartSieve::text("reject '%s';",array(SmartSieve::utf8Decode($rule['action_arg'])));
-        if (preg_match("/address/i",$rule['action']))
-            $complete .= SmartSieve::text("forward to '%s';",array(SmartSieve::utf8Decode($rule['action_arg'])));
-        if (preg_match("/discard/i",$rule['action']))
-            $complete .= SmartSieve::text("discard;");
-        if ($rule['keep']) $complete .= " [".SmartSieve::text('Keep a copy')."]";
-        if ($rule['stop']) $complete .= " [".SmartSieve::text('Stop processing')."]";
-        if (preg_match("/custom/i",$rule['action'])){
-            $complete = '[' . SmartSieve::text('Custom Rule') . '] ' . SmartSieve::utf8Decode($rule['action_arg']);
+            $started = true;
         }
         $summaries[] = htmlspecialchars($complete);
         if ($rule['status'] == 'ENABLED') {
-            if ($rule['continue'] == 1 || $rule['unconditional']) {
+            if ($rule['startNewBlock'] == 1 || Script::hasCondition($rule) == false) {
                 $useif = 1;
             } else {
                 $useif = 0;

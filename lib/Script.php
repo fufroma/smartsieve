@@ -12,6 +12,29 @@ define("CLIENT_UNKNOWN", "unknown");
 define("CLIENT_SMARTSIEVE", "smartsieve");
 define("CLIENT_WEBSIEVE", "websieve");
 
+// Test types.
+define ("TEST_ADDRESS", "address");
+define ("TEST_HEADER", "header");
+define ("TEST_SIZE", "size");
+
+// Action types.
+define ("ACTION_FILEINTO", "fileinto");
+define ("ACTION_REDIRECT", "redirect");
+define ("ACTION_REJECT", "reject");
+define ("ACTION_KEEP", "keep");
+define ("ACTION_DISCARD", "discard");
+define ("ACTION_CUSTOM", "custom");
+define ("ACTION_VACATION", "vacation");
+define ("ACTION_STOP", "stop");
+
+// Bitwise flags.
+define ("CONTINUE_BIT", 1);
+define ("SIZE_BIT", 2);
+define ("ANYOF_BIT", 4);
+define ("KEEP_BIT", 8);
+define ("STOP_BIT", 16);
+define ("REGEX_BIT", 128);
+
 
 /**
  * Class Script:: implements a sieve script.
@@ -127,22 +150,16 @@ class Script {
     *
     * @return boolean True on success, false on failure
     */
-    function retrieveRules()
+    function getContent()
     {
         global $managesieve;
-        $continuebit = 1;
-        $sizebit = 2;
-        $anyofbit = 4;
-        $keepbit = 8;
-        $stopbit = 16;
-        $regexbit = 128;
  
         if (!isset($this->name)){
-            $this->errstr = 'retrieveRules: no script name specified';
+            $this->errstr = 'getContent: no script name specified';
             return false;
         }
         if (!is_object($managesieve)) {
-            $this->errstr = "retrieveRules: no sieve session open";
+            $this->errstr = "getContent: no sieve session open";
             return false;
         }
  
@@ -155,7 +172,7 @@ class Script {
  
         $resp = $managesieve->getscript($this->name);
         if ($resp === false) {
-            $this->errstr = 'retrieveRules: failed getting script: ' . $managesieve->getError();
+            $this->errstr = 'getContent: failed getting script: ' . $managesieve->getError();
             return false;
         }
 
@@ -189,39 +206,117 @@ class Script {
         $line = array_shift($lines);
         while (isset($line)) {
             $line = rtrim($line);
-            if (preg_match("/^ *#rule&&(.*)&&(.*)&&(.*)&&(.*)&&(.*)&&(.*)&&(.*)&&(.*)&&(.*)&&(.*)&&(.*)$/i",
+            if (substr($line, 0, 18) == '#SmartSieveRule#a:') {
+                $serialized = $this->unescapeChars(substr($line, 16));
+                $rules[] = unserialize($serialized);
+            }
+            elseif (substr($line, 0, 18) == '#SmartSieveSpam#a:') {
+                $serialized = $this->unescapeChars(substr($line, 16));
+                $this->spamRule = unserialize($serialized);
+            }
+            elseif (substr($line, 0, 22) == '#SmartSieveVacation#a:') {
+                $serialized = $this->unescapeChars(substr($line, 20));
+                $this->vacation = unserialize($serialized);
+            }
+            // Legacy metadata format.
+            elseif (preg_match("/^ *#rule&&(.*)&&(.*)&&(.*)&&(.*)&&(.*)&&(.*)&&(.*)&&(.*)&&(.*)&&(.*)&&(.*)$/i",
                            $line, $bits)) {
                 $rule = array();
                 $rule['priority'] = $bits[1];
                 $rule['status'] = $bits[2];
-                $rule['from'] = $this->splitValues($bits[3]);
-                $rule['to'] = $this->splitValues($bits[4]);
-                $rule['subject'] = $this->splitValues($bits[5]);
-                $rule['action'] = $bits[6];
-                $rule['action_arg'] = $this->unescapeChars($bits[7]);
-                $rule['flg'] = $bits[8];   // bitwise flag
-                $rule['field'] = $this->splitValues($bits[9]);
-                $rule['field_val'] = $this->splitValues($bits[10]);
-                $rule['size'] = $this->unescapeChars($bits[11]);
-                $rule['continue'] = ($bits[8] & $continuebit);
-                $rule['gthan'] = ($bits[8] & $sizebit); // use 'greater than'
-                $rule['anyof'] = ($bits[8] & $anyofbit);
-                $rule['keep'] = ($bits[8] & $keepbit);
-                $rule['stop'] = ($bits[8] & $stopbit);
-                $rule['regexp'] = ($bits[8] & $regexbit);
-                $rule['unconditional'] = 0;
-                if ((empty($rule['from']) && empty($rule['to']) && empty($rule['subject']) &&
-                   empty($rule['field']) && $rule['size'] === '' && 
-                   $rule['action'] != 'custom') OR
-                   ($rule['action'] == 'custom' && !preg_match("/^ *(els)?if/i", $rule['action_arg']))) {
-                    $rule['unconditional'] = 1;
+                $rule['conditions'] = array();
+                $rule['actions'] = array();
+                $froms = $this->splitValues($bits[3]);
+                if (!empty($froms)) {
+                    foreach ($froms as $from) {
+                        $condition = array();
+                        $condition['type'] = TEST_ADDRESS;
+                        $condition['header'] = 'from';
+                        $condition['matchStr'] = $from;
+                        $rule['conditions'][] = $condition;
+                    }
                 }
+                $tos = $this->splitValues($bits[4]);
+                foreach ($tos as $to) {
+                    $condition = array();
+                    $condition['type'] = TEST_ADDRESS;
+                    $condition['header'] = 'to';
+                    $condition['matchStr'] = $to;
+                    $rule['conditions'][] = $condition;
+                }
+                $subjects = $this->splitValues($bits[5]);
+                foreach ($subjects as $subject) {
+                    $condition = array();
+                    $condition['type'] = TEST_HEADER;
+                    $condition['header'] = 'subject';
+                    $condition['matchStr'] = $subject;
+                    $rule['conditions'][] = $condition;
+                }
+                $headers = $this->splitValues($bits[9]);
+                $headerMatchStrs = $this->splitValues($bits[10]);
+                for ($i=0; $i<count($headers); $i++) {
+                    $condition = array();
+                    $condition['type'] = TEST_HEADER;
+                    $condition['header'] = $headers[$i];
+                    $condition['matchStr'] = $headerMatchStrs[$i];
+                    $rule['conditions'][] = $condition;
+                }
+                $size = $this->unescapeChars($bits[11]);
+                if (!empty($size)) {
+                    $condition = array();
+                    $condition['type'] = TEST_SIZE;
+                    $condition['kbytes'] = $size;
+                    $condition['gthan'] = ($bits[8] & SIZE_BIT);
+                    $rule['conditions'][] = $condition;
+                }
+                $actions = $this->splitValues($bits[6]);
+                $actionArgs = $this->splitValues($bits[7]);
+                for ($i=0; $i<count($actions); $i++) {
+                    $action = array();
+                    switch ($actions[$i]) {
+                        case ('folder'):
+                            $action['type'] = ACTION_FILEINTO;
+                            $action['folder'] = $actionArgs[$i];
+                            break;
+                        case ('address'):
+                            $action['type'] = ACTION_REDIRECT;
+                            $action['address'] = $actionArgs[$i];
+                            break;
+                        case ('reject'):
+                            $action['type'] = ACTION_REJECT;
+                            $action['message'] = $actionArgs[$i];
+                            break;
+                        case ('discard'):
+                            $action['type'] = ACTION_DISCARD;
+                            break;
+                        case ('custom'):
+                            $action['type'] = ACTION_CUSTOM;
+                            $action['sieve'] = $actionArgs[$i];
+                            break;
+                    }
+                    $rule['actions'][] = $action;
+                }
+                if ($bits[8] & KEEP_BIT) {
+                    $action = array();
+                    $action['type'] = ACTION_KEEP;
+                    $rule['actions'][] = $action;
+                }
+                if ($bits[8] & STOP_BIT) {
+                    $action = array();
+                    $action['type'] = ACTION_STOP;
+                    $rule['actions'][] = $action;
+                }
+
+                $rule['flg'] = $bits[8];   // bitwise flag
+                $rule['startNewBlock'] = ($bits[8] & CONTINUE_BIT);
+                $rule['matchAny'] = ($bits[8] & ANYOF_BIT);
+                $rule['useRegex'] = ($bits[8] & REGEX_BIT);
                 array_push($rules, $rule);
                 if ($rule['priority'] > $this->pcount) {
                     $this->pcount = $rule['priority'];
                 }
             }
-            if (preg_match("/^ *#vacation&&(.*)&&(.*)&&(.*)&&(.*)/i", $line, $bits)) {
+            elseif (preg_match("/^ *#vacation&&(.*)&&(.*)&&(.*)&&(.*)/i", $line, $bits)) {
                 $vacation['days'] = $bits[1];
                 $vaddresslist = $this->unescapeChars($bits[2]);
                 $vaddresslist = preg_replace("/\"|\s/","", $vaddresslist);
@@ -231,7 +326,7 @@ class Script {
                 $vacation['status'] = $bits[4];
                 $vacation['addresses'] = &$vaddresses;
             }
-            if (preg_match("/^ *#mode&&(.*)/i", $line, $bits)) {
+            elseif (preg_match("/^ *#mode&&(.*)/i", $line, $bits)) {
                 if ($bits[1] == 'basic') {
                     $this->mode = 'basic';
                 } elseif ($bits[1] == 'advanced') {
@@ -292,153 +387,126 @@ class Script {
  
                 // Conditions
  
-                $anyall = "allof";
-                if ($rule['anyof']) {
-                    $anyall = "anyof";
-                }
-                if ($rule['regexp']) {
+                if ($rule['useRegex']) {
                     $regexused = true;
                 }
                 $started = 0;
  
-                if (!$rule['unconditional']) {
-                    if (!$continue) $newruletext .= "els";
-                    $newruletext .= "if " . $anyall . " (";
-                    if (!empty($rule['from'])) {
-                        foreach ($rule['from'] as $from) {
-                            $newruletext .= ($started) ? ', ' : '';
-                            if (preg_match("/^\s*!/", $from)) {
-                                $newruletext .= 'not ';
-                                $from = preg_replace("/^\s*!/", '', $from);
-                            }
-                            $match = ':contains';
-                            if (preg_match("/\*|\?/", $from) &&
+                if ($this->hasCondition($rule)) {
+                    $newruletext .= sprintf("%sif %s (", ($continue) ? '' : 'els', ($rule['matchAny']) ? 'anyof' : 'allof');
+                    foreach ($rule['conditions'] as $condition) {
+                        $newruletext .= ($started) ? ', ' : '';
+                        if ($condition['type'] == TEST_ADDRESS) {
+                            $not = (preg_match("/^\s*!/", $condition['matchStr'])) ? true : false;
+                            if ($rule['useRegex']) {
+                                $matchType = ':regex';
+                            } elseif (preg_match("/\*|\?/", $condition['matchStr']) &&
                                 SmartSieve::getConf('websieve_auto_matches') === true) {
-                                $match = ':matches';
+                                $matchType = ':matches';
+                            } else {
+                                $matchType = ':contains';
                             }
-                            if ($rule['regexp']) {
-                                $match = ':regex';
+                            if ($condition['header'] == 'from') {
+                                $newruletext .= sprintf("%saddress %s [\"From\"] \"%s\"", ($not) ? 'not ' : '', $matchType,
+                                    ($not) ? preg_replace("/^\s*!/", '', $condition['matchStr']) : $condition['matchStr']);
+                            } elseif ($condition['header'] == 'to') {
+                                $newruletext .= sprintf("%saddress %s [\"To\",\"Cc\"] \"%s\"", ($not) ? 'not ' : '', $matchType,
+                                    ($not) ? preg_replace("/^\s*!/", '', $condition['matchStr']) : $condition['matchStr']);
+                            } else {
+                                $newruletext .= sprintf("%saddress %s \"%s\" \"%s\"", ($not) ? 'not ' : '', $matchType,
+                                    $condition['header'],
+                                    ($not) ? preg_replace("/^\s*!/", '', $condition['matchStr']) : $condition['matchStr']);
                             }
-                            $newruletext .= sprintf("address %s [\"From\"] \"%s\"", $match, $from);
-                            $started = 1;
-                        }
-                    }
-                    if (!empty($rule['to'])) {
-                        foreach ($rule['to'] as $to) {
-                            $newruletext .= ($started) ? ', ' : '';
-                            if (preg_match("/^\s*!/", $to)) {
-                                $newruletext .= 'not ';
-                                $to = preg_replace("/^\s*!/", '', $to);
-                            }
-                            $match = ':contains';
-                            if (preg_match("/\*|\?/", $to) &&
+                        } elseif ($condition['type'] == TEST_HEADER) {
+                           $not = (preg_match("/^\s*!/", $condition['matchStr'])) ? true : false;
+                            if ($rule['useRegex']) {
+                                $matchType = ':regex';
+                            } elseif (preg_match("/\*|\?/", $condition['matchStr']) &&
                                 SmartSieve::getConf('websieve_auto_matches') === true) {
-                                $match = ':matches';
+                                $matchType = ':matches';
+                            } else {
+                                $matchType = ':contains';
                             }
-                            if ($rule['regexp']) {
-                                $match = ':regex';
+                            if ($condition['header'] == 'subject') {
+                                $newruletext .= sprintf("%sheader %s \"subject\" \"%s\"", ($not) ? 'not ' : '', $matchType,
+                                    ($not) ? preg_replace("/^\s*!/", '', $condition['matchStr']) : $condition['matchStr']);
+                            } else {
+                                $newruletext .= sprintf("%sheader %s \"%s\" \"%s\"", ($not) ? 'not ' : '', $matchType, $condition['header'],
+                                    ($not) ? preg_replace("/^\s*!/", '', $condition['matchStr']) : $condition['matchStr']);
                             }
-                            $newruletext .= sprintf("address %s [\"To\",\"Cc\"] \"%s\"", $match, $to);
-                            $started = 1;
+                        } elseif ($condition['type'] == TEST_SIZE) {
+                            $newruletext .= sprintf("size %s %sK",
+                                ($condition['gthan']) ? ':over' : ':under', $condition['kbytes']);
                         }
-                    }
-                    if (!empty($rule['subject'])) {
-                        foreach ($rule['subject'] as $subject) {
-                            $newruletext .= ($started) ? ', ' : '';
-                            if (preg_match("/^\s*!/", $subject)) {
-                                $newruletext .= 'not ';
-                                $subject = preg_replace("/^\s*!/", '', $subject);
-                            }
-                            $match = ':contains';
-                            if (preg_match("/\*|\?/", $subject) && 
-                                SmartSieve::getConf('websieve_auto_matches') === true) {
-                                $match = ':matches';
-                            }
-                            if ($rule['regexp']) {
-                                $match = ':regex';
-                            }
-                            $newruletext .= sprintf("header %s \"subject\" \"%s\"", $match, $subject);
-                            $started = 1;
-                        }
-                    }
-                    if (!empty($rule['field']) && !empty($rule['field_val'])) {
-                        for ($i=0; $i<count($rule['field']); $i++) {
-                            $field = $rule['field'][$i];
-                            $field_val = $rule['field_val'][$i];
-                            $newruletext .= ($started) ? ', ' : '';
-                            if (preg_match("/^\s*!/", $field_val)) {
-                                $newruletext .= 'not ';
-                                $field_val = preg_replace("/^\s*!/", '', $field_val);
-                            }
-                            $match = ':contains';
-                            if (preg_match("/\*|\?/", $field_val) && 
-                                SmartSieve::getConf('websieve_auto_matches') === true) {
-                                $match = ':matches';
-                            }
-                            if ($rule['regexp']) {
-                                $match = ':regex';
-                            }
-                            $newruletext .= sprintf("header %s \"%s\" \"%s\"", $match, $field, $field_val);
-                            $started = 1;
-                        }
-                    }
-                    if (isset($rule['size']) && $rule['size'] !== '') {
-                        $xthan = " :under ";
-                        if ($rule['gthan']) $xthan = " :over ";
-                        if ($started) $newruletext .= ", ";
-                        $newruletext .= "size " . $xthan . $rule['size'] . "K";
                         $started = 1;
                     }
                     $newruletext .= ") {\n";
                 }
  
                 // Actions
+
+                $custom = false;
+                foreach ($rule['actions'] as $action) {
+                    switch ($action['type']) {
+                        case (ACTION_FILEINTO):
+                            $newruletext .= sprintf("%sfileinto \"%s\";\n",
+                                                    $this->hasCondition($rule) ? "\t" : '',
+                                                    $action['folder']);
+                            break;
+                        case (ACTION_REJECT):
+                            $newruletext .= sprintf("%sreject text:\n%s\n.\n;\n",
+                                                    $this->hasCondition($rule) ? "\t" : '',
+                                                    $action['message']);
+                            $rejectused = true;
+                            break;
+                        case (ACTION_REDIRECT):
+                            $newruletext .= sprintf("%sredirect \"%s\";\n",
+                                                    $this->hasCondition($rule) ? "\t" : '',
+                                                    $action['address']);
+                            break;
+                        case (ACTION_DISCARD):
+                            $newruletext .= sprintf("%sdiscard;\n",
+                                                    $this->hasCondition($rule) ? "\t" : '');
+                            break;
+                        case (ACTION_KEEP):
+                            $newruletext .= sprintf("%skeep;\n",
+                                                    $this->hasCondition($rule) ? "\t" : '');
+                            break;
+                        case (ACTION_STOP):
+                            $newruletext .= sprintf("%sstop;\n",
+                                                    $this->hasCondition($rule) ? "\t" : '');
+                            break;
+                        case (ACTION_CUSTOM):
+                            // Scrap the above and just display the custom text.
+                            $newruletext = $action['sieve'];
+                            $custom = true;
+                            if (stripos($action['sieve'], ':regex') !== false) {
+                                $regexused = true;
+                            } if (stripos($action['sieve'], 'reject') !== false) {
+                                $rejectused = true;
+                            } if (stripos($action['sieve'], 'vacation') !== false) {
+                                $vacationused = true;
+                            } if (stripos($action['sieve'], 'notify') !== false) {
+                                $notifyused = true;
+                            } if (stripos($action['sieve'], 'addflag') !== false ||
+                                  stripos($action['sieve'], 'setflag') !== false ||
+                                  stripos($action['sieve'], 'removeflag') !== false) {
+                                $imapflagsused = true;
+                            }
+                            continue 2;
+                            break;
+                    }
+                }
  
-                if ($rule['action'] == 'folder') {
-                    $newruletext .= ((!$rule['unconditional']) ? "\t" : '') . "fileinto \"" . $rule['action_arg'] . "\";\n";
-                }
-                if ($rule['action'] == 'reject') {
-                    $newruletext .= ((!$rule['unconditional']) ? "\t" : '') . "reject text: \n" . $rule['action_arg'] . "\n.\n;\n";
-                    $rejectused = true;
-                }
-                if ($rule['action'] == 'address') {
-                    $newruletext .= ((!$rule['unconditional']) ? "\t" : '') . "redirect \"" . $rule['action_arg'] . "\";\n";
-                }
-                if ($rule['action'] == 'discard') {
-                    $newruletext .= ((!$rule['unconditional']) ? "\t" : '') . "discard;\n";
-                }
-                if ($rule['keep']) {
-                    $newruletext .= ((!$rule['unconditional']) ? "\t" : '') . "keep;\n";
-                }
-                if ($rule['stop']) {
-                    $newruletext .= ((!$rule['unconditional']) ? "\t" : '') . "stop;\n";
-                }
-                if (!$rule['unconditional']) {
+                if ($this->hasCondition($rule) && $custom == false) {
                     $newruletext .= "}\n";
                 }
 
-                if ($rule['action'] == 'custom') {
-                    $newruletext = $rule['action_arg'];
-                    if (preg_match("/:regex/i",$rule['action_arg'])) {
-                        $regexused = true;
-                    }
-                    if (preg_match("/reject/i",$rule['action_arg'])) {
-                        $rejectused = true;
-                    }
-                    if (preg_match("/vacation/i",$rule['action_arg'])) {
-                        $vacationused = true;
-                    }
-                    if (preg_match("/notify/i", $rule['action_arg'])) {
-                        $notifyused = true;
-                    }
-                    if (preg_match("/(addflag|setflag|removeflag)/i", $rule['action_arg'])) {
-                        $imapflagsused = true;
-                    }
-                }
-
+                // Should next rule start with an "if..."?
                 $continue = 0;
-                if ($rule['continue']) $continue = 1;
-                if ($rule['unconditional']) $continue = 1;
+                if ($rule['startNewBlock'] || $this->hasCondition($rule) == false) {
+                    $continue = 1;
+                }
 
                 $newscriptbody .= $newruletext . "\n";
  
@@ -508,11 +576,71 @@ class Script {
                 // Reset priority value. Note, we only do this for 
                 // compatibility with Websieve. SmartSieve never uses it.
                 $rule['priority'] = $pcount;
-                $newscriptfoot .= sprintf("#rule&&%s&&%s&&%s&&%s&&%s&&%s&&%s&&%s&&%s&&%s&&%s\n",
-                    $rule['priority'], $this->escapeChars($rule['status']), $this->concatenateValues($rule['from']),
-                    $this->concatenateValues($rule['to']), $this->concatenateValues($rule['subject']), $rule['action'],
-                    $this->escapeChars($rule['action_arg']), $rule['flg'], $this->concatenateValues($rule['field']),
-                    $this->concatenateValues($rule['field_val']), $rule['size']);
+                $from = array();
+                $to = array();
+                $subject = array();
+                $headers = array();
+                $headerMatchStrs = array();
+                $size = '';
+                $flg = 0;
+                foreach ($rule['conditions'] as $condition) {
+                    if ($condition['type'] == TEST_ADDRESS) {
+                        if ($condition['header'] == 'from') {
+                            $from[] = $condition['matchStr'];
+                        } elseif ($condition['header'] == 'to') {
+                            $to[] = $condition['matchStr'];
+                        }
+                    } elseif ($condition['type'] == TEST_HEADER) {
+                        if ($condition['header'] == 'subject') {
+                            $subject[] = $condition['matchStr'];
+                        } else {
+                            $headers[] = $condition['header'];
+                            $headerMatchStrs[] = $condition['matchStr'];
+                        }
+                    } elseif ($condition['type'] == TEST_SIZE) {
+                        $size = $condition['kbytes'];
+                        $flg = $flg | $condition['gthan'];
+                    }
+                }
+                $actions = array();
+                $actionArgs = array();
+                foreach ($rule['actions'] as $action) {
+                    switch ($action['type']) {
+                        case (ACTION_FILEINTO):
+                            $actions[] = 'folder';
+                            $actionArgs[] = $action['folder'];
+                            break;
+                        case (ACTION_REJECT):
+                            $actions[] = 'reject';
+                            $actionArgs[] = $action['message'];
+                            break;
+                        case (ACTION_REDIRECT):
+                            $actions[] = 'address';
+                            $actionArgs[] = $action['address'];
+                            break;
+                        case (ACTION_DISCARD):
+                            $actions[] = 'discard';
+                            $actionArgs[] = 'discard'; // Dummy value.
+                            break;
+                        case (ACTION_KEEP):
+                            $flg = $flg | KEEP_BIT;
+                            break;
+                        case (ACTION_STOP):
+                            $flg = $flg | STOP_BIT;
+                            break;
+                        case (ACTION_CUSTOM):
+                            $actions[] = 'custom';
+                            $actionArgs[] = $action['sieve'];
+                            break;
+                    }
+                }
+                $flg = $flg | $rule['startNewBlock'] | $rule['matchAny'] | $rule['useRegex'];
+#                $newscriptfoot .= sprintf("#rule&&%s&&%s&&%s&&%s&&%s&&%s&&%s&&%s&&%s&&%s&&%s\n",
+#                     $rule['priority'], $this->escapeChars($rule['status']), $this->concatenateValues($from),
+#                     $this->concatenateValues($to), $this->concatenateValues($subject),
+#                     $this->concatenateValues($actions), $this->concatenateValues($actionArgs), $flg, 
+#                     $this->concatenateValues($headers), $this->concatenateValues($headerMatchStrs), $size);
+                $newscriptfoot .= '#SmartSieveRule#' . $this->escapeChars(serialize($rule)) . "\n";
                 $pcount = $pcount+2;
             }
         }
@@ -696,6 +824,29 @@ class Script {
                              (isset($this->version['tag'])) ? $this->version['tag'] : 'ZZZ');
         $checkVer = sprintf("%s%s%s%s", $major, $minor, $bugfix, (isset($tag)) ? $tag : 'ZZZ');
         return strcmp($scriptVer, $checkVer);
+    }
+
+   /**
+    * Does rule have a condition.
+    *
+    * @param array $rule The rule to check
+    * @return boolean True if rule has a condition, false if not
+    */
+    function hasCondition($rule)
+    {
+        $custom = null;
+        // A custom rule might have a condition in it.
+        foreach ($rule['actions'] as $action) {
+            if ($action['type'] == ACTION_CUSTOM) {
+                $custom = $action;
+            }
+        }
+        // If rule has conditions, or is a custom rule with a condition, return true.
+        if (!empty($rule['conditions']) ||
+            ($custom && preg_match("/^ *(els)?if/i", $custom['sieve']))) {
+            return true;
+        }
+        return false;
     }
 
 }

@@ -665,7 +665,7 @@ class SmartSieve {
             $_SESSION['scripts'][$script] = new Script($script);
         }
         $s = &$_SESSION['scripts'][$script];
-        $ret = $s->retrieveRules();
+        $ret = $s->getContent();
         if ($ret === false) {
             SmartSieve::setError(SmartSieve::text('ERROR: ') . $s->errstr);
             $logmsg = sprintf('failed reading rules from script "%s" for %s: %s',
