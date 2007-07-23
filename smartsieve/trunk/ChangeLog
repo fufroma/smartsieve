@@ -1,6 +1,9 @@
 Smartsieve - ChangeLog
 ----------------------
 
+23 Jul 2007 S Grier
+* Make match type and block control rule attributes.
+
 20 Jul 2007 S Grier
 * Store script metadata as serialized PHP data.
 * Handle multiple sieve actions.
