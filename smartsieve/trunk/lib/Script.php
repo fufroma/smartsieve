@@ -480,7 +480,6 @@ class Script {
             $newscript = $newscripthead . $this->removeEncoding()  . $newscriptfoot;
         }
 
-echo $newscript; exit;
         // Upload the updated script.
         $slist = SmartSieve::getScriptList();
         if (!$managesieve->putScript($this->name, $newscript)) {
@@ -612,7 +611,7 @@ echo $newscript; exit;
                                 $addstr .= sprintf("%s\"%s\"", ($i != 0) ? ', ' : '',
                                                   $action['addresses'][$i]);
                             }
-                            $addstr .= ']';
+                            $addstr .= '] ';
                         }
                         $newruletext .= sprintf("%svacation %s%stext:\n%s\n.\n;\n\n",
                             $this->hasCondition($rule) ? "\t" : '',
