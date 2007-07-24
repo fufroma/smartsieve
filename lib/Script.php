@@ -105,13 +105,6 @@ class Script {
     var $vacation = array();
 
    /**
-    * Rule priority, current highest.
-    * @var integer
-    * @access public
-    */
-    var $pcount;
-
-   /**
     * Client application that wrote this script.
     * @var string
     * @access public
@@ -154,7 +147,6 @@ class Script {
         $this->mode = 'basic';
         $this->rules = array();
         $this->vacation = array();
-        $this->pcount = 0;
         $this->errstr = '';
     }
 
@@ -241,7 +233,7 @@ class Script {
             elseif (preg_match("/^ *#rule&&(.*)&&(.*)&&(.*)&&(.*)&&(.*)&&(.*)&&(.*)&&(.*)&&(.*)&&(.*)&&(.*)$/i",
                            $line, $bits)) {
                 $rule = array();
-                $rule['priority'] = $bits[1];
+                $priority = $bits[1]; // Ignored.
                 $rule['status'] = $bits[2];
                 $rule['conditions'] = array();
                 $rule['actions'] = array();
@@ -468,28 +460,15 @@ class Script {
  
         // Generate an encoded version of script content.
  
-        $newscriptfoot = "";
-        $pcount = 1;
-        $newscriptfoot .= "##PSEUDO script start\n";
+        $newscriptfoot = "##PSEUDO script start\n";
         foreach ($this->rules as $rule) {
             // Add rule to foot if status != deleted. This is how we delete a rule.
             if ($rule['status'] != 'DELETED') {
-                // Reset priority value. Note, we only do this for 
-                // compatibility with Websieve. SmartSieve never uses it.
-                $rule['priority'] = $pcount;
                 $newscriptfoot .= '#SmartSieveRule#' . $this->escapeChars(serialize($rule)) . "\n";
-                $pcount = $pcount+2;
             }
         }
-        if ($this->vacation) {
-            $vacation = $this->vacation;
-            $newscriptfoot .= sprintf("#vacation&&%s&&", $vacation['days']);
-            for ($i=0; $i<count($vacation['addresses']); $i++) {
-                $newscriptfoot .= sprintf("%s\"%s\"", ($i != 0) ? ', ' : '',
-                    $this->escapeChars($vacation['addresses'][$i]));
-            }
-            $newscriptfoot .= sprintf("&&%s&&%s\n", $this->escapeChars($vacation['text']),
-                                      $vacation['status']);
+        if (!empty($this->vacation)) {
+            $newscriptfoot .= '#SmartSieveVacation#' . $this->escapeChars(serialize($this->vacation)) . "\n";
         }
         $newscriptfoot .= sprintf("#mode&&%s\n", $this->mode);
  
@@ -728,55 +707,6 @@ class Script {
             $string = preg_replace('/\\\\\\\\/', '\\', $string);
         }
         return $string;
-    }
-
-   /**
-    * Concatenate an array of string values together, separated by a pipe char.
-    *
-    * @param array $values An array of string values to be concatenated together
-    * @return string The concatenated values
-    */
-    function concatenateValues($values)
-    {
-        $string = '';
-        foreach ($values as $value) {
-            $value = $this->escapeChars($value);
-            $string .= sprintf("%s%s", (strlen($string) != 0) ? '|' : '', $value);
-        }
-        return $string;
-    }
-
-   /**
-    * Split a string on pipe characters.
-    *
-    * @param string $string The string to split
-    * @return array The values
-    */
-    function splitValues($string)
-    {
-        $values = array();
-        // Version 1.0.0-RC2 and newer supports concatenated values.
-        if ($this->checkVersion(1, 0, 0, 'RC2') >= 0) {
-            $buf = '';
-            for ($i=0; $i<strlen($string); $i++) {
-                // Split on un-escaped pipe chars.
-                if ($string[$i] == '|' &&
-                    isset($string[$i-1]) && $string[$i-1] != '\\') {
-                    $values[] = $this->unescapeChars($buf);
-                    $buf = '';
-                } else {
-                    $buf .= $string[$i];
-                }
-            }
-            if (!empty($buf)) {
-                $values[] = $this->unescapeChars($buf);
-            }
-        } else {
-            if (!empty($string)) {
-                $values[] = $this->unescapeChars($string);
-            }
-        }
-        return $values;
     }
 
    /**
