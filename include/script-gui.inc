@@ -16,7 +16,7 @@
   <TD CLASS="main">
 
     <TABLE WIDTH="100%" BORDER="0" CELLPADDING="2" CELLSPACING="1">
-<?php if ($script->rules):?>
+<?php if (!empty($script->rules)):?>
       <TR>
         <TH WIDTH="5%">&nbsp;</TH>
         <TH WIDTH="10%"><?php echo SmartSieve::text('Status');?></TH>
@@ -46,7 +46,7 @@
     </TR>
 <?php endif;?>
 
-<?php if ($script->vacation):?>
+<?php if (!empty($script->vacation)):?>
     <TR>
       <TD CLASS="heading" COLSPAN="4"><?php echo SmartSieve::text('Vacation Message Settings');?>:</TD>
     </TR>
