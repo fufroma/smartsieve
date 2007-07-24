@@ -67,7 +67,7 @@ class Script {
     * @var string
     * @access public
     */
-    var $script;
+    var $content;
 
    /**
     * Script size in bytes.
@@ -141,7 +141,7 @@ class Script {
     function Script($scriptname)
     {
         $this->name = $scriptname;
-        $this->script = '';
+        $this->content = '';
         $this->size = 0;
         $this->so = true;
         $this->mode = 'basic';
@@ -398,7 +398,7 @@ class Script {
             }
             $line = array_shift($lines);
         }
-        $this->script = $resp['raw'];
+        $this->content = $resp['raw'];
         $this->size = $resp['size']; 
         $this->rules = $rules;
         return true;
@@ -480,15 +480,13 @@ class Script {
             $newscript = $newscripthead . $this->removeEncoding()  . $newscriptfoot;
         }
 
-        $this->script = $newscript;
- 
         // Upload the updated script.
         $slist = SmartSieve::getScriptList();
-        $scriptfile = $this->name;
-        if (!$managesieve->putScript($scriptfile, $newscript)) {
+        if (!$managesieve->putScript($this->name, $newscript)) {
             $this->errstr = 'updateScript: putscript failed: ' . $managesieve->getError();
             return false;
         }
+        $this->content = $newscript;
 
         // If this script is not the active script on the server, set it as the 
         // active script if 1) configured to activate when saving changes; 2) if 
@@ -665,7 +663,7 @@ class Script {
                       '^ *# ?Mail(.*)rules for','^ *# ?Created by Websieve',
                       '^ *#Generated (.+) SmartSieve');
         $lines = array();
-        $lines = explode("\n", $script->script);
+        $lines = explode("\n", $script->content);
         foreach ($lines as $line){
             foreach ($encs as $enc){
                 if (preg_match("/$enc/", $line))
@@ -758,6 +756,36 @@ class Script {
             return true;
         }
         return false;
+    }
+
+   /**
+    * Change the order of filter rules.
+    *
+    * @param integer $subject Array index of the rule to move
+    * @param integer $target Array index to move rule to
+    * @return boolean True if successful, false if not
+    */
+    function changeRuleOrder($subject, $target)
+    {
+        if ($target > (count($this->rules)-1)) {
+            $target = count($this->rules)-1;
+        }
+        $newrules = array();
+        if (isset($this->rules[$subject]) &&
+            isset($this->rules[$target]) && $subject !== $target) {
+            for ($i=0; $i<count($this->rules); $i++) {
+                if ($i === $subject) {
+                    // Ignore.
+                } else {
+                    if ($i === $target) {
+                        $newrules[] = $this->rules[$subject];
+                    }
+                    $newrules[] = $this->rules[$i];
+                }
+            }
+            $this->rules = $newrules;
+        }
+        return true;
     }
 
 }
