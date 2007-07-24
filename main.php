@@ -280,7 +280,7 @@ function getSummary($rule)
                 $complete .= sprintf("'From:' %s '%s'",
                     $match, SmartSieve::utf8Decode($condition['matchStr']));
                 $started = 1;
-            } if ($condition['header'] == 'to') {
+            } elseif ($condition['header'] == 'to') {
                 $complete .= sprintf("'To:' %s '%s'",
                     $match, SmartSieve::utf8Decode($condition['matchStr']));
                 $started = 1;
