@@ -480,6 +480,7 @@ class Script {
             $newscript = $newscripthead . $this->removeEncoding()  . $newscriptfoot;
         }
 
+echo $newscript; exit;
         // Upload the updated script.
         $slist = SmartSieve::getScriptList();
         if (!$managesieve->putScript($this->name, $newscript)) {
@@ -531,6 +532,9 @@ class Script {
                 foreach ($rule['conditions'] as $condition) {
                     $newruletext .= ($started) ? ', ' : '';
                     if ($condition['type'] == TEST_ADDRESS) {
+                        if ($condition['matchType'] == MATCH_REGEX) {
+                            $this->extensions['regex'] = true;
+                        }
                         if ($condition['header'] == 'from') {
                             $newruletext .= sprintf("%saddress %s [\"From\"] \"%s\"",
                                 (!empty($condition['not'])) ? 'not ' : '',
@@ -545,6 +549,9 @@ class Script {
                                 $condition['matchType'], $condition['header'], $condition['matchStr']);
                         }
                     } elseif ($condition['type'] == TEST_HEADER) {
+                        if ($condition['matchType'] == MATCH_REGEX) {
+                            $this->extensions['regex'] = true;
+                        }
                         if ($condition['header'] == 'subject') {
                             $newruletext .= sprintf("%sheader %s \"subject\" \"%s\"",
                                 (!empty($condition['not'])) ? 'not ' : '',
@@ -608,6 +615,7 @@ class Script {
                             $addstr .= ']';
                         }
                         $newruletext .= sprintf("%svacation %s%stext:\n%s\n.\n;\n\n",
+                            $this->hasCondition($rule) ? "\t" : '',
                             (!empty($action['days'])) ? sprintf(":days %s ", $action['days']) : '',
                             (!empty($addstr)) ? $addstr : '', $action['message']);
                         $this->extensions['vacation'] = true;
@@ -772,15 +780,22 @@ class Script {
         }
         $newrules = array();
         if (isset($this->rules[$subject]) &&
-            isset($this->rules[$target]) && $subject !== $target) {
+            isset($this->rules[$target]) && $subject != $target) {
             for ($i=0; $i<count($this->rules); $i++) {
-                if ($i === $subject) {
+                if ($i == $subject) {
                     // Ignore.
                 } else {
                     if ($i === $target) {
-                        $newrules[] = $this->rules[$subject];
+                        if ($subject < $target) { // Add after.
+                            $newrules[] = $this->rules[$i];
+                            $newrules[] = $this->rules[$subject];
+                        } else {                  // Add before.
+                            $newrules[] = $this->rules[$subject];
+                            $newrules[] = $this->rules[$i];
+                        }
+                    } else {
+                        $newrules[] = $this->rules[$i];
                     }
-                    $newrules[] = $this->rules[$i];
                 }
             }
             $this->rules = $newrules;
