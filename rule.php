@@ -67,15 +67,11 @@ if (!isset($_SESSION['smartsieve']['mailboxes'])) {
 
 // Get values for this rule.
 $ruleID = null;
-$rule = array('priority' => $script->pcount+1,
-              'status' => 'ENABLED',
-              'startNewBlock' => 0,
-              'useRegex' => 0,
+$rule = array('status' => 'ENABLED',
+              'control' => CONTROL_ELSEIF,
               'matchAny' => 0,
               'conditions' => array(),
               'actions' => array(),
-              'flg' => 0,
-              'unconditional' => 0
               );
 // Get form values from POST data.
 if (isset($_POST['ruleID'])) {
@@ -91,16 +87,16 @@ elseif (isset($_GET['ruleID'])) {
 }
 // If using spam mode, look for an existing spam rule.
 elseif ($mode == SMARTSIEVE_RULE_MODE_SPAM) {
-    $ruleID = getSpamRule();
-    if ($ruleID !== null) {
-        $rule = $script->rules[$ruleID];
+    $ruleID = 'spam';
+    if (!empty($script->spamRule)) {
+        $rule = $script->spamRule;
     }
 }
 // If using forward mode, look for an existing forward rule.
 elseif ($mode == SMARTSIEVE_RULE_MODE_FORWARD) {
-    $ruleID = getForwardRule();
-    if ($ruleID !== null) {
-        $rule = $script->rules[$ruleID];
+    $ruleID = 'forward';
+    if (!empty($script->forwardRule)) {
+        $rule = $script->forwardRule;
     }
 }
 
@@ -270,10 +266,8 @@ SmartSieve::close();
 function getPOSTValues()
 {
     $rule = array();
-    $rule['priority'] = SmartSieve::getPOST('priority', '0');
     $rule['status'] = SmartSieve::getPOST('status', 'ENABLED');
-    $rule['startNewBlock'] = SmartSieve::getPOST('startNewBlock');
-    $rule['useRegex'] = SmartSieve::getPOST('regexp');
+    $rule['control'] = SmartSieve::getPOST('control');
     $rule['matchAny'] = SmartSieve::getPOST('anyof');
     $rule['conditions'] = array();
     $i = 0;
@@ -307,6 +301,40 @@ function getPOSTValues()
                 $condition['header'] = SmartSieve::utf8Encode(SmartSieve::getPOST('header'.$i));
                 $condition['matchStr'] = SmartSieve::utf8Encode(SmartSieve::getPOST('headerMatchStr'.$i));
                 break;
+        }
+        if ($type != 'new' && ($condition['type'] == TEST_ADDRESS || $condition['type'] == TEST_HEADER)) {
+            $matchType = SmartSieve::getPOST('matchType'.$i);
+            switch ($matchType) {
+                case ('is'):
+                    $condition['matchType'] = MATCH_IS;
+                    break;
+                case ('notis'):
+                    $condition['matchType'] = MATCH_IS;
+                    $condition['not'] = true;
+                    break;
+                case ('matches'):
+                    $condition['matchType'] = MATCH_MATCHES;
+                    break;
+                case ('notmatches'):
+                    $condition['matchType'] = MATCH_MATCHES;
+                    $condition['not'] = true;
+                    break;
+                case ('regex'):
+                    $condition['matchType'] = MATCH_REGEX;
+                    break;
+                case ('notregex'):
+                    $condition['matchType'] = MATCH_REGEX;
+                    $condition['not'] = true;
+                    break;
+                case ('notcontains'):
+                    $condition['matchType'] = MATCH_CONTAINS;
+                    $condition['not'] = true;
+                    break;
+                case ('contains'):
+                default:
+                    $condition['matchType'] = MATCH_CONTAINS;
+                    break;
+            }
         }
         // If delete value set, ignore this condition.
         if (SmartSieve::getPOST('delete' . $i++) == '1' || $type == 'new') {
@@ -353,7 +381,6 @@ function getPOSTValues()
         }
         $rule['actions'][] = $action;
     }
-    $rule['flg'] = SmartSieve::getPOST('flg', '0');
     return $rule;
 }
 

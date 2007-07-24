@@ -30,10 +30,10 @@
     <TABLE WIDTH="100%" CELLPADDING="2" BORDER="0" CELLSPACING="0">
     <TR>
       <TD>
-    <INPUT TYPE="checkbox" NAME="startNewBlock" VALUE="<?php echo CONTINUE_BIT;?>"<?php echo ($rule['startNewBlock']) ? ' CHECKED="checked"' : '';?>><?php echo SmartSieve::text('Next rule starts a new if/elseif/else block');?> 
-<?php if (SmartSieve::getConf('allow_regex')): ?>
-    <INPUT TYPE="checkbox" NAME="regexp" VALUE="<?php echo REGEX_BIT;?>"<?php echo ($rule['useRegex']) ? ' CHECKED="checked"' : '';?>><?php echo SmartSieve::text('Use regular expression matching');?> 
-<?php endif; ?>
+        <select name="control">
+            <option value="<?php echo CONTROL_IF;?>"<?php echo ($rule['control'] == CONTROL_IF) ? ' selected="selected"' : '';?>><?php echo SmartSieve::text('If');?></option>
+            <option value="<?php echo CONTROL_ELSEIF;?>"<?php echo ($rule['control'] == CONTROL_ELSEIF) ? ' selected="selected"' : '';?>><?php echo SmartSieve::text('Else If');?></option>
+        </select>
       </TD>
     </TR>
     </TABLE>
@@ -84,7 +84,16 @@
         &nbsp;
 <?php elseif ($condition['type'] == TEST_HEADER && $condition['header'] !== 'subject'):?>
         <INPUT TYPE="text" NAME="header<?php echo $i;?>" VALUE="<?php echo SmartSieve::utf8Decode($condition['header']);?>" SIZE="20">
-        <?php echo SmartSieve::text("contains");?>:
+        <select name="matchType<?php echo $i;?>">
+            <option value="is"<?php echo ($condition['matchType'] == MATCH_IS && empty($condition['not'])) ? ' selected="selected"' : '';?>><?php echo SmartSieve::text('is');?></option>
+            <option value="notis"<?php echo ($condition['matchType'] == MATCH_IS && !empty($condition['not'])) ? ' selected="selected"' : '';?>><?php echo SmartSieve::text('is not');?></option>
+            <option value="contains"<?php echo ($condition['matchType'] == MATCH_CONTAINS && empty($condition['not'])) ? ' selected="selected"' : '';?>><?php echo SmartSieve::text('contains');?></option>
+            <option value="notcontains"<?php echo ($condition['matchType'] == MATCH_CONTAINS && !empty($condition['not'])) ? ' selected="selected"' : '';?>><?php echo SmartSieve::text('does not contain');?></option>
+            <option value="matches"<?php echo ($condition['matchType'] == MATCH_MATCHES && empty($condition['not'])) ? ' selected="selected"' : '';?>><?php echo SmartSieve::text('matches');?></option>
+            <option value="notmatches"<?php echo ($condition['matchType'] == MATCH_MATCHES && !empty($condition['not'])) ? ' selected="selected"' : '';?>><?php echo SmartSieve::text('does not match');?></option>
+            <option value="regex"<?php echo ($condition['matchType'] == MATCH_REGEX && empty($condition['not'])) ? ' selected="selected"' : '';?>><?php echo SmartSieve::text('matches regular expression');?></option>
+            <option value="notregex"<?php echo ($condition['matchType'] == MATCH_REGEX && !empty($condition['not'])) ? ' selected="selected"' : '';?>><?php echo SmartSieve::text('does not match regular expression');?></option>
+        </select>
         <INPUT TYPE="text" NAME="headerMatchStr<?php echo $i;?>" VALUE="<?php echo SmartSieve::utf8Decode($condition['matchStr']);?>" SIZE="30">
         <INPUT TYPE="hidden" NAME="delete<?php echo $i;?>" VALUE="">
         &nbsp;<A HREF="" onclick="document.forms.thisRule.header<?php echo $i;?>.value=''; document.forms.thisRule.headerMatchStr<?php echo $i;?>.value=''; document.forms.thisRule.delete<?php echo $i;?>.value='1'; document.forms.thisRule.submit(); return false;">
@@ -101,6 +110,16 @@
           <IMG SRC="<?php echo SmartSieve::getConf('image_dir', 'images');?>/delete.gif" ALT="<?php echo SmartSieve::text('Delete condition');?>'" BORDER="0" onmouseover="window.status='<?php echo SmartSieve::text('Delete condition');?>'; return true;" onmouseout="window.status='';">
         </a>
 <?php else:?>
+        <select name="matchType<?php echo $i;?>">
+            <option value="is"<?php echo ($condition['matchType'] == MATCH_IS && empty($condition['not'])) ? ' selected="selected"' : '';?>><?php echo SmartSieve::text('is');?></option>
+            <option value="notis"<?php echo ($condition['matchType'] == MATCH_IS && !empty($condition['not'])) ? ' selected="selected"' : '';?>><?php echo SmartSieve::text('is not');?></option>
+            <option value="contains"<?php echo ($condition['matchType'] == MATCH_CONTAINS && empty($condition['not'])) ? ' selected="selected"' : '';?>><?php echo SmartSieve::text('contains');?></option>
+            <option value="notcontains"<?php echo ($condition['matchType'] == MATCH_CONTAINS && !empty($condition['not'])) ? ' selected="selected"' : '';?>><?php echo SmartSieve::text('does not contain');?></option>
+            <option value="matches"<?php echo ($condition['matchType'] == MATCH_MATCHES && empty($condition['not'])) ? ' selected="selected"' : '';?>><?php echo SmartSieve::text('matches');?></option>
+            <option value="notmatches"<?php echo ($condition['matchType'] == MATCH_MATCHES && !empty($condition['not'])) ? ' selected="selected"' : '';?>><?php echo SmartSieve::text('does not match');?></option>
+            <option value="regex"<?php echo ($condition['matchType'] == MATCH_REGEX && empty($condition['not'])) ? ' selected="selected"' : '';?>><?php echo SmartSieve::text('matches regular expression');?></option>
+            <option value="notregex"<?php echo ($condition['matchType'] == MATCH_REGEX && !empty($condition['not'])) ? ' selected="selected"' : '';?>><?php echo SmartSieve::text('does not match regular expression');?></option>
+        </select>
         <INPUT TYPE="text" NAME="<?php echo $condition['header'] . $i;?>" VALUE="<?php echo SmartSieve::utf8Decode($condition['matchStr']);?>" SIZE="50">
         <INPUT TYPE="hidden" NAME="delete<?php echo $i;?>" VALUE="">
         &nbsp;<A HREF="" onclick="document.forms.thisRule.<?php echo $condition['header'] . $i;?>.value=''; document.forms.thisRule.delete<?php echo $i;?>.value='1'; document.forms.thisRule.submit(); return false;">
@@ -189,9 +208,7 @@
 </TABLE>
 
 
-<INPUT TYPE="hidden" NAME="priority" VALUE="<?php echo $rule['priority'];?>">
 <INPUT TYPE="hidden" NAME="status" VALUE="<?php echo ($rule['status'] == 'ENABLED') ? 'ENABLED' : 'DISABLED';?>">
-<INPUT TYPE="hidden" NAME="flg" VALUE="<?php echo $rule['flg'];?>">
 <INPUT TYPE="hidden" NAME="thisAction" VALUE="">
 <INPUT TYPE="hidden" NAME="ruleID" VALUE="<?php echo (isset($ruleID)) ? $ruleID : 'new';?>">
 <INPUT TYPE="hidden" NAME="mode" VALUE="<?php echo $mode;?>">
