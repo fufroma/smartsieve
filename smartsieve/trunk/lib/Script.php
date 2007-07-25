@@ -802,6 +802,46 @@ class Script {
         return true;
     }
 
+   /**
+    * Add a new filter rule.
+    *
+    * @param array $rule The rule to add
+    * @param integer $position Optional array position at which to add rule
+    * @return integer Array index of added rule
+    */
+    function addRule($rule, $position=null)
+    {
+        if (!is_null($position) && is_int($position) &&
+            $position < count($this->rules)) {
+            $newrules = array();
+            for ($i=0; $i<count($this->rules); $i++) {
+                if ($i == $position) {
+                    $newrules[] = $rule;
+                }
+                $newrules[] = $this->rules[$i];
+            }
+            $this->rules = $newrules;
+            return $position;
+        }
+        return array_push($this->rules, $rule) - 1;
+    }
+
+   /**
+    * Save an existing filter rule.
+    *
+    * @param array $rule The rule to save
+    * @param integer $position Array index of rule
+    * @return integer Array index of added rule
+    */
+    function saveRule($rule, $position)
+    {
+        if (!isset($this->rules[$position])) {
+            return $this->addRule($rule);
+        }
+        $this->rules[$position] = $rule;
+        return $position;
+    }
+
 }
 
 ?>

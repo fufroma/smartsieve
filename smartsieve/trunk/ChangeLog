@@ -1,6 +1,10 @@
 Smartsieve - ChangeLog
 ----------------------
 
+25 Jul 2007 S Grier
+* Added addRule() and saveRule() to Script class.
+* Added "Save at position X" widget.
+
 24 Jul 2007 S Grier
 * Cleanups. Remove Script::concatenateValues() and Script::splitValues().
 * Add Script::changeRuleOrder().

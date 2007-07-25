@@ -177,6 +177,19 @@
       </TD>
     </TR>
 <?php $i++; endforeach;?>
+<?php if (!isset($ruleID) || $ruleID == 'new') :?>
+    <TR>
+      <TD CLASS="main">
+        <?php echo SmartSieve::text('Save at position');?> 
+        <select name="position">
+<?php for ($i=0; $i<count($script->rules); $i++):?>
+          <option value="<?php echo $i;?>"<?php echo ($ruleID === $i) ? ' selected="selected"' : '';?>><?php echo $i+1;?></option>
+<?php endfor;?>
+          <option value="<?php echo count($script->rules);?>"<?php echo (!isset($ruleID) || $ruleID == 'new') ? ' selected="selected"' : '';?>><?php echo count($script->rules)+1;?></option>
+        </select>
+      </TD>
+    </TR>
+<?php endif;?>
     </TABLE>
 
   </TD>

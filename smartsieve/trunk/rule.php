@@ -23,6 +23,8 @@ define("SMARTSIEVE_RULE_MODE_GENERAL", 'general');
 define("SMARTSIEVE_RULE_MODE_FORWARD", 'forward');
 define("SMARTSIEVE_RULE_MODE_SPAM", 'spam');
 define("SMARTSIEVE_RULE_MODE_CUSTOM", 'custom');
+define("SMARTSIEVE_RULE_MODE_WHITELIST", 'whitelist');
+define("SMARTSIEVE_RULE_MODE_VACATION", 'vacation');
 
 SmartSieve::checkAuthentication();
 
@@ -47,6 +49,12 @@ if (SmartSieve::getFormValue('mode')) {
             break;
         case (SMARTSIEVE_RULE_MODE_CUSTOM):
             $mode = SMARTSIEVE_RULE_MODE_CUSTOM;
+            break;
+        case (SMARTSIEVE_RULE_MODE_WHITELIST):
+            $mode = SMARTSIEVE_RULE_MODE_WHITELIST;
+            break;
+        case (SMARTSIEVE_RULE_MODE_VACATION):
+            $mode = SMARTSIEVE_RULE_MODE_VACATION;
             break;
     }
 }
@@ -97,6 +105,12 @@ elseif ($mode == SMARTSIEVE_RULE_MODE_FORWARD) {
     $ruleID = 'forward';
     if (!empty($script->forwardRule)) {
         $rule = $script->forwardRule;
+    }
+}
+// Check if this is a custom rule.
+foreach ($rule['actions'] as $action) {
+    if ($action['type'] == ACTION_CUSTOM) {
+        $mode = SMARTSIEVE_RULE_MODE_CUSTOM;
     }
 }
 
@@ -182,28 +196,28 @@ switch ($action) {
 
     case ('save'):
         if (isSane($rule)) {
-            // if existing rule, update. add new if not.
-            if (isset($script->rules[$ruleID])){
-                $oldrule = $script->rules[$ruleID];
-                $script->rules[$ruleID] = $rule;
+            if ($mode == SMARTSIEVE_RULE_MODE_SPAM) {
+                $script->spamRule = $rule;
+            } elseif ($mode == SMARTSIEVE_RULE_MODE_FORWARD) {
+                $script->forwardRule = $rule;
+            } elseif ($mode == SMARTSIEVE_RULE_MODE_CUSTOM) {
+            } elseif ($mode == SMARTSIEVE_RULE_MODE_WHITELIST) {
+                $script->whitelist = $rule;
+            } elseif ($mode == SMARTSIEVE_RULE_MODE_VACATION) {
+                $script->vacation = $rule;
             } else {
-                if ($mode == SMARTSIEVE_RULE_MODE_SPAM) {
-                    array_unshift($script->rules, $rule);
-                    $ruleID = 0;
+                if (isset($script->rules[$ruleID])) {
+                    $script->saveRule($rule, $ruleID);
                 } else {
-                    $ruleID = array_push($script->rules, $rule) - 1;
+                    $ruleID = $script->addRule($rule, (int)SmartSieve::getPOST('position'));
                 }
             }
+
             // write and save the new script.
             if (!$script->updateScript()) {
                 SmartSieve::setError(SmartSieve::text('ERROR: ') . $script->errstr);
                 SmartSieve::log(sprintf('failed writing script "%s" for %s: %s',
                     $script->name, $_SESSION['smartsieve']['authz'], $script->errstr), LOG_ERR);
-                if (isset($oldrule)) {
-                    $script->rules[$ruleID] = $oldrule;
-                } else {
-                    unset($script->rules[$ruleID]);
-                }
             } else {
                 SmartSieve::setNotice(SmartSieve::text('your changes have been successfully saved.'));
                 if (SmartSieve::getConf('return_after_update') === true) {
