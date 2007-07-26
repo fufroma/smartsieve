@@ -156,6 +156,7 @@
           <OPTION VALUE="<?php echo ACTION_REDIRECT;?>"<?php echo ($action['type'] == ACTION_REDIRECT) ? ' SELECTED="selected"' : '';?>><?php echo SmartSieve::text("Forward to address");?></OPTION>
           <OPTION VALUE="<?php echo ACTION_REJECT;?>"<?php echo ($action['type'] == ACTION_REJECT) ? ' SELECTED="selected"' : '';?>><?php echo SmartSieve::text("Send a reject message");?></OPTION>
           <OPTION VALUE="<?php echo ACTION_DISCARD;?>"<?php echo ($action['type'] == ACTION_DISCARD) ? ' SELECTED="selected"' : '';?>><?php echo SmartSieve::text("Discard the message");?></OPTION>
+          <OPTION VALUE="<?php echo ACTION_VACATION;?>"<?php echo ($action['type'] == ACTION_VACATION) ? ' SELECTED="selected"' : '';?>><?php echo SmartSieve::text('Send vacation message');?></OPTION>
           <OPTION VALUE="<?php echo ACTION_KEEP;?>"<?php echo ($action['type'] == ACTION_KEEP) ? ' SELECTED="selected"' : '';?>><?php echo SmartSieve::text('Keep a copy in your Inbox');?></OPTION>
           <OPTION VALUE="<?php echo ACTION_STOP;?>"<?php echo ($action['type'] == ACTION_STOP) ? ' SELECTED="selected"' : '';?>><?php echo SmartSieve::text('Stop processing filter rules');?></OPTION>
         </SELECT>
@@ -172,6 +173,50 @@
         <INPUT TYPE="text" NAME="<?php echo ACTION_REDIRECT . $i;?>" VALUE="<?php echo (!empty($action['address'])) ? SmartSieve::utf8Decode($action['address']) : '';?>" SIZE="40">
 <?php elseif ($action['type'] == ACTION_REJECT):?>
         <TEXTAREA NAME="<?php echo ACTION_REJECT . $i;?>" ROWS="3" COLS="<?php echo $wrap_width;?>" WRAP="hard"><?php echo SmartSieve::utf8Decode($action['message']);?></TEXTAREA>
+<?php elseif ($action['type'] == ACTION_VACATION):?>
+        <TABLE WIDTH="100%" CELLPADDING="5" BORDER="0" CELLSPACING="0">
+        <TR>
+          <TD>
+            &nbsp;
+          </TD>
+          <TD>
+            <TEXTAREA NAME="message<?php echo $i;?>" ROWS="3" COLS="<?php echo $wrap_width;?>" WRAP="hard"><?php echo (!empty($action['message'])) ? SmartSieve::utf8Decode($action['message']) : '';?></TEXTAREA>
+          </TD>
+        </TR>
+        <TR>
+          <TD>
+            <?php echo SmartSieve::text('Days between responses');?> 
+          </TD>
+          <TD>
+            <SELECT NAME="days<?php echo $i;?>">
+<?php for ($j=1; $j <= SmartSieve::getConf('max_vacation_days', 30); $j++):?>
+              <OPTION VALUE="<?php echo $j;?>"<?php echo ((empty($action['days']) && SmartSieve::getConf('vacation_days', 7) == $j) || $action['days']==$j) ? ' SELECTED' : '';?>><?php echo $j;?></OPTION>
+<?php endfor;?>
+            </SELECT>
+          </TD>
+        </TR>
+        <TR>
+          <TD>
+            <?php echo SmartSieve::text('Your e-mail addresses');?> 
+          </TD>
+          <TD>
+            <TABLE WIDTH="100%" CELLPADDING="5" BORDER="0" CELLSPACING="0">
+<?php foreach (getAllAddresses($action['addresses']) as $addr=>$checked):?>
+            <TR>
+              <TD>
+                <INPUT TYPE="checkbox" NAME="address<?php echo $i;?>[]" VALUE="<?php echo $addr;?>"<?php echo ($checked === true) ? ' CHECKED="checked"' : '';?>>&nbsp;<?php echo $addr;?>
+              </TD>
+            </TR>
+<?php endforeach;?>
+            <TR>
+              <TD>
+                <INPUT TYPE="text" NAME="newaddresses<?php echo $i;?>" VALUE="" SIZE="50">
+              </TD>
+            </TR>
+            </TABLE>
+          </TD>
+        </TR>
+        </TABLE>
 <?php elseif ($action['type'] == ACTION_DISCARD || $action['type'] == ACTION_KEEP || $action['type'] == ACTION_STOP):?>
 <?php endif;?>
       </TD>
