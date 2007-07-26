@@ -58,7 +58,7 @@
         <?php echo $vRow['status'];?> 
       </TD>
       <TD COLSPAN="2">
-        <A CLASS="rule" HREF="<?php echo SmartSieve::setUrl('vacation.php'); ?>" onmouseover="window.status='<?php echo SmartSieve::text('Edit vacation settings');?>'; return true;" onmouseout="window.status='';"><?php echo $vRow['summary'];?></A>
+        <A CLASS="rule" HREF="<?php echo SmartSieve::setUrl('rule.php?mode=vacation'); ?>" onmouseover="window.status='<?php echo SmartSieve::text('Edit vacation settings');?>'; return true;" onmouseout="window.status='';"><?php echo $vRow['summary'];?></A>
       </TD>
     </TR>
 <?php endif;?>
