@@ -518,7 +518,7 @@ class Script {
         static $startNewBlock = true;
 
         // Generate sieve if rule is enabled.
-        if ($rule['status'] == 'ENABLED') {
+        if (!empty($rule) && $rule['status'] == 'ENABLED') {
 
             // Conditions
 
@@ -840,6 +840,27 @@ class Script {
         }
         $this->rules[$position] = $rule;
         return $position;
+    }
+
+   /**
+    * Delete a filter rule.
+    *
+    * @param integer $rid Array index of the rule to delete
+    * @return boolean True if successful, false if not
+    */
+    function deleteRule($rid)
+    {
+        $deleted = false;
+        $newrules = array();
+        for ($i=0; $i<count($this->rules); $i++) {
+            if ($i === $rid) {
+                $deleted = true;
+            } else {
+                $newrules[] = $this->rules[$i];
+            }
+        }
+        $this->rules = $newrules;
+        return $deleted;
     }
 
 }

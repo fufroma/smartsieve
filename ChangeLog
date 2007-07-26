@@ -1,6 +1,10 @@
 Smartsieve - ChangeLog
 ----------------------
 
+26 Jul 2007 S Grier
+* Add vacation action to rule.php.
+* Add Script::deleteRule().
+
 25 Jul 2007 S Grier
 * Added addRule() and saveRule() to Script class.
 * Added "Save at position X" widget.

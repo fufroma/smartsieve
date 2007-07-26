@@ -106,6 +106,11 @@ elseif ($mode == SMARTSIEVE_RULE_MODE_FORWARD) {
     if (!empty($script->forwardRule)) {
         $rule = $script->forwardRule;
     }
+} elseif ($mode == SMARTSIEVE_RULE_MODE_VACATION) {
+    $ruleID = 'vacation';
+    if (!empty($script->vacation)) {
+        $rule = $script->vacation;
+    }
 }
 // Check if this is a custom rule.
 foreach ($rule['actions'] as $action) {
@@ -173,18 +178,32 @@ switch ($action) {
         break;
 
     case ('delete'):
-        if (isset($script->rules[$ruleID])){
-            $status = $script->rules[$ruleID]['status'];
-            $script->rules[$ruleID]['status'] = 'DELETED';
+        $deleted = false;
+        if ($mode == SMARTSIEVE_RULE_MODE_SPAM) {
+            $script->spamRule = array();
+            $deleted = true;
+        } elseif ($mode == SMARTSIEVE_RULE_MODE_FORWARD) {
+            $script->forwardRule = array();
+            $deleted = true;
+        } elseif ($mode == SMARTSIEVE_RULE_MODE_CUSTOM) {
+        } elseif ($mode == SMARTSIEVE_RULE_MODE_WHITELIST) {
+            $script->whitelist = array();
+            $deleted = true;
+        } elseif ($mode == SMARTSIEVE_RULE_MODE_VACATION) {
+            $script->vacation = array();
+            $deleted = true;
+        } else {
+            if (isset($script->rules[$ruleID])){
+                $deleted = $script->deleteRule($ruleID);
+            }
+        }
+        if ($deleted == true) {
             // write and save the new script.
             if (!$script->updateScript()) {
                 SmartSieve::setError(SmartSieve::text('ERROR: ') . $script->errstr);
                 SmartSieve::log(sprintf('failed writing script "%s" for %s: %s',
                     $script->name, $_SESSION['smartsieve']['authz'], $script->errstr), LOG_ERR);
-                $script->rules[$ruleID]['status'] = $status;
             } else {
-                unset($script->rules[$ruleID]);
-                $script->rules = array_values($script->rules);
                 SmartSieve::setNotice(SmartSieve::text('Rule successfully deleted.'));
                 header('Location: ' . SmartSieve::setUrl('main.php'),true);
                 exit;
@@ -256,6 +275,10 @@ switch ($mode) {
     case (SMARTSIEVE_RULE_MODE_CUSTOM):
         $help_url = SmartSieve::getConf('custom_help_url', '');
         $template = '/custom.inc';
+        break;
+    case (SMARTSIEVE_RULE_MODE_VACATION):
+        $help_url = SmartSieve::getConf('vacation_help_url', '');
+        $template = '/vacation.inc';
         break;
     default:
         $help_url = SmartSieve::getConf('rule_help_url', '');
@@ -388,6 +411,27 @@ function getPOSTValues()
                 $action['type'] = ACTION_CUSTOM;
                 $action['sieve'] = SmartSieve::utf8Encode(SmartSieve::getPOST('sieve'));
                 break;
+            case (ACTION_VACATION):
+                $action['type'] = ACTION_VACATION;
+                $action['message'] = SmartSieve::utf8Encode(SmartSieve::getPOST('message'.$i));
+                $action['days'] = SmartSieve::getPOST('days'.$i);
+                $addrs = SmartSieve::getFormValue('address'.$i);
+                $addresses = array();
+                if (is_array($addrs)) {
+                    foreach ($addrs as $addr) {
+                        $addresses[] = SmartSieve::utf8Encode($addr);
+                    }
+                }
+                $newAddrs = SmartSieve::utf8Encode(SmartSieve::getFormValue('newaddresses'.$i));
+                $newAddrs = preg_replace("/\"|\\\/", "", $newAddrs);
+                $addrs = preg_split("/\s*,\s*|\s+/", $newAddrs);
+                foreach ($addrs as $addr) {
+                    if (!empty($addr)) {
+                        $addresses[] = $addr;
+                    }
+                }
+                $action['addresses'] = array_unique($addresses);
+                break;
         }
         // If delete value set, ignore this condition.
         if (SmartSieve::getPOST('deleteAction' . $i++) == '1' || $type == 'new') {
@@ -455,6 +499,7 @@ function isSane($rule)
         if (($action['type'] == ACTION_FILEINTO && empty($action['folder'])) ||
             ($action['type'] == ACTION_REDIRECT && empty($action['address'])) ||
             ($action['type'] == ACTION_REJECT && empty($action['message'])) ||
+            ($action['type'] == ACTION_VACATION && empty($action['message'])) ||
             ($action['type'] == ACTION_CUSTOM && empty($action['sieve']))) {
             SmartSieve::setError(SmartSieve::text("you must supply an argument for this action"));
             return false;
@@ -473,6 +518,24 @@ function isSane($rule)
         if ($action['type'] == ACTION_REJECT) {
             if (strlen($action['message']) > $max_textbox_chars) {
                 SmartSieve::setError(SmartSieve::text('your reject message is too long. it should not exceed %d characters.', array($max_textbox_chars)));
+                return false;
+            }
+        }
+        if ($action['type'] == ACTION_VACATION) {
+            if (strlen($action['message']) > $max_textbox_chars) {
+                SmartSieve::setError(SmartSieve::text('Your vacation message must not exceed %d characters',
+                    array($max_textbox_chars)));
+                return false;
+            }
+            foreach ($action['addresses'] as $addr) {
+                if (!preg_match("/^[\x21-\x7E]+@([0-9a-zA-Z-]+\.)+[0-9a-zA-Z]{2,}$/i", $addr)) {
+                    SmartSieve::setError(SmartSieve::text('"%s" is not a valid email address',
+                        array(htmlspecialchars($addr))));
+                    return false;
+                }
+            }
+            if (!is_numeric($action['days'])) {
+                SmartSieve::setError(SmartSieve::text('vacation days must be a positive integer'));
                 return false;
             }
         }
@@ -524,6 +587,49 @@ function getSpamRule()
         }
     }
     return null;
+}
+
+/**
+ * Format an array of vacation addresses for the vacation widget.
+ *
+ * The full list of addresses will include any set in an existing vacation
+ * action, plus those returned by get_email_addresses_hook, if set.
+ *
+ * @param array $addresses List of addresses set in existing vacation object
+ * @return array Formatted array of all addresses
+ */
+function getAllAddresses($addresses)
+{
+    $all = array();
+    if (is_array($addresses)) {
+        foreach ($addresses as $address) {
+            $all[SmartSieve::utf8Decode($address)] = true;
+        }
+    }
+    static $extra_addresses;
+    if (!isset($extra_addresses)) {
+        $extra_addresses = array();
+        if (($func = SmartSieve::getConf('get_email_addresses_hook')) !== null &&
+            function_exists($func)) {
+            $extra_addresses = call_user_func($func);
+        }
+    }
+    foreach ($extra_addresses as $addr) {
+        if (!in_array($addr, $addresses)) {
+            $all[SmartSieve::utf8Decode($addr)] = false;
+        }
+    }
+    // Try some other options if have no addresses.
+    if (empty($all)) {
+        // If username is fully qualified, suggest that.
+        if (strpos($_SESSION['smartsieve']['authz'],'@') !== false) {
+            $all[$_SESSION['smartsieve']['authz']] = false;
+        }
+        if (!empty($_SESSION['smartsieve']['server']['maildomain'])) {
+            $all[$_SESSION['smartsieve']['authz'] . '@' . $_SESSION['smartsieve']['server']['maildomain']] = false;
+        }
+    }
+    return $all;
 }
 
 ?>
