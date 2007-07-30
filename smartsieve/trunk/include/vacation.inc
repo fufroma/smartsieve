@@ -109,5 +109,6 @@
 <INPUT TYPE="hidden" NAME="thisAction" VALUE="">
 <INPUT TYPE="hidden" NAME="ruleID" VALUE="<?php echo (isset($ruleID)) ? $ruleID : 'new';?>">
 <INPUT TYPE="hidden" NAME="mode" VALUE="<?php echo $mode;?>">
+<INPUT TYPE="hidden" NAME="special" VALUE="<?php echo RULE_TAG_VACATION;?>">
 
 </FORM>
