@@ -26,6 +26,12 @@ define("SMARTSIEVE_RULE_MODE_CUSTOM", 'custom');
 define("SMARTSIEVE_RULE_MODE_WHITELIST", 'whitelist');
 define("SMARTSIEVE_RULE_MODE_VACATION", 'vacation');
 
+// Form actions.
+define("FORM_ACTION_ENABLE", 'enable');
+define("FORM_ACTION_DISABLE", 'disable');
+define("FORM_ACTION_DELETE", 'delete');
+define("FORM_ACTION_SAVE", 'save');
+
 SmartSieve::checkAuthentication();
 
 $smartsieve = &$_SESSION['smartsieve'];
@@ -39,24 +45,13 @@ if ($script->mode == 'advanced' || $script->so == false) {
 
 // What kind of rule are we creating?
 $mode = SMARTSIEVE_RULE_MODE_GENERAL;
-if (SmartSieve::getFormValue('mode')) {
-    switch (SmartSieve::getFormValue('mode')) {
-        case (SMARTSIEVE_RULE_MODE_SPAM):
-            $mode = SMARTSIEVE_RULE_MODE_SPAM;
-            break;
-        case (SMARTSIEVE_RULE_MODE_FORWARD):
-            $mode = SMARTSIEVE_RULE_MODE_FORWARD;
-            break;
-        case (SMARTSIEVE_RULE_MODE_CUSTOM):
-            $mode = SMARTSIEVE_RULE_MODE_CUSTOM;
-            break;
-        case (SMARTSIEVE_RULE_MODE_WHITELIST):
-            $mode = SMARTSIEVE_RULE_MODE_WHITELIST;
-            break;
-        case (SMARTSIEVE_RULE_MODE_VACATION):
-            $mode = SMARTSIEVE_RULE_MODE_VACATION;
-            break;
-    }
+if (($m = SmartSieve::getFormValue('mode')) !== null &&
+    ($m == SMARTSIEVE_RULE_MODE_SPAM ||
+     $m == SMARTSIEVE_RULE_MODE_FORWARD ||
+     $m == SMARTSIEVE_RULE_MODE_CUSTOM ||
+     $m == SMARTSIEVE_RULE_MODE_WHITELIST ||
+     $m == SMARTSIEVE_RULE_MODE_VACATION)) {
+    $mode = $m;
 }
 
 // Get the list of mailboxes for this user.
@@ -82,34 +77,32 @@ $rule = array('status' => 'ENABLED',
               'actions' => array(),
               );
 // Get form values from POST data.
-if (isset($_POST['ruleID'])) {
-    $ruleID = SmartSieve::getFormValue('ruleID');
+if (SmartSieve::getPOST('ruleID') !== null) {
+    $ruleID = SmartSieve::getPOST('ruleID');
     $rule = getPOSTValues();
 }
 // Use values from an existing rule.
-elseif (isset($_GET['ruleID'])) {
-    $ruleID = SmartSieve::getFormValue('ruleID');
-    if (isset($script->rules[$ruleID])) {
-        $rule = $script->rules[$ruleID];
-    }
+elseif (SmartSieve::getGET('ruleID') !== null) {
+    $ruleID = SmartSieve::getGET('ruleID');
+    $rule = $script->getRule($ruleID);
 }
 // If using spam mode, look for an existing spam rule.
 elseif ($mode == SMARTSIEVE_RULE_MODE_SPAM) {
-    $ruleID = 'spam';
-    if (!empty($script->spamRule)) {
-        $rule = $script->spamRule;
+    $ruleID = $script->getSpecialRuleId(RULE_TAG_SPAM);
+    if ($ruleID !== null) {
+        $rule = $script->getRule($ruleID);
     }
 }
 // If using forward mode, look for an existing forward rule.
 elseif ($mode == SMARTSIEVE_RULE_MODE_FORWARD) {
-    $ruleID = 'forward';
-    if (!empty($script->forwardRule)) {
-        $rule = $script->forwardRule;
+    $ruleID = $script->getSpecialRuleId(RULE_TAG_FORWARD);
+    if ($ruleID !== null) {
+        $rule = $script->getRule($ruleID);
     }
 } elseif ($mode == SMARTSIEVE_RULE_MODE_VACATION) {
-    $ruleID = 'vacation';
-    if (!empty($script->vacation)) {
-        $rule = $script->vacation;
+    $ruleID = $script->getSpecialRuleId(RULE_TAG_VACATION);
+    if ($ruleID !== null) {
+        $rule = $script->getRule($ruleID);
     }
 }
 // Check if this is a custom rule.
@@ -125,30 +118,24 @@ $action = SmartSieve::getFormValue('thisAction');
 
 switch ($action) {
 
-    case ('enable'):
+    case (FORM_ACTION_ENABLE):
+        $rule['status'] = 'ENABLED';
         if (isSane($rule)) {
-            $rule['status'] = 'ENABLED';
-            if ($mode == SMARTSIEVE_RULE_MODE_SPAM) {
-                $script->spamRule = $rule;
-            } elseif ($mode == SMARTSIEVE_RULE_MODE_FORWARD) {
-                $script->forwardRule = $rule;
-            } elseif ($mode == SMARTSIEVE_RULE_MODE_CUSTOM) {
-            } elseif ($mode == SMARTSIEVE_RULE_MODE_WHITELIST) {
-                $script->whitelist = $rule;
-            } elseif ($mode == SMARTSIEVE_RULE_MODE_VACATION) {
-                $script->vacation = $rule;
+            $oldrule = $script->getRule($ruleID);
+            if (isset($script->rules[$ruleID])) {
+                $ruleID = $script->saveRule($rule, $ruleID);
             } else {
-                if (isset($script->rules[$ruleID])) {
-                    $script->saveRule($rule, $ruleID);
-                } else {
-                    $ruleID = $script->addRule($rule, (int)SmartSieve::getPOST('position'));
-                }
+                $ruleID = $script->addRule($rule, (int)SmartSieve::getPOST('position'));
             }
-            // write and save the new script.
             if (!$script->updateScript()) {
                 SmartSieve::setError(SmartSieve::text('ERROR: ') . $script->errstr);
                 SmartSieve::log(sprintf('failed writing script "%s" for %s: %s',
                     $script->name, $_SESSION['smartsieve']['authz'], $script->errstr), LOG_ERR);
+                if ($oldrule) {
+                    $ruleID = $script->saveRule($oldrule, $ruleID);
+                } else {
+                    $script->deleteRule($ruleID);
+                }
             } else {
                 SmartSieve::setNotice(SmartSieve::text('rule successfully enabled.'));
                 if (SmartSieve::getConf('return_after_update') === true) {
@@ -159,30 +146,24 @@ switch ($action) {
         }
         break;
 
-    case ('disable'):
-        if (isSane($rule) === true) {
-            $rule['status'] = 'DISABLED';
-            if ($mode == SMARTSIEVE_RULE_MODE_SPAM) {
-                $script->spamRule = $rule;
-            } elseif ($mode == SMARTSIEVE_RULE_MODE_FORWARD) {
-                $script->forwardRule = $rule;
-            } elseif ($mode == SMARTSIEVE_RULE_MODE_CUSTOM) {
-            } elseif ($mode == SMARTSIEVE_RULE_MODE_WHITELIST) {
-                $script->whitelist = $rule;
-            } elseif ($mode == SMARTSIEVE_RULE_MODE_VACATION) {
-                $script->vacation = $rule;
+    case (FORM_ACTION_DISABLE):
+        $rule['status'] = 'DISABLED';
+        if (isSane($rule)) {
+            $oldrule = $script->getRule($ruleID);
+            if (isset($script->rules[$ruleID])) {
+                $ruleID = $script->saveRule($rule, $ruleID);
             } else {
-                if (isset($script->rules[$ruleID])) {
-                    $script->saveRule($rule, $ruleID);
-                } else {
-                    $ruleID = $script->addRule($rule, (int)SmartSieve::getPOST('position'));
-                }
+                $ruleID = $script->addRule($rule, (int)SmartSieve::getPOST('position'));
             }
-            // write and save the new script.
             if (!$script->updateScript()) {
                 SmartSieve::setError(SmartSieve::text('ERROR: ') . $script->errstr);
                 SmartSieve::log(sprintf('failed writing script "%s" for %s: %s',
                     $script->name, $_SESSION['smartsieve']['authz'], $script->errstr), LOG_ERR);
+                if ($oldrule) {
+                    $ruleID = $script->saveRule($oldrule, $ruleID);
+                } else {
+                    $script->deleteRule($ruleID);
+                }
             } else {
                 SmartSieve::setNotice(SmartSieve::text('rule successfully disabled.'));
                 if (SmartSieve::getConf('return_after_update') === true) {
@@ -193,32 +174,16 @@ switch ($action) {
         }
         break;
 
-    case ('delete'):
-        $deleted = false;
-        if ($mode == SMARTSIEVE_RULE_MODE_SPAM) {
-            $script->spamRule = array();
-            $deleted = true;
-        } elseif ($mode == SMARTSIEVE_RULE_MODE_FORWARD) {
-            $script->forwardRule = array();
-            $deleted = true;
-        } elseif ($mode == SMARTSIEVE_RULE_MODE_CUSTOM) {
-        } elseif ($mode == SMARTSIEVE_RULE_MODE_WHITELIST) {
-            $script->whitelist = array();
-            $deleted = true;
-        } elseif ($mode == SMARTSIEVE_RULE_MODE_VACATION) {
-            $script->vacation = array();
-            $deleted = true;
-        } else {
-            if (isset($script->rules[$ruleID])){
-                $deleted = $script->deleteRule($ruleID);
-            }
-        }
-        if ($deleted == true) {
-            // write and save the new script.
+    case (FORM_ACTION_DELETE):
+        $oldrule = $script->getRule($ruleID);
+        if ($script->deleteRule($ruleID)) {
             if (!$script->updateScript()) {
                 SmartSieve::setError(SmartSieve::text('ERROR: ') . $script->errstr);
                 SmartSieve::log(sprintf('failed writing script "%s" for %s: %s',
                     $script->name, $_SESSION['smartsieve']['authz'], $script->errstr), LOG_ERR);
+                if ($oldrule) {
+                    $ruleID = $script->saveRule($oldrule, $ruleID);
+                }
             } else {
                 SmartSieve::setNotice(SmartSieve::text('Rule successfully deleted.'));
                 header('Location: ' . SmartSieve::setUrl('main.php'),true);
@@ -229,30 +194,23 @@ switch ($action) {
         }
         break;
 
-    case ('save'):
+    case (FORM_ACTION_SAVE):
         if (isSane($rule)) {
-            if ($mode == SMARTSIEVE_RULE_MODE_SPAM) {
-                $script->spamRule = $rule;
-            } elseif ($mode == SMARTSIEVE_RULE_MODE_FORWARD) {
-                $script->forwardRule = $rule;
-            } elseif ($mode == SMARTSIEVE_RULE_MODE_CUSTOM) {
-            } elseif ($mode == SMARTSIEVE_RULE_MODE_WHITELIST) {
-                $script->whitelist = $rule;
-            } elseif ($mode == SMARTSIEVE_RULE_MODE_VACATION) {
-                $script->vacation = $rule;
+            $oldrule = $script->getRule($ruleID);
+            if (isset($script->rules[$ruleID])) {
+                $ruleID = $script->saveRule($rule, $ruleID);
             } else {
-                if (isset($script->rules[$ruleID])) {
-                    $script->saveRule($rule, $ruleID);
-                } else {
-                    $ruleID = $script->addRule($rule, (int)SmartSieve::getPOST('position'));
-                }
+                $ruleID = $script->addRule($rule, (int)SmartSieve::getPOST('position'));
             }
-
-            // write and save the new script.
             if (!$script->updateScript()) {
                 SmartSieve::setError(SmartSieve::text('ERROR: ') . $script->errstr);
                 SmartSieve::log(sprintf('failed writing script "%s" for %s: %s',
                     $script->name, $_SESSION['smartsieve']['authz'], $script->errstr), LOG_ERR);
+                if ($oldrule) {
+                    $ruleID = $script->saveRule($oldrule, $ruleID);
+                } else {
+                    $script->deleteRule($ruleID);
+                }
             } else {
                 SmartSieve::setNotice(SmartSieve::text('your changes have been successfully saved.'));
                 if (SmartSieve::getConf('return_after_update') === true) {
@@ -323,6 +281,10 @@ function getPOSTValues()
     $rule['control'] = SmartSieve::getPOST('control');
     $rule['matchAny'] = SmartSieve::getPOST('anyof');
     $rule['conditions'] = array();
+    $special = SmartSieve::getPOST('special');
+    if (!empty($special)) {
+        $rule['special'] = $special;
+    }
     $i = 0;
     while (($type = SmartSieve::getPOST('condition' . $i)) !== null) {
         $condition = array();
@@ -559,50 +521,6 @@ function isSane($rule)
 
     // All values sane.
     return true;
-}
-
-/**
- * Search for existing forward rule.
- *
- * @return mixed Matching rule array index if one exists, or null if not
- */
-function getForwardRule()
-{
-    for ($i=0;$i<count($GLOBALS['script']->rules);$i++) {
-        $conditions = $GLOBALS['script']->rules[$i]['conditions'];
-        $actions = $GLOBALS['script']->rules[$i]['actions'];
-        if (count($actions) === 1 && $actions[0]['type'] == ACTION_REDIRECT && empty($conditions)) {
-            return $i;
-        }
-    }
-    return null;
-}
-
-/**
- * Search for existing spam filter rule.
- *
- * This will search for a rule matching the settings
- * @return mixed Matching rule array index if one exists, or null if not
- */
-function getSpamRule()
-{
-    $config = SmartSieve::getConf('spam_filter');
-    if ($config === false ||
-        !is_array($config) ||
-        !isset($config['header']) ||
-        !isset($config['value'])) {
-        return null;
-    }
-    for ($i=0;$i<count($GLOBALS['script']->rules);$i++) {
-        $rule = $GLOBALS['script']->rules[$i];
-        $conditions = $GLOBALS['script']->rules[$i]['conditions'];
-        $actions = $GLOBALS['script']->rules[$i]['actions'];
-        if (count($conditions) == 1 && $conditions[0]['type'] == TEST_HEADER &&
-            $conditions[0]['header'] == $config['header'] && $conditions[0]['headerMatchStr'] == $config['value']) {
-            return $i;
-        }
-    }
-    return null;
 }
 
 /**

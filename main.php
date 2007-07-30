@@ -19,6 +19,14 @@ session_set_cookie_params(0, SmartSieve::getConf('cookie_path', ''), SmartSieve:
 session_name(SmartSieve::getConf('session_name', session_name()));
 @session_start();
 
+// Form actions.
+define("FORM_ACTION_ENABLE", 'enable');
+define("FORM_ACTION_DISABLE", 'disable');
+define("FORM_ACTION_DELETE", 'delete');
+define("FORM_ACTION_SAVE", 'save');
+define("FORM_ACTION_CHANGEORDER", 'changeOrder');
+define("FORM_ACTION_VIEWSOURCE", 'viewSource');
+
 SmartSieve::checkAuthentication();
 
 $smartsieve = &$_SESSION['smartsieve'];
@@ -31,23 +39,20 @@ if (isset($_POST['script'])) {
 $script = &$_SESSION['scripts'][$_SESSION['smartsieve']['workingScript']];
 
 
-
 /* do rule status change if requested. */
 
 $action = SmartSieve::getFormValue('action');
 
 switch ($action) {
 
-    case ('enable'):
+    case (FORM_ACTION_ENABLE):
         $changes = false;
-        $ruleIDs = SmartSieve::getFormValue('ruleID');
+        $ruleIDs = SmartSieve::getPOST('ruleID');
         if (is_array($ruleIDs)) {
             foreach ($ruleIDs as $ruleID) {
-                if ($ruleID == 'vacation' && !empty($script->vacation)) {
-                    $script->vacation['status'] = 'ENABLED';
-                    $changes = true;
-                } elseif (isset($script->rules[$ruleID])) {
-                    $script->rules[$ruleID]['status'] = 'ENABLED';
+                if (($rule = $script->getRule($ruleID)) !== null) {
+                    $rule['status'] = 'ENABLED';
+                    $script->saveRule($rule, $ruleID);
                     $changes = true;
                 }
             }
@@ -64,16 +69,14 @@ switch ($action) {
         }
         break;
 
-    case ('disable'):
+    case (FORM_ACTION_DISABLE):
         $changes = false;
-        $ruleIDs = SmartSieve::getFormValue('ruleID');
+        $ruleIDs = SmartSieve::getPOST('ruleID');
         if (is_array($ruleIDs)) {
             foreach ($ruleIDs as $ruleID) {
-                if ($ruleID == 'vacation' && !empty($script->vacation)) {
-                    $script->vacation['status'] = 'DISABLED';
-                    $changes = true;
-                } elseif (isset($script->rules[$ruleID])) {
-                    $script->rules[$ruleID]['status'] = 'DISABLED';
+                if (($rule = $script->getRule($ruleID)) !== null) {
+                    $rule['status'] = 'DISABLED';
+                    $script->saveRule($rule, $ruleID);
                     $changes = true;
                 }
             }
@@ -90,18 +93,12 @@ switch ($action) {
         }
         break;
 
-    case ('delete'):
+    case (FORM_ACTION_DELETE):
         $changes = false;
-        $ruleIDs = SmartSieve::getFormValue('ruleID');
+        $ruleIDs = SmartSieve::getPOST('ruleID');
         if (is_array($ruleIDs)) {
             foreach ($ruleIDs as $ruleID) {
-                if ($ruleID == 'vacation' && !empty($script->vacation)) {
-                    $script->vacation = array();
-                    $changes = true;
-                } elseif (isset($script->rules[$ruleID])) {
-                    $script->rules[$ruleID]['status'] = 'DELETED';
-                    $changes = true;
-                }
+                $changes = $script->deleteRule($ruleID);
             }
         }
         if ($changes === true) {
@@ -116,7 +113,7 @@ switch ($action) {
         }
         break;
 
-    case ('save'):
+    case (FORM_ACTION_SAVE):
         $script->content = SmartSieve::utf8Encode(SmartSieve::getFormValue('text'));
         if (!$script->updateScript()) {
             SmartSieve::setError(SmartSieve::text('ERROR: ') . $script->errstr);
@@ -128,20 +125,10 @@ switch ($action) {
         }
         break;
 
-    case ('increase'):
-        $rindex = SmartSieve::getFormValue('rindex');
-        $script->changeRuleOrder($rindex, ($rindex-1));
-        if (!$script->updateScript()) {
-            SmartSieve::setError(SmartSieve::text('ERROR: ') . $script->errstr);
-            $logmsg = sprintf('failed writing script "%s" for %s: %s',
-                $script->name, $_SESSION['smartsieve']['authz'], $script->errstr);
-            SmartSieve::log($logmsg, LOG_ERR);
-        }
-        break;
-
-    case ('decrease'):
-        $rindex = SmartSieve::getFormValue('rindex');
-        $script->changeRuleOrder($rindex, ($rindex+1));
+    case (FORM_ACTION_CHANGEORDER):
+        $ridx = SmartSieve::getPOST('rindex');
+        $newidx = SmartSieve::getPOST('toPosition')-1;
+        $script->changeRuleOrder($ridx, $newidx);
         if (!$script->updateScript()) {
             SmartSieve::setError(SmartSieve::text('ERROR: ') . $script->errstr);
             $logmsg = sprintf('failed writing script "%s" for %s: %s',
@@ -174,7 +161,7 @@ switch ($action) {
         }
         break;
 
-    case ('view_source'):
+    case (FORM_ACTION_VIEWSOURCE):
         header('Content-Type: text/plain; charset=utf-8');
         echo $script->content;
         exit;
@@ -226,23 +213,12 @@ if ($script->mode == 'advanced' || $script->so == false){
             $tr['status'] = SmartSieve::text('ENABLED');
         }
         $tr['id'] = $i;
-        $rows[] = $tr;
-    }
-    $vRow = array();
-    $vRow['class'] = 'disabledrule';
-    $vRow['eclass'] = 'disabled';
-    $vRow['onmouseover'] = $css['.disabledrule-over']['background-color'];
-    $vRow['onmouseout'] = $css['.disabledrule']['background-color'];
-    $vRow['status'] = SmartSieve::text('DISABLED');
-    if (!empty($script->vacation)) {
-        $vRow['summary'] = getSummary($script->vacation);
-        if ($script->vacation['status'] == 'ENABLED'){
-            $vRow['class'] = 'enabledrule';
-            $vRow['eclass'] = 'enabled';
-            $vRow['onmouseover'] = $css['.enabledrule-over']['background-color'];
-            $vRow['onmouseout'] = $css['.enabledrule']['background-color'];
-            $vRow['status'] = SmartSieve::text('ENABLED');
+        $tr['position'] = $i+1;
+        $tr['link'] = SmartSieve::setUrl(sprintf("rule.php?ruleID=%s", $i));
+        if (!empty($script->rules[$i]['special'])) {
+            $tr['link'] = SmartSieve::setUrl(sprintf("rule.php?mode=%s", $script->rules[$i]['special']));
         }
+        $rows[] = $tr;
     }
     include SmartSieve::getConf('include_dir', 'include') . '/script-gui.inc';
 }

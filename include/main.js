@@ -38,8 +38,9 @@ function Submit(a)
 
 function ChangeOrder(a,b)
 {
-    document.rules.action.value = a;
-    document.rules.rindex.value = b;
+    document.rules.action.value = 'changeOrder';
+    document.rules.rindex.value = a;
+    document.rules.toPosition.value = b;
     document.rules.submit();
 }
 

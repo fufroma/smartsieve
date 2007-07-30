@@ -46,6 +46,12 @@ define ("KEEP_BIT", 8);
 define ("STOP_BIT", 16);
 define ("REGEX_BIT", 128);
 
+// Special rule identifiers.
+define("RULE_TAG_FORWARD", 'forward');
+define("RULE_TAG_SPAM", 'spam');
+define("RULE_TAG_WHITELIST", 'whitelist');
+define("RULE_TAG_VACATION", 'vacation');
+
 
 /**
  * Class Script:: implements a sieve script.
@@ -98,13 +104,6 @@ class Script {
     var $rules = array();
 
    /**
-    * Vacation settings.
-    * @var array
-    * @access public
-    */
-    var $vacation = array();
-
-   /**
     * Client application that wrote this script.
     * @var string
     * @access public
@@ -146,7 +145,6 @@ class Script {
         $this->so = true;
         $this->mode = 'basic';
         $this->rules = array();
-        $this->vacation = array();
         $this->errstr = '';
     }
 
@@ -190,7 +188,6 @@ class Script {
         $lines = array();
         $lines = preg_split("/\n/", $resp['raw']);
         $rules = array();
-        $vacation = array();
 
         // If this script was created by SmartSieve or Websieve, the first line
         // will have a recognizable format. If not, the script is of an unrecognised
@@ -220,14 +217,6 @@ class Script {
             if (substr($line, 0, 18) == '#SmartSieveRule#a:') {
                 $serialized = $this->unescapeChars(substr($line, 16));
                 $rules[] = unserialize($serialized);
-            }
-            elseif (substr($line, 0, 18) == '#SmartSieveSpam#a:') {
-                $serialized = $this->unescapeChars(substr($line, 16));
-                $this->spamRule = unserialize($serialized);
-            }
-            elseif (substr($line, 0, 22) == '#SmartSieveVacation#a:') {
-                $serialized = $this->unescapeChars(substr($line, 20));
-                $this->vacation = unserialize($serialized);
             }
             // Legacy metadata format.
             elseif (preg_match("/^ *#rule&&(.*)&&(.*)&&(.*)&&(.*)&&(.*)&&(.*)&&(.*)&&(.*)&&(.*)&&(.*)&&(.*)$/i",
@@ -385,7 +374,8 @@ class Script {
                 $rule['actions'][] = $action;
                 $rule['control'] = ($startNewBlock) ? CONTROL_IF : CONTROL_ELSEIF;
                 $rule['matchAny'] = 0;
-                $this->vacation = $rule;
+                $rule['special'] = RULE_TAG_VACATION;
+                $rules[] = $rule;
             }
             elseif (preg_match("/^ *#mode&&(.*)/i", $line, $bits)) {
                 if ($bits[1] == 'basic') {
@@ -435,12 +425,6 @@ class Script {
             $newscriptbody .= $this->getSieveForRule($rule);
         }
  
-        // Vacation rule
-
-        if (is_array($this->vacation)) {
-            $newscriptbody .= $this->getSieveForRule($this->vacation);
-        }
- 
         // Generate script header and add a "require" line if needed.
  
         $newscripthead = sprintf("#Mail filter rules for %s\n", $_SESSION['smartsieve']['authz']);
@@ -466,9 +450,6 @@ class Script {
             if ($rule['status'] != 'DELETED') {
                 $newscriptfoot .= '#SmartSieveRule#' . $this->escapeChars(serialize($rule)) . "\n";
             }
-        }
-        if (!empty($this->vacation)) {
-            $newscriptfoot .= '#SmartSieveVacation#' . $this->escapeChars(serialize($this->vacation)) . "\n";
         }
         $newscriptfoot .= sprintf("#mode&&%s\n", $this->mode);
  
@@ -850,17 +831,39 @@ class Script {
     */
     function deleteRule($rid)
     {
-        $deleted = false;
-        $newrules = array();
+        if (isset($this->rules[$rid])) {
+            unset($this->rules[$rid]);
+            $this->rules = array_values($this->rules);
+            return true;
+        }
+        return false;
+    }
+
+   /**
+    * Get a filter rule.
+    *
+    * @param integer $rid Array index of the rule to delete
+    * @return mixed Rule array if it exists, or null otherwise.
+    */
+    function getRule($id)
+    {
+        return (isset($this->rules[$id])) ? $this->rules[$id] : null;
+    }
+
+   /**
+    * Get a special rule (vacation, whitelist etc).
+    *
+    * @param string $tag Special rule tag, one of RULE_TAG_* contants
+    * @return mixed Array index if it exists, or null otherwise.
+    */
+    function getSpecialRuleId($tag)
+    {
         for ($i=0; $i<count($this->rules); $i++) {
-            if ($i === $rid) {
-                $deleted = true;
-            } else {
-                $newrules[] = $this->rules[$i];
+            if (!empty($this->rules[$i]['special']) && $this->rules[$i]['special'] == $tag) {
+                return $i;
             }
         }
-        $this->rules = $newrules;
-        return $deleted;
+        return null;
     }
 
 }
