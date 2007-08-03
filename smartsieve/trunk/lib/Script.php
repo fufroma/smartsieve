@@ -187,7 +187,7 @@ class Script {
         // Split on newlines.
         $lines = array();
         $lines = preg_split("/\n/", $resp['raw']);
-        $rules = array();
+        $this->rules = array();
 
         // If this script was created by SmartSieve or Websieve, the first line
         // will have a recognizable format. If not, the script is of an unrecognised
@@ -363,7 +363,7 @@ class Script {
                     $this->getSpecialRuleId(RULE_TAG_FORWARD) === null) {
                     $rule['special'] = RULE_TAG_FORWARD;
                 }
-                $rules[] = $rule;
+                $this->rules[] = $rule;
             }
             // Legacy vacation values.
             elseif (preg_match("/^ *#vacation&&(.*)&&(.*)&&(.*)&&(.*)/i", $line, $bits)) {
@@ -382,7 +382,7 @@ class Script {
                 $rule['control'] = ($startNewBlock) ? CONTROL_IF : CONTROL_ELSEIF;
                 $rule['matchAny'] = 0;
                 $rule['special'] = RULE_TAG_VACATION;
-                $rules[] = $rule;
+                $this->rules[] = $rule;
             }
             elseif (preg_match("/^ *#mode&&(.*)/i", $line, $bits)) {
                 if ($bits[1] == 'basic') {
@@ -397,7 +397,6 @@ class Script {
         }
         $this->content = $resp['raw'];
         $this->size = $resp['size']; 
-        $this->rules = $rules;
         return true;
     }
  
