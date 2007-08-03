@@ -91,6 +91,14 @@ elseif ($mode == SMARTSIEVE_RULE_MODE_SPAM) {
     $ruleID = $script->getSpecialRuleId(RULE_TAG_SPAM);
     if ($ruleID !== null) {
         $rule = $script->getRule($ruleID);
+    } else {
+        if (($spam = SmartSieve::getConf('spam_filter')) !== null) {;
+            $rule['conditions'][] = array('type'=>TEST_HEADER,
+                                          'header'=>(!empty($spam['header'])) ? $spam['header'] : '',
+                                          'matchStr'=>(!empty($spam['matchStr'])) ? $spam['matchStr'] : '',
+                                          'matchType'=>(!empty($spam['matchType'])) ? $spam['matchType'] : '',
+                                          'not'=>(!empty($spam['not'])) ? true : false);
+        }
     }
 }
 // If using forward mode, look for an existing forward rule.
@@ -98,17 +106,29 @@ elseif ($mode == SMARTSIEVE_RULE_MODE_FORWARD) {
     $ruleID = $script->getSpecialRuleId(RULE_TAG_FORWARD);
     if ($ruleID !== null) {
         $rule = $script->getRule($ruleID);
+    } else {
+        $rule['actions'][] = array('type'=>ACTION_REDIRECT, 'address'=>'');
     }
 } elseif ($mode == SMARTSIEVE_RULE_MODE_VACATION) {
     $ruleID = $script->getSpecialRuleId(RULE_TAG_VACATION);
     if ($ruleID !== null) {
         $rule = $script->getRule($ruleID);
+    } else {
+        $rule['actions'][] = array('type'=>ACTION_VACATION,
+                                   'message'=>'',
+                                   'days'=>SmartSieve::getConf('vacation_days', 7),
+                                   'addresses'=>array());
     }
 }
 // Check if this is a custom rule.
 foreach ($rule['actions'] as $action) {
     if ($action['type'] == ACTION_CUSTOM) {
         $mode = SMARTSIEVE_RULE_MODE_CUSTOM;
+    }
+}
+if ($mode == SMARTSIEVE_RULE_MODE_CUSTOM) {
+    if (empty($ruleID)) {
+        $rule['actions'][] = array('type'=>ACTION_CUSTOM, 'sieve'=>'');
     }
 }
 
@@ -239,7 +259,6 @@ $rule['actions'][] = array('type' => 'new');
 switch ($mode) {
     case (SMARTSIEVE_RULE_MODE_SPAM):
         $help_url = SmartSieve::getConf('spam_help_url', '');
-        $config = SmartSieve::getConf('spam_filter', array());
         $template = '/spam.inc';
         break;
     case (SMARTSIEVE_RULE_MODE_FORWARD):

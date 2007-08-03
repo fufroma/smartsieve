@@ -114,7 +114,7 @@ switch ($action) {
         break;
 
     case (FORM_ACTION_SAVE):
-        $script->content = SmartSieve::utf8Encode(SmartSieve::getFormValue('text'));
+        $script->content = SmartSieve::utf8Encode(SmartSieve::getFormValue('content'));
         if (!$script->updateScript()) {
             SmartSieve::setError(SmartSieve::text('ERROR: ') . $script->errstr);
             $logmsg = sprintf('failed writing script "%s" for %s: %s',
@@ -175,18 +175,9 @@ if ($ret === false) {
     SmartSieve::log(sprintf('failed reading rules from script "%s" for %s: %s',
         $script->name, $_SESSION['smartsieve']['authz'], $script->errstr), LOG_ERR);
 }
-if (isset($_POST['text'])) {
-    $stext = SmartSieve::getFormValue('text');
-} else {
-    $stext = SmartSieve::utf8Decode(Script::removeEncoding());
-}
 
-if ($script->mode == 'advanced'){
-    $jsfile = 'script-direct.js';
-} else {
-    $jsfile = 'main.js';
-}
 $jsonload = '';
+$jsfile = ($script->mode == 'advanced' || $script->so == false) ? 'script-direct.js' : 'main.js';
 $help_url = SmartSieve::getConf('main_help_url', '');
 
 include SmartSieve::getConf('include_dir', 'include') . '/common-head.inc';
@@ -194,22 +185,23 @@ include SmartSieve::getConf('include_dir', 'include') . '/menu.inc';
 include SmartSieve::getConf('include_dir', 'include') . '/common_status.inc';
 
 if ($script->mode == 'advanced' || $script->so == false){
+    if (isset($_POST['content'])) {
+        $content = SmartSieve::getPOST('content');
+    } else {
+        $content = SmartSieve::utf8Decode(Script::removeEncoding());
+    }
     include SmartSieve::getConf('include_dir', 'include') . '/script-direct.inc';
 } else {
     $rows = array();
     for ($i=0; $i<count($script->rules); $i++) {
         $tr = array();
         $tr['summary'] = getSummary($script->rules[$i]);
-        $tr['class'] = 'disabledrule';
-        $tr['eclass'] = 'disabled';
-        $tr['onmouseover'] = $css['.disabledrule-over']['background-color'];
-        $tr['onmouseout'] = $css['.disabledrule']['background-color'];
+        $tr['class'] = 'inactive';
+        $tr['statusImage'] = SmartSieve::getConf('image_dir', 'images') . '/delete.gif';
         $tr['status'] = SmartSieve::text('DISABLED');
         if ($script->rules[$i]['status'] == 'ENABLED'){
-            $tr['class'] = 'enabledrule';
-            $tr['eclass'] = 'enabled';
-            $tr['onmouseover'] = $css['.enabledrule-over']['background-color'];
-            $tr['onmouseout'] = $css['.enabledrule']['background-color'];
+            $tr['class'] = 'active';
+            $tr['statusImage'] = SmartSieve::getConf('image_dir', 'images') . '/tick.gif';
             $tr['status'] = SmartSieve::text('ENABLED');
         }
         $tr['id'] = $i;

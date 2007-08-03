@@ -1,19 +1,19 @@
 
 <FORM ACTION="<?php print SmartSieve::setUrl('main.php');?>" METHOD="post" NAME="menu">
 
-<TABLE WIDTH="100%" CELLPADDING="2" BORDER="0" CELLSPACING="0">
-<TR>
-  <TD CLASS="menuouter">
+<TABLE WIDTH="100%" CELLPADDING="1" BORDER="0" CELLSPACING="0">
+<TR CLASS="menuouter">
+  <TD>
     <TABLE WIDTH="100%" CELLPADDING="5" BORDER="0" CELLSPACING="0">
-      <TR>
-        <TD CLASS="menu">
+      <TR CLASS="menu">
+        <TD>
           &nbsp;
           <a href="<?php print SmartSieve::setUrl('main.php');?>"><?php echo SmartSieve::text('View All Rules');?></a>
 <?php if ($_SESSION['scripts'][$_SESSION['smartsieve']['workingScript']]->mode != 'advanced'): ?>
 <?php if (SmartSieve::getConf('use_forward_mail_interface')):?>
         | <A HREF="<?php print SmartSieve::setUrl('rule.php?mode=forward');?>"><?php echo SmartSieve::text('Forward Mail');?></A>
 <?php endif;?>
-        | <a href="<?php print SmartSieve::setUrl('vacation.php');?>"><?php echo SmartSieve::text('Vacation Settings');?></a>
+        | <a href="<?php print SmartSieve::setUrl('rule.php?mode=vacation');?>"><?php echo SmartSieve::text('Vacation Settings');?></a>
         | <a href="<?php print SmartSieve::setUrl('rule.php');?>"><?php echo SmartSieve::text('New Filter Rule');?></a>
 <?php if (SmartSieve::getConf('spam_filter')):?>
         | <a href="<?php print SmartSieve::setUrl('rule.php?mode=spam');?>"><?php echo SmartSieve::text('Filter Spam');?></a>
@@ -29,17 +29,9 @@
         | <a href="<?php echo $help_url; ?>" target="_blank"><?php echo SmartSieve::text('Help');?></a>
 <?php endif; //$help_url ?>
         </TD>
-        <TD CLASS="menu" ALIGN="right">
-          &nbsp;
-          <a href="<?php echo SmartSieve::setUrl('login.php?reason=logout');?>"><?php echo SmartSieve::text('Logout');?></a>
-<?php if (SmartSieve::getConf('allow_multi_scripts') !== false): ?>
-        | <?php echo SmartSieve::text('View script');?> 
-          <SELECT NAME="script" onchange="document.menu.submit();">
-<?php     foreach (SmartSieve::getScriptList() as $s => $active): ?>
-              <OPTION VALUE="<?php echo $s; ?>"<?php if ($s == $_SESSION['smartsieve']['workingScript']): ?> SELECTED="selected"<?php endif; ?>><?php echo $s;?></OPTION>
-<?php     endforeach; ?>
-          </SELECT>
-<?php endif; //$default->allow_multi_scripts ?>
+        <TD ALIGN="right">
+          &nbsp;<?php echo SmartSieve::text('Logged in as "%s"', array($_SESSION['smartsieve']['authz']));?> 
+          &nbsp;<a href="<?php echo SmartSieve::setUrl('login.php?reason=logout');?>"><?php echo SmartSieve::text('Logout');?></a>
         </TD>
       </TR>
     </TABLE>
