@@ -216,7 +216,7 @@ class Script {
             $line = rtrim($line);
             if (substr($line, 0, 18) == '#SmartSieveRule#a:') {
                 $serialized = $this->unescapeChars(substr($line, 16));
-                $rules[] = unserialize($serialized);
+                $this->rules[] = unserialize($serialized);
             }
             // Legacy metadata format.
             elseif (preg_match("/^ *#rule&&(.*)&&(.*)&&(.*)&&(.*)&&(.*)&&(.*)&&(.*)&&(.*)&&(.*)&&(.*)&&(.*)$/i",
