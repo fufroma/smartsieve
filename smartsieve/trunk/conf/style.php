@@ -1,12 +1,12 @@
 <?php
-/*
+/**
  * This file holds the SmartSieve stylesheet configuration.
  *
  * $Id$
  */
 
 
-$css['body']['background-color'] = '#e5e5e5';
+$css['body']['background-color'] = '#FFFFFF';
 $css['body']['font-family'] = 'helvetica,sans-serif';
 $css['body']['font-size'] = '10pt';
 $css['body']['color'] = '#000000';
@@ -30,74 +30,32 @@ $css['a:active']['font-family'] = 'helvetica,sans-serif';
 $css['a:active']['font-size'] = '10pt';
 $css['a:active']['text-decoration'] = 'none';
 
-$css['a:hover']['color'] = '#FFFFFF';
+$css['a:hover']['color'] = '#0000FF';
 $css['a:hover']['font-family'] = 'helvetica,sans-serif';
 $css['a:hover']['font-size'] = '10pt';
 $css['a:hover']['text-decoration'] = 'none';
 
-$css['a.rule:link']['color'] = '#0000FF';
-$css['a.rule:link']['font-family'] = 'sans-serif';
-$css['a.rule:link']['font-size'] = '8pt';
-$css['a.rule:link']['text-decoration'] = 'none';
-
-$css['a.rule:visited']['color'] = '#0000FF';
-$css['a.rule:visited']['font-family'] = 'sans-serif';
-$css['a.rule:visited']['font-size'] = '8pt';
-$css['a.rule:visited']['text-decoration'] = 'none';
-
-$css['a.rule:active']['color'] = '#000000';
-$css['a.rule:active']['font-family'] = 'sans-serif';
-$css['a.rule:active']['font-size'] = '8pt';
-$css['a.rule:active']['text-decoration'] = 'none';
-
-$css['a.rule:hover']['color'] = '#0000FF';
-$css['a.rule:hover']['font-family'] = 'sans-serif';
-$css['a.rule:hover']['font-size'] = '8pt';
-$css['a.rule:hover']['text-decoration'] = 'none';
-
-$css['.enabledrule']['color'] = '#000000';
-$css['.enabledrule']['font-family'] = 'helvetica,sans-serif';
-$css['.enabledrule']['font-size'] = '9pt';
-$css['.enabledrule']['background-color'] = '#FFFFFF';
-
-$css['.enabledrule-over']['color'] = '#000000';
-$css['.enabledrule-over']['font-family'] = 'helvetica,sans-serif';
-$css['.enabledrule-over']['font-size'] = '9pt';
-$css['.enabledrule-over']['background-color'] = '#e5e5e5';
-
-$css['.disabledrule']['color'] = '#000000';
-$css['.disabledrule']['font-family'] = 'helvetica,sans-serif';
-$css['.disabledrule']['font-size'] = '9pt';
-$css['.disabledrule']['background-color'] = '#f1f1f1';
-
-$css['.disabledrule-over']['color'] = '#000000';
-$css['.disabledrule-over']['font-family'] = 'helvetica,sans-serif';
-$css['.disabledrule-over']['font-size'] = '9pt';
-$css['.disabledrule-over']['background-color'] = '#c5c5c5';
-
-$css['.enabled']['color'] = '#008000';
-$css['.enabled']['font-weight'] = 'normal';
-
-$css['.disabled']['color'] = '#FF0000';
-$css['.disabled']['font-weight'] = 'normal';
-
-$css['.menu']['background-color'] = '#b5b5b5';
-$css['.menu']['font-family'] = 'helvetica,sans-serif';
-$css['.menu']['font-size'] = '10pt';
-
-$css['.menuouter']['background-color'] = '#000000';
-
 $css['.main']['background-color'] = '#b5b5b5';
 
-$css['.status']['background-color'] = '#b5b5b5';
-$css['.status']['color'] = '#000000';
-$css['.status']['font-family'] = 'helvetica,sans-serif';
-$css['.status']['font-size'] = '10pt';
-$css['.status']['font-weight'] = 'bold';
+$css['td.breadcrumb']['background-color'] = '#FFFFFF';
+$css['td.breadcrumb']['color'] = '#000000';
+$css['td.breadcrumb']['font-family'] = 'helvetica,sans-serif';
+$css['td.breadcrumb']['font-size'] = '10pt';
+$css['td.breadcrumb']['font-weight'] = 'bold';
 
-$css['.statusouter']['background-color'] = '#000000';
+$css['tr.active']['background-color'] = '#FFFFFF';
+$css['tr.active-mover']['background-color'] = '#e5e5e5';
 
-$css['.heading']['background-color'] = '#e5e5e5';
+$css['tr.inactive']['background-color'] = '#ededed';
+$css['tr.inactive-mover']['background-color'] = '#c5c5c5';
+
+$css['tr.menu']['background-color'] = '#CCCCCC';
+
+$css['tr.menuouter']['background-color'] = '#000000';
+
+$css['a.summary']['font-size'] = '8pt';
+
+$css['.heading']['background-color'] = '#FFFFFF';
 $css['.heading']['color'] = '#444466';
 $css['.heading']['font-family'] = 'verdana,helvetica,sans-serif';
 $css['.heading']['font-size'] = '12pt';
@@ -109,15 +67,19 @@ $css['th']['font-family'] = 'verdana,helvetica,sans-serif';
 $css['th']['font-size'] = '9pt';
 $css['th']['font-weight'] = 'bold';
 
-$css['.errors']['background-color'] = '#FFFFFF';
-$css['.errors']['color'] = '#FF0000';
-$css['.errors']['font-family'] = 'helvetica,sans-serif';
-$css['.errors']['font-size'] = '9pt';
+$css['td']['font-family'] = 'helvetica,sans-serif';
+$css['td']['font-size'] = '9pt';
+$css['td']['vertical-align'] = 'top';
 
-$css['.messages']['background-color'] = '#FFFFFF';
-$css['.messages']['color'] = '#000000';
-$css['.messages']['font-family'] = 'helvetica,sans-serif';
-$css['.messages']['font-size'] = '9pt';
+$css['tr.errors']['background-color'] = '#e5e5e5';
+$css['tr.errors']['color'] = '#FF0000';
+$css['tr.errors']['font-family'] = 'helvetica,sans-serif';
+$css['tr.errors']['font-size'] = '9pt';
+
+$css['tr.messages']['background-color'] = '#e5e5e5';
+$css['tr.messages']['color'] = '#000000';
+$css['tr.messages']['font-family'] = 'helvetica,sans-serif';
+$css['tr.messages']['font-size'] = '9pt';
 
 $css['.welcome']['background-color'] = '#b5b5b5';
 $css['.welcome']['color'] = '#000000';
@@ -149,12 +111,33 @@ $css['.options']['color'] = '#0000FF';
 $css['.options']['font-family'] = 'helvetica,sans-serif';
 $css['.options']['font-size'] = '9pt';
 
-$css['.active']['color'] = '#008000';
-$css['.inactive']['color'] = '#FF0000';
+$css['textarea']['background-color'] = '#FFFFFF';
+$css['textarea']['border'] = '#b5b5b5 1px solid';
+$css['textarea']['color'] = '#000000';
+$css['textarea']['font-family'] = 'helvetica,sans-serif';
+$css['textarea']['font-size'] = '8pt';
+$css['textarea']['font-weight'] = 'normal';
+$css['textarea']['width'] = '100%';
+$css['textarea']['height'] = '200px';
 
-$css['.inactivescript']['background-color'] = '#f1f1f1';
-$css['.inactivescript']['font-size'] = '9pt';
-$css['.activescript']['background-color'] = '#FFFFFF';
-$css['.activescript']['font-size'] = '9pt';
+$css['input']['background-color'] = '#FFFFFF';
+$css['input']['border'] = '#b5b5b5 1px solid';
+$css['input']['color'] = '#000000';
+$css['input']['font-family'] = 'helvetica,sans-serif';
+$css['input']['font-size'] = '8pt';
+$css['input']['font-weight'] = 'normal';
+
+$css['input.text']['height'] = '25px';
+
+$css['input.position']['width'] = '25px';
+$css['input.position']['height'] = '25px';
+
+$css['select']['background-color'] = '#FFFFFF';
+$css['select']['border'] = '#b5b5b5 1px solid';
+$css['select']['color'] = '#000000';
+$css['select']['font-family'] = 'helvetica,sans-serif';
+$css['select']['font-size'] = '8pt';
+$css['select']['font-weight'] = 'normal';
+$css['select']['height'] = '22px';
 
 ?>

@@ -1,6 +1,29 @@
-<FORM ACTION="<?php print SmartSieve::setUrl('main.php');?>" METHOD="post" NAME="rules">
+<FORM ACTION="<?php echo SmartSieve::setUrl('main.php');?>" METHOD="post" NAME="rules">
 
 <TABLE WIDTH="100%" CELLPADDING="0" BORDER="0" CELLSPACING="0">
+<TR>
+  <TD>
+
+    <TABLE WIDTH="100%" BORDER="0" CELLPADDING="2" CELLSPACING="0">
+    <TR>
+      <TD CLASS="breadcrumb">
+        &nbsp;<a href="<?php echo SmartSieve::setUrl('scripts.php');?>"><?php echo SmartSieve::text('Scripts');?>&nbsp;&gt;</a>
+        &nbsp;<?php echo SmartSieve::text('Filter rules for "%s"', array($script->getName()));?>
+      </TD>
+    </TR>
+    <TR CLASS="heading">
+      <TD ALIGN="right">
+<?php if ($_SESSION['smartsieve']['workingScript'] === SmartSieve::getActiveScript()): ?>
+        &nbsp;<?php echo SmartSieve::text('Script "%s" is active', array($script->getName()));?>
+<?php else:?>
+        &nbsp;<?php echo SmartSieve::text('Script "%s" is not active', array($script->getName()));?>
+<?php endif;?>
+      </TD>
+    </TR>
+    </TABLE>
+
+  </TD>
+</TR>
 <TR>
   <TD CLASS="main">
 
@@ -13,28 +36,26 @@
   </TD>
 </TR>
 <TR>
-  <TD CLASS="main">
+  <TD>
 
-    <TEXTAREA NAME="text" ROWS="30" COLS="70" WRAP="off">
-<?php echo $stext; ?>
-</TEXTAREA>
+    <TEXTAREA NAME="content" ROWS="30" COLS="70" WRAP="off"><?php echo $content;?></TEXTAREA>
 
   </TD>
 </TR>
 <TR>
-  <TD CLASS="main">
+  <TD>
 
-    <TABLE WIDTH="100%" BORDER="0" CELLPADDING="2" CELLSPACING="1">
-    <BR>
-      <TD CLASS="options">
-        <A CLASS="option" HREF="" onclick="Save(); return false;" onmouseover="window.status='<?php echo SmartSieve::text('Save Changes');?>'; return true;" onmouseout="window.status='';"><?php echo SmartSieve::text('Save Changes');?></a>
-      </TD>
+    <TABLE WIDTH="100%" BORDER="0" CELLPADDING="2" CELLSPACING="0">
+      <TR>
+        <TD CLASS="options">
+          <A CLASS="option" HREF="" onclick="document.rules.action.value='save'; document.rules.submit(); return false;" onmouseover="window.status='<?php echo SmartSieve::text('Save Changes');?>'; return true;" onmouseout="window.status='';"><?php echo SmartSieve::text('Save Changes');?></a>
+        </TD>
 <?php if (SmartSieve::getConf('allow_change_mode')): ?>
-      <TD ALIGN="right" CLASS="options">
-        <A CLASS="option" HREF="" onclick="ChangeMode(); return false;" onmouseover="window.status='<?php echo SmartSieve::text('Switch to GUI mode');?>'; return true;" onmouseout="window.status='';"><?php echo SmartSieve::text('GUI mode');?></A>
-      </TD>
+        <TD ALIGN="right" CLASS="options">
+          <A CLASS="option" HREF="" onclick="ChangeMode(); return false;" onmouseover="window.status='<?php echo SmartSieve::text('Switch to GUI mode');?>'; return true;" onmouseout="window.status='';"><?php echo SmartSieve::text('GUI mode');?></A>
+        </TD>
 <?php endif; ?>
-    </BR>
+      </TR>
     </TABLE>
 
   </TD>

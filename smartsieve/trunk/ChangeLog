@@ -3,6 +3,7 @@ Smartsieve - ChangeLog
 
 03 Aug 2007 S Grier
 * Added getName() and isRuleEnabled() to Script class + maintain legacy getForwardRule() behaviour.
+* Cosmetic changes.
 
 30 Jul 2007 S Grier
 * Added "Move rule to position X" widget.
