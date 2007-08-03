@@ -1,6 +1,14 @@
 Smartsieve - ChangeLog
 ----------------------
 
+03 Aug 2007 S Grier
+* Added getName() and isRuleEnabled() to Script class + maintain legacy getForwardRule() behaviour.
+
+30 Jul 2007 S Grier
+* Added "Move rule to position X" widget.
+* Added getRule() and getSpecialRuleId() to Script class.
+* "Special" rules like vacation or forward rule are now identified by 'special' attribute.
+
 26 Jul 2007 S Grier
 * Add vacation action to rule.php.
 * Add Script::deleteRule().

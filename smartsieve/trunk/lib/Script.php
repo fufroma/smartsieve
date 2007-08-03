@@ -356,6 +356,13 @@ class Script {
                 $rule['control'] = ($startNewBlock) ? CONTROL_IF : CONTROL_ELSEIF;
                 $startNewBlock = ($bits[8] & CONTINUE_BIT);
                 $rule['matchAny'] = ($bits[8] & ANYOF_BIT);
+                // Is this a spacial forward rule?
+                if ($this->hasCondition($rule) === false &&
+                    count($rule['actions']) > 0 &&
+                    $rule['actions'][0]['type'] == ACTION_REDIRECT &&
+                    $this->getSpecialRuleId(RULE_TAG_FORWARD) === null) {
+                    $rule['special'] = RULE_TAG_FORWARD;
+                }
                 $rules[] = $rule;
             }
             // Legacy vacation values.
@@ -864,6 +871,31 @@ class Script {
             }
         }
         return null;
+    }
+
+   /**
+    * Get the script name.
+    *
+    * @return string The name of the script as it appears on the server
+    */
+    function getName()
+    {
+        return $this->name;
+    }
+
+   /**
+    * Is filter rule enabled.
+    *
+    * @param integer $id The array index of rule to check
+    * @return boolean True if rule if enabled, false if not
+    */
+    function isRuleEnabled($id)
+    {
+        if (isset($this->rules[$id]) &&
+            $this->rules[$id]['status'] == 'ENABLED') {
+            return true;
+        }
+        return false;
     }
 
 }
