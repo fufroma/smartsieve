@@ -1,6 +1,9 @@
 Smartsieve - ChangeLog
 ----------------------
 
+15 Aug 2007 S Grier
+* Added change status and delete widget for each rule.
+
 03 Aug 2007 S Grier
 * Added getName() and isRuleEnabled() to Script class + maintain legacy getForwardRule() behaviour.
 * Cosmetic changes.

@@ -56,7 +56,8 @@
         <?php echo $tr['position'];?> 
       </TD>
       <TD>
-        <IMG SRC="<?php echo $tr['statusImage'];?>" ALT="<?php echo $tr['status'];?>" BORDER="0">
+        <A HREF="" onclick="var ruleIDs=document.getElementsByName('ruleID[]'); ruleIDs[<?php echo $tr['id'];?>].checked=true; document.rules.action.value='<?php echo $tr['statusChangeAction'];?>'; document.rules.submit(); return false;"><IMG SRC="<?php echo $tr['statusImage'];?>" ALT="<?php echo $tr['status'];?>" TITLE="<?php echo $tr['statusChangeText'];?>" BORDER="0"></a>
+        <A HREF="" onclick="deleteRule(<?php echo $tr['id'];?>); return false;"><IMG SRC="<?php echo SmartSieve::getConf('image_dir', 'images');?>/delete.gif" ALT="<?php echo SmartSieve::text('Delete');?>" TITLE="<?php echo SmartSieve::text('Delete this rule');?>" BORDER="0"></a>
       </TD>
       <TD>
         <A CLASS="summary" HREF="<?php echo $tr['link'];?>" TITLE="<?php echo SmartSieve::text('Edit this rule');?>" onmouseover="window.status='<?php echo SmartSieve::text('Edit this rule');?>'; return true;" onmouseout="window.status='';"><?php echo $tr['summary'];?></A>

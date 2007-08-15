@@ -53,5 +53,16 @@ function ChangeMode()
     document.rules.submit();
 }
 
+function deleteRule(r)
+{
+    if (!confirm("<?php echo SmartSieve::text('Are you sure you want to delete this rule?');?>")){
+        return true;
+    }
+    var ruleIDs = document.getElementsByName('ruleID[]');
+    ruleIDs[r].checked = true;
+    document.rules.action.value = '<?php echo FORM_ACTION_DELETE;?>';
+    document.rules.submit();
+}
+
 //-->
 </script>
