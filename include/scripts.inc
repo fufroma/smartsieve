@@ -50,7 +50,7 @@
         <A CLASS="summary" HREF="" TITLE="<?php echo SmartSieve::text('View This Script');?>" onclick="viewScript('<?php echo $s;?>'); return false;" onmouseover="window.status='<?php echo SmartSieve::text('View This Script');?>'; return true;" onmouseout="window.status='';"><?php echo $s;?></A>
       </TD>
       <TD>
-        <IMG SRC="<?php echo SmartSieve::getConf('image_dir', 'images');?>/<?php echo ($active===true) ? 'tick.gif' : 'delete.gif';?>" BORDER="0">
+        <IMG SRC="<?php echo SmartSieve::getConf('image_dir', 'images');?>/<?php echo ($active===true) ? 'tick.gif' : 'disable.gif';?>" BORDER="0">
         <?php echo ($active===true) ? SmartSieve::text('ACTIVE') : SmartSieve::text('NOT ACTIVE');?> 
       </TD>
       <TD>
