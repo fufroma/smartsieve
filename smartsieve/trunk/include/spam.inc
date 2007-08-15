@@ -36,7 +36,7 @@
 <?php if (isset($ruleID) && $ruleID !== 'new'): ?>
       <TD ALIGN="right">
         &nbsp;<?php echo ($script->isRuleEnabled($ruleID)) ? SmartSieve::text('This rule is enabled') : SmartSieve::text('This rule is disabled');?>
-        &nbsp;<IMG SRC="<?php echo SmartSieve::getConf('image_dir', 'images'); echo ($script->isRuleEnabled($ruleID)) ? '/tick.gif' : '/delete.gif';?>" BORDER="0">
+        &nbsp;<IMG SRC="<?php echo SmartSieve::getConf('image_dir', 'images'); echo ($script->isRuleEnabled($ruleID)) ? '/tick.gif' : '/disable.gif';?>" BORDER="0">
       </TD>
 <?php else: ?>
       <TD>
