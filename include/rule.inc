@@ -119,7 +119,7 @@
                 </select>
                 <INPUT TYPE="text" NAME="headerMatchStr<?php echo $i;?>" VALUE="<?php echo SmartSieve::utf8Decode($condition['matchStr']);?>" SIZE="30">
                 <INPUT TYPE="hidden" NAME="delete<?php echo $i;?>" VALUE="">
-                &nbsp;<A HREF="" onclick="document.forms.thisRule.delete<?php echo $i;?>.value='1'; document.forms.thisRule.submit(); return false;"><IMG SRC="<?php echo SmartSieve::getConf('image_dir', 'images');?>/delete.gif" ALT="<?php echo SmartSieve::text('Delete condition');?>'" BORDER="0" onmouseover="window.status='<?php echo SmartSieve::text('Delete condition');?>'; return true;" onmouseout="window.status='';"></a>
+                &nbsp;<A HREF="" onclick="document.forms.thisRule.delete<?php echo $i;?>.value='1'; document.forms.thisRule.submit(); return false;"><IMG SRC="<?php echo SmartSieve::getConf('image_dir', 'images');?>/delete.gif" ALT="<?php echo SmartSieve::text('Delete condition');?>" TITLE="<?php echo SmartSieve::text('Delete condition');?>" BORDER="0" onmouseover="window.status='<?php echo SmartSieve::text('Delete condition');?>'; return true;" onmouseout="window.status='';"></a>
 <?php elseif ($condition['type'] == TEST_SIZE):?>
                 <SELECT NAME="gthan">
                   <OPTION VALUE="0"<?php echo (empty($condition['gthan'])) ? ' SELECTED="selected"' : '';?>><?php echo SmartSieve::text("less than");?></OPTION>
@@ -127,7 +127,7 @@
                 </SELECT>
                 <INPUT TYPE="text" NAME="size" VALUE="<?php echo $condition['kbytes'];?>" SIZE="5"> <?php echo SmartSieve::text("KiloBytes");?>
                 <INPUT TYPE="hidden" NAME="delete<?php echo $i;?>" VALUE="">
-                &nbsp;<A HREF="" onclick="document.forms.thisRule.delete<?php echo $i;?>.value='1'; document.forms.thisRule.submit(); return false;"><IMG SRC="<?php echo SmartSieve::getConf('image_dir', 'images');?>/delete.gif" ALT="<?php echo SmartSieve::text('Delete condition');?>'" BORDER="0" onmouseover="window.status='<?php echo SmartSieve::text('Delete condition');?>'; return true;" onmouseout="window.status='';"></a>
+                &nbsp;<A HREF="" onclick="document.forms.thisRule.delete<?php echo $i;?>.value='1'; document.forms.thisRule.submit(); return false;"><IMG SRC="<?php echo SmartSieve::getConf('image_dir', 'images');?>/delete.gif" ALT="<?php echo SmartSieve::text('Delete condition');?>" TITLE="<?php echo SmartSieve::text('Delete condition');?>" BORDER="0" onmouseover="window.status='<?php echo SmartSieve::text('Delete condition');?>'; return true;" onmouseout="window.status='';"></a>
 <?php else:?>
                 <select name="matchType<?php echo $i;?>">
                   <option value="is"<?php echo ($condition['matchType'] == MATCH_IS && empty($condition['not'])) ? ' selected="selected"' : '';?>><?php echo SmartSieve::text('is');?></option>
@@ -141,7 +141,7 @@
                 </select>
                 <INPUT TYPE="text" NAME="<?php echo $condition['header'] . $i;?>" VALUE="<?php echo SmartSieve::utf8Decode($condition['matchStr']);?>" SIZE="50">
                 <INPUT TYPE="hidden" NAME="delete<?php echo $i;?>" VALUE="">
-                &nbsp;<A HREF="" onclick="document.forms.thisRule.delete<?php echo $i;?>.value='1'; document.forms.thisRule.submit(); return false;"><IMG SRC="<?php echo SmartSieve::getConf('image_dir', 'images');?>/delete.gif" ALT="<?php echo SmartSieve::text('Delete condition');?>'" BORDER="0" onmouseover="window.status='<?php echo SmartSieve::text('Delete condition');?>'; return true;" onmouseout="window.status='';"></a>
+                &nbsp;<A HREF="" onclick="document.forms.thisRule.delete<?php echo $i;?>.value='1'; document.forms.thisRule.submit(); return false;"><IMG SRC="<?php echo SmartSieve::getConf('image_dir', 'images');?>/delete.gif" ALT="<?php echo SmartSieve::text('Delete condition');?>" TITLE="<?php echo SmartSieve::text('Delete condition');?>" BORDER="0" onmouseover="window.status='<?php echo SmartSieve::text('Delete condition');?>'; return true;" onmouseout="window.status='';"></a>
 <?php endif;?>
               </TD>
             </TR>
@@ -248,6 +248,10 @@
                 </TABLE>
 <?php elseif ($action['type'] == ACTION_DISCARD || $action['type'] == ACTION_KEEP || $action['type'] == ACTION_STOP):?>
                 &nbsp;
+<?php endif;?>
+<?php if ($action['type'] != 'new'):?>
+                <INPUT TYPE="hidden" NAME="deleteAction<?php echo $i;?>" VALUE="">
+                &nbsp;<A HREF="" onclick="document.forms.thisRule.deleteAction<?php echo $i;?>.value='1'; document.forms.thisRule.submit(); return false;"><IMG SRC="<?php echo SmartSieve::getConf('image_dir', 'images');?>/delete.gif" ALT="<?php echo SmartSieve::text('Delete action');?>" TITLE="<?php echo SmartSieve::text('Delete action');?>" BORDER="0" onmouseover="window.status='<?php echo SmartSieve::text('Delete action');?>'; return true;" onmouseout="window.status='';"></a>
 <?php endif;?>
               </TD>
             </TR>
