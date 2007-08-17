@@ -1,37 +1,38 @@
 
-<FORM ACTION="<?php print SmartSieve::setUrl('main.php');?>" METHOD="post" NAME="menu">
+<FORM ACTION="<?php echo SmartSieve::setUrl('main.php');?>" METHOD="post" NAME="menu">
 
 <TABLE WIDTH="100%" CELLPADDING="1" BORDER="0" CELLSPACING="0">
 <TR CLASS="menuouter">
   <TD>
-    <TABLE WIDTH="100%" CELLPADDING="5" BORDER="0" CELLSPACING="0">
+    <TABLE WIDTH="100%" CELLPADDING="0" BORDER="0" CELLSPACING="0">
       <TR CLASS="menu">
         <TD>
-          &nbsp;
-          <a href="<?php print SmartSieve::setUrl('main.php');?>"><?php echo SmartSieve::text('View All Rules');?></a>
+          <div id="menu">
+          <ul>
+            <li class="left"><a href="<?php echo SmartSieve::setUrl('main.php');?>"><img src="<?php echo SmartSieve::getConf('image_dir', 'images');?>/filter.gif" alt="" title="" border="0"><br><?php echo SmartSieve::text('Filter Rules');?></a></li>
 <?php if ($_SESSION['scripts'][$_SESSION['smartsieve']['workingScript']]->mode != 'advanced'): ?>
 <?php if (SmartSieve::getConf('use_forward_mail_interface')):?>
-        | <A HREF="<?php print SmartSieve::setUrl('rule.php?mode=forward');?>"><?php echo SmartSieve::text('Forward Mail');?></A>
+            <li class="left"><A HREF="<?php echo SmartSieve::setUrl('rule.php?mode=forward');?>"><img src="<?php echo SmartSieve::getConf('image_dir', 'images');?>/forward.gif" alt="" title="" border="0"><br><?php echo SmartSieve::text('Forward Mail');?></A></li>
 <?php endif;?>
-        | <a href="<?php print SmartSieve::setUrl('rule.php?mode=vacation');?>"><?php echo SmartSieve::text('Vacation Settings');?></a>
-        | <a href="<?php print SmartSieve::setUrl('rule.php');?>"><?php echo SmartSieve::text('New Filter Rule');?></a>
+            <li class="left"><a href="<?php echo SmartSieve::setUrl('rule.php?mode=vacation');?>"><img src="<?php echo SmartSieve::getConf('image_dir', 'images');?>/vacation.gif" alt="" title="" border="0"><br><?php echo SmartSieve::text('Out-of-Office');?></a></li>
+            <li class="left"><a href="<?php echo SmartSieve::setUrl('rule.php');?>"><img src="<?php echo SmartSieve::getConf('image_dir', 'images');?>/new.gif" alt="" title="" border="0"><br><?php echo SmartSieve::text('New Rule');?></a></li>
 <?php if (SmartSieve::getConf('spam_filter')):?>
-        | <a href="<?php print SmartSieve::setUrl('rule.php?mode=spam');?>"><?php echo SmartSieve::text('Filter Spam');?></a>
+            <li class="left"><a href="<?php echo SmartSieve::setUrl('rule.php?mode=spam');?>"><img src="<?php echo SmartSieve::getConf('image_dir', 'images');?>/spam.gif" alt="" title="" border="0"><br><?php echo SmartSieve::text('Filter Spam');?></a></li>
 <?php endif;?>
 <?php endif;?>
 <?php if (SmartSieve::getConf('allow_multi_scripts') !== false): ?>
-        | <A HREF="<?php print SmartSieve::setUrl('scripts.php');?>"><?php echo SmartSieve::text('Manage Scripts');?></A>
+            <li class="left"><A HREF="<?php echo SmartSieve::setUrl('scripts.php');?>"><img src="<?php echo SmartSieve::getConf('image_dir', 'images');?>/scripts.gif" alt="" title="" border="0"><br><?php echo SmartSieve::text('Manage Scripts');?></A></li>
 <?php endif; //$default->allow_multi_scripts ?>
 <?php foreach (SmartSieve::getConf('menu_items', array()) as $item):?>
-        | <a href="<?php echo $item['uri'];?>"<?php echo (isset($item['target'])) ? sprintf(' target="%s"', $item['target']) : '';?>><?php echo $item['label'];?></a>
+            <li class="left"><a href="<?php echo $item['uri'];?>"<?php echo (isset($item['target'])) ? sprintf(' target="%s"', $item['target']) : '';?>><?php echo $item['label'];?></a></li>
 <?php endforeach;?>
 <?php if (!empty($help_url)): ?>
-        | <a href="<?php echo $help_url; ?>" target="_blank"><?php echo SmartSieve::text('Help');?></a>
+            <li><a href="<?php echo $help_url; ?>" target="_blank"><?php echo SmartSieve::text('Help');?></a></li>
 <?php endif; //$help_url ?>
-        </TD>
-        <TD ALIGN="right">
-          &nbsp;<?php echo SmartSieve::text('Logged in as "%s"', array($_SESSION['smartsieve']['authz']));?> 
-          &nbsp;<a href="<?php echo SmartSieve::setUrl('login.php?reason=logout');?>"><?php echo SmartSieve::text('Logout');?></a>
+            <li class="right"><a href="<?php echo SmartSieve::setUrl('login.php?reason=logout');?>"><img src="<?php echo SmartSieve::getConf('image_dir', 'images');?>/logout.gif" alt="" title="" border="0"><br><?php echo SmartSieve::text('Logout');?></a></li>
+            <li class="right"><?php echo SmartSieve::text('Logged in as "%s"', array($_SESSION['smartsieve']['authz']));?></li>
+          </ul>
+          </div>
         </TD>
       </TR>
     </TABLE>
