@@ -237,6 +237,7 @@ $default->scripts_help_url = '';
 // $default->menu_items = array(
 //     array('uri'=>'http://mydomain.com/mypage.html',
 //           'label'=>'Menu Item',
+//           'img'=>'./images/item.gif',
 //           'target'=>'_blank'));
 
 // The following array provides a mechanism for specifying a site-specific 
@@ -247,8 +248,9 @@ $default->scripts_help_url = '';
 // item which will link to a simple GUI asking them what they want to do 
 // with such messages.
 // $default->spam_filter = array('header'=>'X-Spam-Score',
-//                               'value'=>'^[0-9]',
-//                               'regexp'=>true);
+//                               'matchStr'=>'^[0-9]',
+//                               'matchType'=>':regex',
+//                               'not'=>false);
 
 /**
  * Custom function hooks.
