@@ -60,7 +60,7 @@
         <A HREF="" onclick="deleteRule(<?php echo $tr['id'];?>); return false;"><IMG SRC="<?php echo SmartSieve::getConf('image_dir', 'images');?>/delete.gif" ALT="<?php echo SmartSieve::text('Delete');?>" TITLE="<?php echo SmartSieve::text('Delete this rule');?>" BORDER="0"></a>
       </TD>
       <TD>
-        <A CLASS="summary" HREF="<?php echo $tr['link'];?>" TITLE="<?php echo SmartSieve::text('Edit this rule');?>" onmouseover="window.status='<?php echo SmartSieve::text('Edit this rule');?>'; return true;" onmouseout="window.status='';"><?php echo $tr['summary'];?></A>
+        <A CLASS="summary" HREF="<?php echo $tr['link'];?>" TITLE="<?php echo $tr['tooltip'];?>" onmouseover="window.status='<?php echo $tr['tooltip'];?>'; return true;" onmouseout="window.status='';"><?php if (isset($tr['img'])):?><img src="<?php echo $tr['img'];?>" alt="" title="<?php echo $tr['tooltip'];?>" border="0">&nbsp;<?php endif;?><?php echo $tr['summary'];?></A>
       </TD>
       <TD NOWRAP="nowrap">
         <A HREF="" onclick="ChangeOrder(<?php echo $tr['id'];?>, <?php echo $tr['id'];?>); return false;"><IMG SRC="<?php echo SmartSieve::getConf('image_dir', 'images');?>/up.gif" ALT="Move rule up" TITLE="<?php echo SmartSieve::text('Move rule up');?>" BORDER="0" onmouseover="window.status='<?php echo SmartSieve::text('Move rule up');?>'; return true;" onmouseout="window.status='';"></A>
@@ -89,20 +89,19 @@
     <TABLE WIDTH="100%" BORDER="0" CELLPADDING="2" CELLSPACING="0">
       <TR>
         <TD CLASS="options">
-          <A CLASS="option" HREF="" onclick="Submit('enable'); return false;" onmouseover="window.status='<?php echo SmartSieve::text('Enable');?>'; return true;" onmouseout="window.status='';"><?php echo SmartSieve::text('Enable');?></a>
-           |
-          <A CLASS="option" HREF="" onclick="Submit('disable'); return false;" onmouseover="window.status='<?php echo SmartSieve::text('Disable');?>'; return true;" onmouseout="window.status='';"><?php echo SmartSieve::text('Disable');?></a>
-           |
-          <A CLASS="option" HREF="" onclick="Submit('delete'); return false;" onmouseover="window.status='<?php echo SmartSieve::text('Delete');?>'; return true;" onmouseout="window.status='';"><?php echo SmartSieve::text('Delete');?></a>
+          <input type="button" name="enable" value="<?php echo SmartSieve::text('Enable');?>" onClick="Submit('enable'); return false;">
+          <input type="button" name="disable" value="<?php echo SmartSieve::text('Disable');?>" onClick="Submit('disable'); return false;">
+          <input type="button" name="delete" value="<?php echo SmartSieve::text('Delete');?>" onClick="Submit('delete'); return false;">
+          <input type="button" name="new" value="<?php echo SmartSieve::text('New Rule');?>" onClick="window.location='<?php echo SmartSieve::setUrl('rule.php');?>';">
         </TD>
 <?php if (SmartSieve::getConf('allow_change_mode')): ?>
         <TD ALIGN="right" CLASS="options">
-          <A CLASS="option" HREF="" onclick="ChangeMode(); return false;" onmouseover="window.status='<?php echo SmartSieve::text('Switch to direct edit mode');?>'; return true;" onmouseout="window.status='';"><?php echo SmartSieve::text('Direct edit mode');?></A>
+          <input type="button" name="changeMode" value="<?php echo SmartSieve::text('Direct edit mode');?>" onClick="ChangeMode(); return false;">
         </TD>
 <?php endif; ?>
 <?php if (SmartSieve::getConf('allow_view_source', true) !== false): ?>
         <TD ALIGN="right" CLASS="options">
-          <A CLASS="option" HREF="" onclick="window.open('<?php echo SmartSieve::setUrl('main.php?action=viewSource');?>','','menubar=yes,toolbar=no,location=no,status=no,scrollbars=yes,resizable=yes'); return false;" onmouseover="window.status='<?php echo SmartSieve::text('View script source');?>'; return true;" onmouseout="window.status='';"><?php echo SmartSieve::text('View Source');?></A>
+          <input type="button" name="viewSource" value="<?php echo SmartSieve::text('View Source');?>" onClick="window.open('<?php echo SmartSieve::setUrl('main.php?action=viewSource');?>','','menubar=yes,toolbar=no,location=no,status=no,scrollbars=yes,resizable=yes'); return false;">
         </TD>
 <?php endif; ?>
       </TR>
