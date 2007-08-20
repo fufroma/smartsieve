@@ -3,6 +3,7 @@ Smartsieve - ChangeLog
 
 20 Aug 2007 S Grier
 * Add images for help and $default->menu_items menu items.
+* Remove websieve_auto_matches warning from rule edit page.
 
 17 Aug 2007 S Grier
 * Menu style changes.
