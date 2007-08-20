@@ -64,7 +64,7 @@ switch ($action) {
                   $script->name, $_SESSION['smartsieve']['authz'], $script->errstr);
                 SmartSieve::log($logmsg, LOG_ERR);
             } else {
-                SmartSieve::setNotice(SmartSieve::text('rule successfully enabled.'));
+                SmartSieve::setNotice(SmartSieve::text('Rule successfully enabled'));
             }
         }
         break;
@@ -88,7 +88,7 @@ switch ($action) {
                   $script->name, $_SESSION['smartsieve']['authz'], $script->errstr);
                 SmartSieve::log($logmsg, LOG_ERR);
             } else {
-                SmartSieve::setNotice(SmartSieve::text('rule successfully disabled.'));
+                SmartSieve::setNotice(SmartSieve::text('Rule successfully disabled'));
             }
         }
         break;
@@ -108,7 +108,7 @@ switch ($action) {
                   $script->name, $_SESSION['smartsieve']['authz'], $script->errstr);
                 SmartSieve::log($logmsg, LOG_ERR);
             } else {
-                SmartSieve::setNotice(SmartSieve::text('Rule successfully deleted.'));
+                SmartSieve::setNotice(SmartSieve::text('Rule successfully deleted'));
             }
         }
         break;
@@ -121,7 +121,7 @@ switch ($action) {
               $script->name, $_SESSION['smartsieve']['authz'], $script->errstr);
             SmartSieve::log($logmsg, LOG_ERR);
         } else {
-            SmartSieve::setNotice(SmartSieve::text('your changes have been successfully saved.'));
+            SmartSieve::setNotice(SmartSieve::text('Your changes have been successfully saved'));
         }
         break;
 
@@ -145,7 +145,7 @@ switch ($action) {
               $script->name, $_SESSION['smartsieve']['authz'], $script->errstr);
             SmartSieve::log($logmsg, LOG_ERR);
         } else {
-            SmartSieve::setNotice(SmartSieve::text('You are now in direct edit mode.'));
+            SmartSieve::setNotice(SmartSieve::text('You are now in direct edit mode'));
         }
         break;
 
@@ -157,7 +157,7 @@ switch ($action) {
               $script->name, $_SESSION['smartsieve']['authz'], $script->errstr);
             SmartSieve::log($logmsg, LOG_ERR);
         } else {
-            SmartSieve::setNotice(SmartSieve::text('You are now in GUI mode.'));
+            SmartSieve::setNotice(SmartSieve::text('You are now in GUI mode'));
         }
         break;
 
