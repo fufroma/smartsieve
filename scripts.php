@@ -51,7 +51,7 @@ switch ($action) {
                 if ($ret === false) {
                     SmartSieve::setError(SmartSieve::text('activatescript failed').': ' . $managesieve->getError());
                 } else {
-                    SmartSieve::setNotice(SmartSieve::text("Script \"%s\" successfully activated.", array($s)));
+                    SmartSieve::setNotice(SmartSieve::text('Script "%s" successfully activated', array($s)));
                 }
             }
         }
@@ -64,7 +64,7 @@ switch ($action) {
         if ($ret === false) {
             SmartSieve::setError(SmartSieve::text('activatescript failed').': ' . $managesieve->getError());
         } else {
-            SmartSieve::setNotice(SmartSieve::text("Successfully deactivated all scripts."));
+            SmartSieve::setNotice(SmartSieve::text('Successfully deactivated all scripts'));
         }
         break;
 
@@ -72,7 +72,7 @@ switch ($action) {
         $newscript = SmartSieve::getFormValue('newscript');
         if ($newscript){
             if (SmartSieve::scriptExists($newscript)) {
-                SmartSieve::setError(SmartSieve::text("Script \"%s\" already exists.", array($newscript)));
+                SmartSieve::setError(SmartSieve::text('Script "%s" already exists', array($newscript)));
             } else {
                 if (!isset($scripts[$newscript]) || !is_object($scripts[$newscript])) {
                     $scripts[$newscript] = new Script($newscript);
@@ -83,9 +83,9 @@ switch ($action) {
                         $scripts[$newscript]->name, $_SESSION['smartsieve']['authz'], $scripts[$newscript]->errstr), LOG_ERR);
                 }
                 if (SmartSieve::scriptExists($newscript)) {
-                    SmartSieve::setNotice(SmartSieve::text("Successfully created script \"%s\".", array($newscript)));
+                    SmartSieve::setNotice(SmartSieve::text('Successfully created script "%s"', array($newscript)));
                 } else {
-                    SmartSieve::setError(SmartSieve::text("Could not create script \"%s\".", array($newscript)));
+                    SmartSieve::setError(SmartSieve::text('Could not create script "%s"', array($newscript)));
                 }
             }
         }
@@ -104,7 +104,7 @@ switch ($action) {
                     if ($ret === false) {
                         SmartSieve::setError('deletescript '.SmartSieve::text('failed: ') . $managesieve->getError());
                     } else {
-                        SmartSieve::setNotice(SmartSieve::text("Script \"%s\" successfully deleted.", array($sname)));
+                        SmartSieve::setNotice(SmartSieve::text('Script "%s" successfully deleted', array($sname)));
                         if (isset($scripts[$sname])) {
                             unset($scripts[$sname]);
                         }
@@ -131,9 +131,9 @@ switch ($action) {
         }
         if ($newscript && $oldscript){
             if (SmartSieve::scriptExists($newscript)) {
-                SmartSieve::setError(SmartSieve::text("Script \"%s\" already exists.", array($newscript)));
+                SmartSieve::setError(SmartSieve::text('Script "%s" already exists', array($newscript)));
             } elseif (!SmartSieve::scriptExists($oldscript)) {
-                SmartSieve::setError(SmartSieve::text("Script \"%s\" does not exist.", array($oldscript)));
+                SmartSieve::setError(SmartSieve::text('Script "%s" does not exist', array($oldscript)));
             } else {
                 $resp = $managesieve->getScript($oldscript);
                 if ($resp === false || !is_array($resp)) {
@@ -149,7 +149,7 @@ switch ($action) {
                         if ($resp === false) {
                             SmartSieve::setError('getscript '.SmartSieve::text('failed: ') . $managesieve->getError());
                         } elseif ($resp['raw'] != $old) {
-                            SmartSieve::setError(SmartSieve::text("Failed to rename \"%s\" as \"%s\"",array($oldscript,$newscript)));
+                            SmartSieve::setError(SmartSieve::text('Failed to rename "%s" as "%s"', array($oldscript,$newscript)));
                             $managesieve->deleteScript($newscript);
                         } else {
                             // Successfully copied old to new. Delete old.
@@ -157,7 +157,7 @@ switch ($action) {
                             if ($ret === false) {
                                 SmartSieve::setError('deletescript '.SmartSieve::text('failed: ') . $managesieve->getError());
                             } else {
-                                SmartSieve::setNotice(SmartSieve::text("Successfully renamed \"%s\" as \"%s\".", array($oldscript,$newscript)));
+                                SmartSieve::setNotice(SmartSieve::text('Successfully renamed "%s" as "%s"', array($oldscript,$newscript)));
                                 if (isset($scripts[$oldscript])) {
                                     $scripts[$newscript] = $scripts[$oldscript];
                                     unset($scripts[$oldscript]);

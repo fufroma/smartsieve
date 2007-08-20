@@ -157,7 +157,7 @@ switch ($action) {
                     $script->deleteRule($ruleID);
                 }
             } else {
-                SmartSieve::setNotice(SmartSieve::text('rule successfully enabled.'));
+                SmartSieve::setNotice(SmartSieve::text('Rule successfully enabled'));
                 if (SmartSieve::getConf('return_after_update') === true) {
                     header('Location: ' . SmartSieve::setUrl('main.php'),true);
                     exit;
@@ -185,7 +185,7 @@ switch ($action) {
                     $script->deleteRule($ruleID);
                 }
             } else {
-                SmartSieve::setNotice(SmartSieve::text('rule successfully disabled.'));
+                SmartSieve::setNotice(SmartSieve::text('Rule successfully disabled'));
                 if (SmartSieve::getConf('return_after_update') === true) {
                     header('Location: ' . SmartSieve::setUrl('main.php'),true);
                     exit;
@@ -205,7 +205,7 @@ switch ($action) {
                     $ruleID = $script->saveRule($oldrule, $ruleID);
                 }
             } else {
-                SmartSieve::setNotice(SmartSieve::text('Rule successfully deleted.'));
+                SmartSieve::setNotice(SmartSieve::text('Rule successfully deleted'));
                 header('Location: ' . SmartSieve::setUrl('main.php'),true);
                 exit;
             }
@@ -232,7 +232,7 @@ switch ($action) {
                     $script->deleteRule($ruleID);
                 }
             } else {
-                SmartSieve::setNotice(SmartSieve::text('your changes have been successfully saved.'));
+                SmartSieve::setNotice(SmartSieve::text('Your changes have been successfully saved'));
                 if (SmartSieve::getConf('return_after_update') === true) {
                     header('Location: ' . SmartSieve::setUrl('main.php'),true);
                     exit;
@@ -460,14 +460,14 @@ function isSane($rule)
         if ($condition['type'] == TEST_ADDRESS || $condition['type'] == TEST_HEADER) {
             if (($condition['type'] == TEST_HEADER && strlen($condition['header']) > $max_field_chars) ||
                 strlen($condition['matchStr']) > $max_field_chars) {
-                SmartSieve::setError(SmartSieve::text('the condition value you supplied is too long. it should not exceed %d characters.', array($max_field_chars)));
+                SmartSieve::setError(SmartSieve::text('The condition value you supplied is too long. It should not exceed %d characters.', array($max_field_chars)));
                 return false;
             }
         }
         if ($condition['type'] == TEST_SIZE) {
             // Message size must not contain non-digits.
             if (preg_match("/\D/", $condition['kbytes'])) {
-                SmartSieve::setError(SmartSieve::text("message size value must be a positive integer"));
+                SmartSieve::setError(SmartSieve::text('Message size value must be a positive integer'));
                 return false;
             }
         }
@@ -477,7 +477,7 @@ function isSane($rule)
                 return false;
             }
             if (empty($condition['matchStr'])) {
-                SmartSieve::setError(SmartSieve::text("you must supply a value for the field \"%s\".",
+                SmartSieve::setError(SmartSieve::text('You must supply a value for the field "%s"',
                     array($rule['field'][$i])));
                 return false;
             }
@@ -488,7 +488,7 @@ function isSane($rule)
 
     // Rule must have an action.
     if (empty($rule['actions'])) {
-        SmartSieve::setError(SmartSieve::text("please supply an action"));
+        SmartSieve::setError(SmartSieve::text('Please supply an action'));
         return false;
     }
     foreach ($rule['actions'] as $action) {
@@ -498,12 +498,12 @@ function isSane($rule)
             ($action['type'] == ACTION_REJECT && empty($action['message'])) ||
             ($action['type'] == ACTION_VACATION && empty($action['message'])) ||
             ($action['type'] == ACTION_CUSTOM && empty($action['sieve']))) {
-            SmartSieve::setError(SmartSieve::text("you must supply an argument for this action"));
+            SmartSieve::setError(SmartSieve::text('You must supply an argument for this action'));
             return false;
         }
         if ($action['type'] == ACTION_REDIRECT) {
             if (strlen($action['address']) > $max_field_chars) {
-                SmartSieve::setError(SmartSieve::text('the forward address you supplied is too long. it should not exceed %d characters.', array($max_field_chars)));
+                SmartSieve::setError(SmartSieve::text('The email address you supplied is too long. It should not exceed %d characters', array($max_field_chars)));
                 return false;
             }
             if (!preg_match("/^[\x21-\x7E]+@([0-9a-zA-Z-]+\.)+[0-9a-zA-Z]{2,}$/i", $action['address'])) {
@@ -514,7 +514,7 @@ function isSane($rule)
         }
         if ($action['type'] == ACTION_REJECT) {
             if (strlen($action['message']) > $max_textbox_chars) {
-                SmartSieve::setError(SmartSieve::text('your reject message is too long. it should not exceed %d characters.', array($max_textbox_chars)));
+                SmartSieve::setError(SmartSieve::text('Your reject message is too long. It should not exceed %d characters', array($max_textbox_chars)));
                 return false;
             }
         }
@@ -532,7 +532,7 @@ function isSane($rule)
                 }
             }
             if (!is_numeric($action['days'])) {
-                SmartSieve::setError(SmartSieve::text('vacation days must be a positive integer'));
+                SmartSieve::setError(SmartSieve::text('Vacation days must be a positive integer'));
                 return false;
             }
         }
