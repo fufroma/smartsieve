@@ -47,11 +47,11 @@
         <INPUT TYPE="checkbox" NAME="scriptID[]" VALUE="<?php echo $i++;?>">
       </TD>
       <TD>
-        <A CLASS="summary" HREF="" TITLE="<?php echo SmartSieve::text('View This Script');?>" onclick="viewScript('<?php echo $s;?>'); return false;" onmouseover="window.status='<?php echo SmartSieve::text('View This Script');?>'; return true;" onmouseout="window.status='';"><?php echo $s;?></A>
+        <A CLASS="summary" HREF="" TITLE="<?php echo SmartSieve::text('Edit this script');?>" onclick="edit('<?php echo $s;?>'); return false;" onmouseover="window.status='<?php echo SmartSieve::text('Edit this script');?>'; return true;" onmouseout="window.status='';"><?php echo $s;?></A>
       </TD>
       <TD>
         <IMG SRC="<?php echo SmartSieve::getConf('image_dir', 'images');?>/<?php echo ($active===true) ? 'tick.gif' : 'disable.gif';?>" BORDER="0">
-        <?php echo ($active===true) ? SmartSieve::text('ACTIVE') : SmartSieve::text('NOT ACTIVE');?> 
+        <?php echo ($active===true) ? SmartSieve::text('active') : SmartSieve::text('not active');?> 
       </TD>
       <TD>
         &nbsp;<?php echo (isset($scripts[$s])) ? $scripts[$s]->size . SmartSieve::text('bytes') : '';?> 
@@ -78,15 +78,11 @@
     <TABLE WIDTH="100%" BORDER="0" CELLPADDING="2" CELLSPACING="0">
       <TR>
         <TD CLASS="options">
-          <A CLASS="option" HREF="" onclick="setScriptActive(); return false;" onmouseover="window.status='<?php echo SmartSieve::text('Activate script');?>'; return true;" onmouseout="window.status='';"><?php echo SmartSieve::text("Activate");?></a>
-           |
-          <A CLASS="option" HREF="" onclick="deactivate(); return false;" onmouseover="window.status='<?php echo SmartSieve::text('Deactivate all');?>'; return true;" onmouseout="window.status='';"><?php echo SmartSieve::text("Deactivate");?></a>
-           |
-          <A CLASS="option" HREF="" onclick="createScript(); return false;" onmouseover="window.status='<?php echo SmartSieve::text('Create new script');?>'; return true;" onmouseout="window.status='';"><?php echo SmartSieve::text("Create");?></a>
-           |
-          <A CLASS="option" HREF="" onclick="deleteScript(); return false;" onmouseover="window.status='<?php echo SmartSieve::text('Delete script');?>'; return true;" onmouseout="window.status='';"><?php echo SmartSieve::text("Delete");?></a>
-           |
-          <A CLASS="option" HREF="" onclick="renameScript(); return false;" onmouseover="window.status='<?php echo SmartSieve::text('Rename script');?>'; return true;" onmouseout="window.status='';"><?php echo SmartSieve::text("Rename");?></A>
+          <input type="button" name="activate" value="<?php echo SmartSieve::text('Activate');?>" onClick="setScriptActive(); return false;">
+          <input type="button" name="deactivate" value="<?php echo SmartSieve::text('Deactivate');?>" onClick="Deactivate(); return false;">
+          <input type="button" name="create" value="<?php echo SmartSieve::text('Create new script');?>" onClick="createScript(); return false;">
+          <input type="button" name="delete" value="<?php echo SmartSieve::text('Delete');?>" onClick="deleteScript(); return false;">
+          <input type="button" name="rename" value="<?php echo SmartSieve::text('Rename script');?>" onClick="renameScript(); return false;">
         </TD>
       </TR>
     </TABLE>

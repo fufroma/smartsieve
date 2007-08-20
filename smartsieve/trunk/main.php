@@ -211,8 +211,19 @@ if ($script->mode == 'advanced' || $script->so == false){
         $tr['id'] = $i;
         $tr['position'] = $i+1;
         $tr['link'] = SmartSieve::setUrl(sprintf("rule.php?ruleID=%s", $i));
+        $tr['tooltip'] = SmartSieve::text('Edit this rule');
         if (!empty($script->rules[$i]['special'])) {
             $tr['link'] = SmartSieve::setUrl(sprintf("rule.php?mode=%s", $script->rules[$i]['special']));
+            if ($script->rules[$i]['special'] == RULE_TAG_VACATION) {
+                $tr['tooltip'] = SmartSieve::text('Edit vacation settings');
+                $tr['img'] = SmartSieve::getConf('image_dir', 'images').'/vacation.gif';
+            } elseif ($script->rules[$i]['special'] == RULE_TAG_FORWARD) {
+                $tr['tooltip'] = SmartSieve::text('Edit mail forwarding');
+                $tr['img'] = SmartSieve::getConf('image_dir', 'images').'/forward.gif';
+            } elseif ($script->rules[$i]['special'] == RULE_TAG_SPAM) {
+                $tr['tooltip'] = SmartSieve::text('Edit spam filtering');
+                $tr['img'] = SmartSieve::getConf('image_dir', 'images').'/spam.gif';
+            }
         }
         $rows[] = $tr;
     }

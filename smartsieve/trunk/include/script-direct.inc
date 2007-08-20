@@ -48,11 +48,11 @@
     <TABLE WIDTH="100%" BORDER="0" CELLPADDING="2" CELLSPACING="0">
       <TR>
         <TD CLASS="options">
-          <A CLASS="option" HREF="" onclick="document.rules.action.value='save'; document.rules.submit(); return false;" onmouseover="window.status='<?php echo SmartSieve::text('Save Changes');?>'; return true;" onmouseout="window.status='';"><?php echo SmartSieve::text('Save Changes');?></a>
+          <input type="button" name="save" value="<?php echo SmartSieve::text('Save Changes');?>" onClick="document.rules.action.value='<?php echo FORM_ACTION_SAVE;?>'; document.rules.submit(); return false;">
         </TD>
 <?php if (SmartSieve::getConf('allow_change_mode')): ?>
         <TD ALIGN="right" CLASS="options">
-          <A CLASS="option" HREF="" onclick="ChangeMode(); return false;" onmouseover="window.status='<?php echo SmartSieve::text('Switch to GUI mode');?>'; return true;" onmouseout="window.status='';"><?php echo SmartSieve::text('GUI mode');?></A>
+          <input type="button" name="changeMode" value="<?php echo SmartSieve::text('GUI mode');?>" onClick="ChangeMode(); return false;">
         </TD>
 <?php endif; ?>
       </TR>

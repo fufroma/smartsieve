@@ -10,14 +10,12 @@
 <script language="JavaScript" type="text/javascript">
 <!--
 
-function Submit(a)
+function Delete()
 {
-    if (a == 'delete'){
-	if (!confirm("<?php echo SmartSieve::text('Are you sure you want to delete this rule?');?>")){
-                return true;
-        }
+    if (!confirm("<?php echo SmartSieve::text('Are you sure you want to delete this rule?');?>")){
+        return true;
     }
-    document.thisRule.thisAction.value = a;
+    document.thisRule.thisAction.value = '<?php echo FORM_ACTION_DELETE;?>';
     document.thisRule.submit();
 }
 
