@@ -336,8 +336,12 @@ function getPOSTValues()
                 $condition['header'] = SmartSieve::utf8Encode(SmartSieve::getPOST('header'.$i));
                 $condition['matchStr'] = SmartSieve::utf8Encode(SmartSieve::getPOST('headerMatchStr'.$i));
                 break;
+            case ('body'):
+                $condition['type'] = TEST_BODY;
+                $condition['matchStr'] = SmartSieve::utf8Encode(SmartSieve::getPOST('bodyMatchStr'.$i));
+                break;
         }
-        if ($type != 'new' && ($condition['type'] == TEST_ADDRESS || $condition['type'] == TEST_HEADER)) {
+        if ($type != 'new' && ($condition['type'] == TEST_ADDRESS || $condition['type'] == TEST_HEADER || $condition['type'] == TEST_BODY)) {
             $matchType = SmartSieve::getPOST('matchType'.$i);
             switch ($matchType) {
                 case ('is'):
@@ -478,8 +482,14 @@ function isSane($rule)
                 return false;
             }
             if (empty($condition['matchStr'])) {
-                SmartSieve::setError(SmartSieve::text('You must supply a value for the field "%s"',
-                    array($rule['field'][$i])));
+                SmartSieve::setError(SmartSieve::text('You must supply a value for the header "%s"',
+                    array($condition['header'])));
+                return false;
+            }
+        }
+        if ($condition['type'] == TEST_BODY) {
+            if (empty($condition['matchStr'])) {
+                SmartSieve::setError(SmartSieve::text('You must supply a value to match in the message body'));
                 return false;
             }
         }

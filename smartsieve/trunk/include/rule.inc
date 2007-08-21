@@ -100,6 +100,9 @@
                   <OPTION VALUE="subject"<?php echo ($condition['type'] == TEST_HEADER && $condition['header'] == 'subject') ? ' SELECTED="selected"' : '';?>><?php echo SmartSieve::text("If message 'Subject:' contains");?></OPTION>
                   <OPTION VALUE="size"<?php echo ($condition['type'] == TEST_SIZE) ? ' SELECTED="selected"' : (($sizeUsed == true) ? ' DISABLED="disabled"' : '');?>><?php echo SmartSieve::text("If message size is");?></OPTION>
                   <OPTION VALUE="header"<?php echo ($condition['type'] == TEST_HEADER && $condition['header'] !== 'subject') ? ' SELECTED="selected"' : '';?>><?php echo SmartSieve::text("If mail header");?></OPTION>
+<?php if ($managesieve->hasExtension('body')):?>
+                  <OPTION VALUE="body"<?php echo ($condition['type'] == TEST_BODY) ? ' SELECTED="selected"' : '';?>><?php echo SmartSieve::text("If message body");?></OPTION>
+<?php endif;?>
                 </SELECT>
               </TD>
               <TD>
@@ -126,6 +129,20 @@
                   <OPTION VALUE="<?php echo SIZE_BIT;?>"<?php echo (!empty($condition['gthan'])) ? ' SELECTED="selected"' : '';?>><?php echo SmartSieve::text("greater than");?></OPTION>
                 </SELECT>
                 <INPUT TYPE="text" NAME="size" VALUE="<?php echo $condition['kbytes'];?>" SIZE="5"> <?php echo SmartSieve::text("KiloBytes");?>
+                <INPUT TYPE="hidden" NAME="delete<?php echo $i;?>" VALUE="">
+                &nbsp;<A HREF="" onclick="document.forms.thisRule.delete<?php echo $i;?>.value='1'; document.forms.thisRule.submit(); return false;"><IMG SRC="<?php echo SmartSieve::getConf('image_dir', 'images');?>/delete.gif" ALT="<?php echo SmartSieve::text('Delete condition');?>" TITLE="<?php echo SmartSieve::text('Delete condition');?>" BORDER="0" onmouseover="window.status='<?php echo SmartSieve::text('Delete condition');?>'; return true;" onmouseout="window.status='';"></a>
+<?php elseif ($condition['type'] == TEST_BODY):?>
+                <select name="matchType<?php echo $i;?>">
+                  <option value="is"<?php echo ($condition['matchType'] == MATCH_IS && empty($condition['not'])) ? ' selected="selected"' : '';?>><?php echo SmartSieve::text('is');?></option>
+                  <option value="notis"<?php echo ($condition['matchType'] == MATCH_IS && !empty($condition['not'])) ? ' selected="selected"' : '';?>><?php echo SmartSieve::text('is not');?></option>
+                  <option value="contains"<?php echo ($condition['matchType'] == MATCH_CONTAINS && empty($condition['not'])) ? ' selected="selected"' : '';?>><?php echo SmartSieve::text('contains');?></option>
+                  <option value="notcontains"<?php echo ($condition['matchType'] == MATCH_CONTAINS && !empty($condition['not'])) ? ' selected="selected"' : '';?>><?php echo SmartSieve::text('does not contain');?></option>
+                  <option value="matches"<?php echo ($condition['matchType'] == MATCH_MATCHES && empty($condition['not'])) ? ' selected="selected"' : '';?>><?php echo SmartSieve::text('matches');?></option>
+                  <option value="notmatches"<?php echo ($condition['matchType'] == MATCH_MATCHES && !empty($condition['not'])) ? ' selected="selected"' : '';?>><?php echo SmartSieve::text('does not match');?></option>
+                  <option value="regex"<?php echo ($condition['matchType'] == MATCH_REGEX && empty($condition['not'])) ? ' selected="selected"' : '';?>><?php echo SmartSieve::text('matches regular expression');?></option>
+                  <option value="notregex"<?php echo ($condition['matchType'] == MATCH_REGEX && !empty($condition['not'])) ? ' selected="selected"' : '';?>><?php echo SmartSieve::text('does not match regular expression');?></option>
+                </select>
+                <INPUT TYPE="text" NAME="bodyMatchStr<?php echo $i;?>" VALUE="<?php echo SmartSieve::utf8Decode($condition['matchStr']);?>" SIZE="50">
                 <INPUT TYPE="hidden" NAME="delete<?php echo $i;?>" VALUE="">
                 &nbsp;<A HREF="" onclick="document.forms.thisRule.delete<?php echo $i;?>.value='1'; document.forms.thisRule.submit(); return false;"><IMG SRC="<?php echo SmartSieve::getConf('image_dir', 'images');?>/delete.gif" ALT="<?php echo SmartSieve::text('Delete condition');?>" TITLE="<?php echo SmartSieve::text('Delete condition');?>" BORDER="0" onmouseover="window.status='<?php echo SmartSieve::text('Delete condition');?>'; return true;" onmouseout="window.status='';"></a>
 <?php else:?>
