@@ -193,11 +193,15 @@
               </TD>
               <TD>
 <?php if ($action['type'] == ACTION_FILEINTO):?>
+<?php if ($_SESSION['smartsieve']['auth'] == $_SESSION['smartsieve']['authz']):?>
                 <SELECT NAME="<?php echo ACTION_FILEINTO . $i;?>">
 <?php foreach ($_SESSION['smartsieve']['mailboxes'] as $mbox): ?>
                   <OPTION VALUE="<?php echo $mbox;?>"<?php echo ($action['folder'] == $mbox) ? ' SELECTED="selected"' : '';?>><?php echo SmartSieve::mutf7Decode($mbox);?></OPTION>
 <?php endforeach; ?>
                 </SELECT>
+<?php else:?>
+                <INPUT TYPE="text" NAME="<?php echo ACTION_FILEINTO . $i;?>" VALUE="<?php echo $action['folder'];?>">
+<?php endif;?>
 <?php elseif ($action['type'] == ACTION_REDIRECT):?>
                 <INPUT TYPE="text" NAME="<?php echo ACTION_REDIRECT . $i;?>" VALUE="<?php echo (!empty($action['address'])) ? SmartSieve::utf8Decode($action['address']) : '';?>" SIZE="40">
 <?php elseif ($action['type'] == ACTION_REJECT):?>
