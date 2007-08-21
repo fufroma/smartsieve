@@ -6,6 +6,7 @@ Smartsieve - ChangeLog
 * Added Managesieve::hasExtension().
 * Added support for sieve body extension.
 * Added support for the "addflag" action.
+* More menu style changes.
 
 20 Aug 2007 S Grier
 * Add images for help and $default->menu_items menu items.

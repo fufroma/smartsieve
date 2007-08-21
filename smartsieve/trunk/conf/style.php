@@ -51,24 +51,12 @@ $css['tr.inactive-mover']['background-color'] = '#c5c5c5';
 
 $css['tr.menuouter']['background-color'] = '#000000';
 $css['tr.menu']['background-color'] = '#CCCCCC';
-
-$css['#menu']['overflow'] = 'hidden';
-$css['#menu']['min-height'] = '50px';
-$css['#menu']['font-family'] = 'helvetica,sans-serif';
-$css['#menu']['font-size'] = '8pt';
-$css['#menu']['margin-bottom'] = '1px';
-
-$css['#menu>ul']['padding'] = '2px';
-$css['#menu>ul']['display'] = 'table';
-$css['#menu>ul']['width'] = '100%';
-$css['#menu>ul li']['display'] = 'table-cell';
-$css['#menu>ul li']['list-style-type'] = 'none';
-$css['#menu>ul li']['text-align'] = 'center';
-$css['#menu>ul li']['margin'] = '2px';
-$css['#menu>ul li.left']['float'] = 'left';
-$css['#menu>ul li.right']['float'] = 'right';
-$css['#menu a']['font-size'] = '8pt';
-$css['#menu a']['padding'] = '5px';
+$css['tr.menu table tr td']['font-family'] = 'helvetica,sans-serif';
+$css['tr.menu table tr td']['font-size'] = '8pt';
+$css['tr.menu table tr td']['text-align'] = 'center';
+$css['tr.menu table tr td']['vertical-align'] = 'middle';
+$css['tr.menu a']['font-size'] = '8pt';
+$css['tr.menu a']['padding'] = '5px';
 
 $css['a.summary']['font-size'] = '8pt';
 
