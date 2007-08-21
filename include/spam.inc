@@ -152,6 +152,10 @@
 <?php elseif ($action['type'] == ACTION_DISCARD || $action['type'] == ACTION_KEEP || $action['type'] == ACTION_STOP):?>
                 &nbsp;
 <?php endif;?>
+<?php if ($action['type'] != 'new'):?>
+                <INPUT TYPE="hidden" NAME="deleteAction<?php echo $i;?>" VALUE="">
+                &nbsp;<A HREF="" onclick="document.forms.thisRule.deleteAction<?php echo $i;?>.value='1'; document.forms.thisRule.submit(); return false;"><IMG SRC="<?php echo SmartSieve::getConf('image_dir', 'images');?>/delete.gif" ALT="<?php echo SmartSieve::text('Delete action');?>" TITLE="<?php echo SmartSieve::text('Delete action');?>" BORDER="0" onmouseover="window.status='<?php echo SmartSieve::text('Delete action');?>'; return true;" onmouseout="window.status='';"></a>
+<?php endif;?>
               </TD>
             </TR>
 <?php $i++; endforeach;?>
