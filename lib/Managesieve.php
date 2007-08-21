@@ -961,6 +961,18 @@ class Managesieve {
 
 
    /**
+    * Does server support a sieve extension.
+    *
+    * @param string $extension The extension to check
+    * @return boolean true if extension is supported, false otherwise
+    */
+    function hasExtension($extension)
+    {
+        return in_array(strtolower($extension), $this->_capabilities['extensions'], true);
+    }
+
+
+   /**
     * Return the last error string.
     *
     * @return string $this->_errstr
