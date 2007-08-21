@@ -291,6 +291,12 @@ function getSummary($rule)
                 $condition['kbytes']));
             $started = 1;
         }
+        if ($condition['type'] == TEST_BODY) {
+            $match = getMatchType($condition['matchType'], isset($condition['not']) ? $condition['not'] : false);
+            $complete .= SmartSieve::text("message body %s '%s'", array(
+                $match, SmartSieve::utf8Decode($condition['matchStr'])));
+            $started = 1;
+        }
     }
     if (Script::hasCondition($rule)) {
         $complete .= sprintf(" %s ", SmartSieve::text('THEN'));

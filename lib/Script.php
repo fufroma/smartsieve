@@ -16,6 +16,7 @@ define("CLIENT_WEBSIEVE", "websieve");
 define ("TEST_ADDRESS", "address");
 define ("TEST_HEADER", "header");
 define ("TEST_SIZE", "size");
+define ("TEST_BODY", "body");
 
 // Action types.
 define ("ACTION_FILEINTO", "fileinto");
@@ -550,6 +551,16 @@ class Script {
                     } elseif ($condition['type'] == TEST_SIZE) {
                         $newruletext .= sprintf("size %s %sK",
                             ($condition['gthan']) ? ':over' : ':under', $condition['kbytes']);
+                    } elseif ($condition['type'] == TEST_BODY) {
+                        $this->extensions['body'] = true;
+                        if ($condition['matchType'] == MATCH_REGEX) {
+                            $this->extensions['regex'] = true;
+                        }
+                        $newruletext .= sprintf("%sbody %s %s\"%s\"",
+                                (!empty($condition['not'])) ? 'not ' : '',
+                                $condition['matchType'],
+                                (!empty($condition['transform'])) ? sprintf("%s ", $condition['transform']) : '',
+                                $condition['matchStr']);
                     }
                     $started = true;
                 }
