@@ -5,6 +5,7 @@ Smartsieve - ChangeLog
 * Add workaround for Bug #1775235: "Proxy user: wrong folders displayed".
 * Added Managesieve::hasExtension().
 * Added support for sieve body extension.
+* Added support for the "addflag" action.
 
 20 Aug 2007 S Grier
 * Add images for help and $default->menu_items menu items.

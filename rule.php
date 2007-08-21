@@ -133,6 +133,9 @@ if ($mode == SMARTSIEVE_RULE_MODE_CUSTOM) {
     }
 }
 
+// Define a list of imap flags to make available to the addflag action.
+$imapFlags = SmartSieve::getConf('imap_flags', array('\\\\Seen', '\\\\Deleted', '\\\\Answered', '\\\\Flagged', 'Junk', 'NotJunk', '$Label1', '$Label2', '$Label3', '$Label4', '$Label5'));
+
 // Perform actions.
 
 $action = SmartSieve::getFormValue('thisAction');
@@ -434,6 +437,10 @@ function getPOSTValues()
                 }
                 $action['addresses'] = array_unique($addresses);
                 break;
+            case (ACTION_ADDFLAG):
+                $action['type'] = ACTION_ADDFLAG;
+                $action['flag'] = SmartSieve::getPOST(ACTION_ADDFLAG.$i);
+                break;
         }
         // If delete value set, ignore this condition.
         if (SmartSieve::getPOST('deleteAction' . $i++) == '1' || $type == 'new') {
@@ -508,6 +515,7 @@ function isSane($rule)
             ($action['type'] == ACTION_REDIRECT && empty($action['address'])) ||
             ($action['type'] == ACTION_REJECT && empty($action['message'])) ||
             ($action['type'] == ACTION_VACATION && empty($action['message'])) ||
+            ($action['type'] == ACTION_ADDFLAG && empty($action['flag'])) ||
             ($action['type'] == ACTION_CUSTOM && empty($action['sieve']))) {
             SmartSieve::setError(SmartSieve::text('You must supply an argument for this action'));
             return false;
@@ -544,6 +552,12 @@ function isSane($rule)
             }
             if (!is_numeric($action['days'])) {
                 SmartSieve::setError(SmartSieve::text('Vacation days must be a positive integer'));
+                return false;
+            }
+        }
+        if ($action['type'] == ACTION_ADDFLAG) {
+            if (!in_array($action['flag'], $GLOBALS['imapFlags'])) {
+                SmartSieve::setError(SmartSieve::text('This flag is not permitted'));
                 return false;
             }
         }

@@ -204,6 +204,9 @@
                   <OPTION VALUE="<?php echo ACTION_REJECT;?>"<?php echo ($action['type'] == ACTION_REJECT) ? ' SELECTED="selected"' : '';?>><?php echo SmartSieve::text("Send a reject message");?></OPTION>
                   <OPTION VALUE="<?php echo ACTION_DISCARD;?>"<?php echo ($action['type'] == ACTION_DISCARD) ? ' SELECTED="selected"' : '';?>><?php echo SmartSieve::text("Discard the message");?></OPTION>
                   <OPTION VALUE="<?php echo ACTION_VACATION;?>"<?php echo ($action['type'] == ACTION_VACATION) ? ' SELECTED="selected"' : '';?>><?php echo SmartSieve::text('Send vacation message');?></OPTION>
+<?php if ($GLOBALS['managesieve']->hasExtension('imapflags')):?>
+                  <OPTION VALUE="<?php echo ACTION_ADDFLAG;?>"<?php echo ($action['type'] == ACTION_ADDFLAG) ? ' SELECTED="selected"' : '';?>><?php echo SmartSieve::text('Set message flag');?></OPTION>
+<?php endif;?>
                   <OPTION VALUE="<?php echo ACTION_KEEP;?>"<?php echo ($action['type'] == ACTION_KEEP) ? ' SELECTED="selected"' : '';?>><?php echo SmartSieve::text('Keep a copy in your Inbox');?></OPTION>
                   <OPTION VALUE="<?php echo ACTION_STOP;?>"<?php echo ($action['type'] == ACTION_STOP) ? ' SELECTED="selected"' : '';?>><?php echo SmartSieve::text('Stop processing filter rules');?></OPTION>
                 </SELECT>
@@ -267,6 +270,12 @@
                     </TD>
                   </TR>
                 </TABLE>
+<?php elseif ($action['type'] == ACTION_ADDFLAG):?>
+                <SELECT NAME="<?php echo ACTION_ADDFLAG . $i;?>">
+<?php foreach ($imapFlags as $flag): ?>
+                  <OPTION VALUE="<?php echo $flag;?>"<?php echo ($action['flag'] == $flag) ? ' SELECTED="selected"' : '';?>><?php echo SmartSieve::utf8Decode($flag);?></OPTION>
+<?php endforeach; ?>
+                </SELECT>
 <?php elseif ($action['type'] == ACTION_DISCARD || $action['type'] == ACTION_KEEP || $action['type'] == ACTION_STOP):?>
                 &nbsp;
 <?php endif;?>
