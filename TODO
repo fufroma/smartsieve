@@ -1,34 +1,31 @@
 SmartSieve - TODO
 
 
+Known bugs
+
+1. Bug #1775235: "Proxy user: wrong folders displayed".
+2. SmartSieve does not wrap its metadata lines, so these could, in theory, exceed the
+   maximum sieve line length. This is 16k though, so even very large rules should not get 
+   anywhere near this.
+
 TODO for 1.0
 
-Feature request #1679018: "Insert rule at position" and "move rule to position" option
-* Handle string lists as a way of matching various strings against the same field.
-
-TODO for 1.1
-
+* add Whitelist feature.
 * fix mcrypt.php: MCRYPT_DEV_RANDOM->MCRYPT_RAND, keep IV, and mcrypt_generic_deinit
-* fix mailbox list for proxy authorization
-* do HAVESPACE before doing a PUTSCRIPT as the spec demands. HAVESPACE is broken up to 
-  cyrus-2.0.16, so will need to handle this according to timsieved version
-* include file/line number to log messages
 
 TODO for 2.0
 
-* major rewrite of meta-indexing code
 * implement rule/condition/action as objects
-* write a generic error class similar to pearError
+* support sieve on shared mailboxes (cyrus 2.3)
+* find permanent fix for Bug #1775235: proxy authz folder list issue
+* Feature request #1544828: "Ability to create notification rules".
+* Fearure request #1657537: "Case-insensitive pattern matching".
 
 Miscellaneous TODOs
 
-* remove dependency on c-client by adding hardcoded pure-php imap functions
 * more htmlspecialchars()
-* add drop down list for rule position on create rule page
 * handle magic_quotes_runtime = 'On'
-* abbreviate vacation and reject text in summary lines on main.php
 * make use of sieve redirect, reject, etc configurable
-* make it possible to supply other server options from login.php
 
 
 $Id$
