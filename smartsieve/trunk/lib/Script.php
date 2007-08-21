@@ -26,6 +26,7 @@ define ("ACTION_KEEP", "keep");
 define ("ACTION_DISCARD", "discard");
 define ("ACTION_CUSTOM", "custom");
 define ("ACTION_VACATION", "vacation");
+define ("ACTION_ADDFLAG", "addflag");
 define ("ACTION_STOP", "stop");
 
 // Match types.
@@ -616,6 +617,12 @@ class Script {
                             (!empty($action['days'])) ? sprintf(":days %s ", $action['days']) : '',
                             (!empty($addstr)) ? $addstr : '', $action['message']);
                         $this->extensions['vacation'] = true;
+                        break;
+                    case (ACTION_ADDFLAG):
+                        $newruletext .= sprintf("%saddflag \"%s\";\n",
+                                                $this->hasCondition($rule) ? "\t" : '',
+                                                $action['flag']);
+                        $this->extensions['imapflags'] = true;
                         break;
                     case (ACTION_CUSTOM):
                         // Scrap the above and just display the custom text.

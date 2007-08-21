@@ -344,6 +344,9 @@ function getSummary($rule)
                 $complete .= sprintf(" %s",
                     SmartSieve::text('with message "%s"',array(SmartSieve::utf8Decode($action['message']))));
                 break;
+            case (ACTION_ADDFLAG):
+                $complete .= SmartSieve::text('set the "%s" flag', array($action['flag']));
+                break;
             case (ACTION_CUSTOM):
                 // Scrap the above and just display the custom text.
                 $complete = sprintf("[%s] %s", SmartSieve::text('Custom Rule'),
