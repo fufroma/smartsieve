@@ -56,7 +56,8 @@ if (($m = SmartSieve::getFormValue('mode')) !== null &&
 
 // Get the list of mailboxes for this user.
 // Set it in the session so we only do this once per login.
-if (!isset($_SESSION['smartsieve']['mailboxes'])) {
+if (!isset($_SESSION['smartsieve']['mailboxes']) &&
+    $_SESSION['smartsieve']['auth'] == $_SESSION['smartsieve']['authz']) {
     $_SESSION['smartsieve']['mailboxes'] = array();
     $mboxes = SmartSieve::getMailboxList();
     if (is_array($mboxes)) {

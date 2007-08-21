@@ -1,6 +1,9 @@
 Smartsieve - ChangeLog
 ----------------------
 
+21 Aug 2007 S Grier
+* Add workaround for Bug #1775235: "Proxy user: wrong folders displayed".
+
 20 Aug 2007 S Grier
 * Add images for help and $default->menu_items menu items.
 * Remove websieve_auto_matches warning from rule edit page.
