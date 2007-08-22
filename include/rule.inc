@@ -330,7 +330,6 @@
           <input type="button" name="disable" value="<?php echo SmartSieve::text('Disable');?>" onClick="document.thisRule.thisAction.value='<?php echo FORM_ACTION_DISABLE;?>'; document.thisRule.submit(); return false;">
           <input type="button" name="delete" value="<?php echo SmartSieve::text('Delete');?>" onClick="Delete(); return false;">
 <?php endif; ?>
-          <input type="button" name="custom" value="<?php echo SmartSieve::text('Custom rule');?>" onClick="window.location='<?php echo SmartSieve::setUrl('rule.php?mode=custom');?>';">
           <input type="button" name="return" value="<?php echo SmartSieve::text('Return to Filters');?>" onClick="window.location='<?php echo SmartSieve::setUrl('main.php');?>';">
         </TD>
       </TR>
