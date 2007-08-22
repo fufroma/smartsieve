@@ -5,27 +5,29 @@ Known bugs
 
 1. Bug #1775235: "Proxy user: wrong folders displayed".
 2. SmartSieve does not wrap its metadata lines, so these could, in theory, exceed the
-   maximum sieve line length. This is 16k though, so even very large rules should not get 
+   maximum sieve line length. This is 16KB though, so even very large rules should not get 
    anywhere near this.
 
 TODO for 1.0
 
-* add Whitelist feature.
-* fix mcrypt.php: MCRYPT_DEV_RANDOM->MCRYPT_RAND, keep IV, and mcrypt_generic_deinit
+* Add Whitelist feature.
+* Fix mcrypt.php: MCRYPT_DEV_RANDOM->MCRYPT_RAND, keep IV, and mcrypt_generic_deinit
+* Fix CSS caching.
+* Feature request #1544828: "Ability to create notification rules".
+* Add configuration tool.
 
 TODO for 2.0
 
-* implement rule/condition/action as objects
-* support sieve on shared mailboxes (cyrus 2.3)
-* find permanent fix for Bug #1775235: proxy authz folder list issue
-* Feature request #1544828: "Ability to create notification rules".
+* Implement rule/condition/action as objects
+* Support sieve on shared mailboxes (cyrus 2.3)
+* Find permanent fix for Bug #1775235: proxy authz folder list issue
 * Fearure request #1657537: "Case-insensitive pattern matching".
 
 Miscellaneous TODOs
 
-* more htmlspecialchars()
-* handle magic_quotes_runtime = 'On'
-* make use of sieve redirect, reject, etc configurable
+* More htmlspecialchars()
+* Handle magic_quotes_runtime = 'On'
+* Make use of sieve redirect, reject, etc configurable
 
 
 $Id$
