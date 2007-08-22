@@ -1,6 +1,9 @@
 Smartsieve - ChangeLog
 ----------------------
 
+22 Aug 2007 S Grier
+* Make script and rule status icons action widgets.
+
 21 Aug 2007 S Grier
 * Add workaround for Bug #1775235: "Proxy user: wrong folders displayed".
 * Added Managesieve::hasExtension().
