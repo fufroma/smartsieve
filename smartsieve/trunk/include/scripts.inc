@@ -24,7 +24,7 @@
 
     <TABLE WIDTH="100%" BORDER="0" CELLPADDING="2" CELLSPACING="0">
     <TR>
-      <TD CLASS="heading">Sieve <?php echo SmartSieve::text("Scripts");?>:</TD>
+      <TD CLASS="heading"><?php echo SmartSieve::text('Sieve Scripts');?></TD>
     </TR>
     </TABLE>
 

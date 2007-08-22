@@ -15,18 +15,22 @@
         &nbsp;<?php echo SmartSieve::text('New filter rule');?> 
 <?php endif;?>
       </TD>
-    </TR>
-    <TR CLASS="heading">
-      <TD ALIGN="right">
+      <TD ALIGN="right" class="heading">
 <?php if ($_SESSION['smartsieve']['workingScript'] === SmartSieve::getActiveScript()): ?>
         &nbsp;<?php echo SmartSieve::text('Script "%s" is active', array($script->getName()));?> 
 <?php else:?>
         &nbsp;<?php echo SmartSieve::text('Script "%s" is not active', array($script->getName()));?> 
 <?php endif;?>
+        &nbsp;<a href="<?php echo SmartSieve::setUrl('scripts.php');?>"><img src="<?php echo SmartSieve::getConf('image_dir', 'images'); echo ($_SESSION['smartsieve']['workingScript'] === SmartSieve::getActiveScript()) ? '/tick.gif' : '/disable.gif';?>" title="<?php echo SmartSieve::text('Manage Scripts');?>" border="0"></a>
       </TD>
     </TR>
     </TABLE>
 
+  </TD>
+</TR>
+<TR>
+  <TD>
+    &nbsp;
   </TD>
 </TR>
 <TR>
@@ -40,7 +44,7 @@
       </TD>
       <TD ALIGN="right">
         &nbsp;<?php echo ($script->isRuleEnabled($ruleID)) ? SmartSieve::text('This rule is enabled') : SmartSieve::text('This rule is disabled');?> 
-        &nbsp;<IMG SRC="<?php echo SmartSieve::getConf('image_dir', 'images'); echo ($script->isRuleEnabled($ruleID)) ? '/tick.gif' : '/disable.gif';?>" BORDER="0">
+        &nbsp;<a href="" onclick="document.thisRule.thisAction.value='<?php echo ($script->isRuleEnabled($ruleID)) ? FORM_ACTION_DISABLE : FORM_ACTION_ENABLE;?>'; document.thisRule.submit(); return false;"><IMG SRC="<?php echo SmartSieve::getConf('image_dir', 'images'); echo ($script->isRuleEnabled($ruleID)) ? '/tick.gif' : '/disable.gif';?>" title="<?php echo ($script->isRuleEnabled($ruleID)) ? SmartSieve::text('Disable this rule') : SmartSieve::text('Enable this rule');?>" BORDER="0"></a>
 <?php else: ?>
         <?php echo SmartSieve::text('New filter rule');?> 
       </TD>

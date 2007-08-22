@@ -10,14 +10,13 @@
         &nbsp;<a href="<?php echo SmartSieve::setUrl('scripts.php');?>"><?php echo SmartSieve::text('Scripts');?>&nbsp;&gt;</a>
         &nbsp;<?php echo SmartSieve::text('Filter rules for "%s"', array($script->getName()));?> 
       </TD>
-    </TR>
-    <TR CLASS="heading">
-      <TD ALIGN="right">
+      <TD ALIGN="right" class="heading">
 <?php if ($_SESSION['smartsieve']['workingScript'] === SmartSieve::getActiveScript()): ?>
         &nbsp;<?php echo SmartSieve::text('Script "%s" is active', array($script->getName()));?> 
 <?php else:?>
         &nbsp;<?php echo SmartSieve::text('Script "%s" is not active', array($script->getName()));?> 
 <?php endif;?>
+        &nbsp;<a href="<?php echo SmartSieve::setUrl('scripts.php');?>"><img src="<?php echo SmartSieve::getConf('image_dir', 'images'); echo ($_SESSION['smartsieve']['workingScript'] === SmartSieve::getActiveScript()) ? '/tick.gif' : '/disable.gif';?>" title="<?php echo SmartSieve::text('Manage Scripts');?>" border="0"></a>
       </TD>
     </TR>
     </TABLE>
@@ -25,11 +24,16 @@
   </TD>
 </TR>
 <TR>
+  <TD>
+    &nbsp;
+  </TD>
+</TR>
+<TR>
   <TD CLASS="main">
 
     <TABLE WIDTH="100%" BORDER="0" CELLPADDING="2" CELLSPACING="0">
-    <TR>
-      <TD CLASS="heading"><?php echo SmartSieve::text('Mail Filter Rules');?>:</TD>
+    <TR class="heading">
+      <TD><?php echo SmartSieve::text('Filter Rules');?></TD>
     </TR>
     </TABLE>
 
