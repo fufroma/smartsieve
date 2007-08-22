@@ -3,6 +3,7 @@ Smartsieve - ChangeLog
 
 22 Aug 2007 S Grier
 * Make script and rule status icons action widgets.
+* Fix #1243957: "Improved recognition of Web/Smart scripts".
 
 21 Aug 2007 S Grier
 * Add workaround for Bug #1775235: "Proxy user: wrong folders displayed".
