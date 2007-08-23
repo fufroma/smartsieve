@@ -10,7 +10,6 @@ Known bugs
 
 TODO for 1.0
 
-* Add Whitelist feature.
 * Fix mcrypt.php: MCRYPT_DEV_RANDOM->MCRYPT_RAND, keep IV, and mcrypt_generic_deinit
 * Fix CSS caching.
 * Add configuration tool.

@@ -13,7 +13,12 @@
                 <a href="<?php echo SmartSieve::setUrl('main.php');?>"><img src="<?php echo SmartSieve::getConf('image_dir', 'images');?>/filter.gif" alt="" title="" border="0"><br><?php echo SmartSieve::text('Filter Rules');?></a>
               </td>
 <?php if ($_SESSION['scripts'][$_SESSION['smartsieve']['workingScript']]->mode != 'advanced'): ?>
-<?php if (SmartSieve::getConf('use_forward_mail_interface')):?>
+<?php if (SmartSieve::getConf('use_whitelist', true)):?>
+              <td>
+                <A HREF="<?php echo SmartSieve::setUrl('rule.php?mode=whitelist');?>"><img src="<?php echo SmartSieve::getConf('image_dir', 'images');?>/whitelist.gif" alt="" title="" border="0"><br><?php echo SmartSieve::text('Whitelist');?></A>
+              </td>
+<?php endif;?>
+<?php if (SmartSieve::getConf('use_forward_mail_interface', true)):?>
               <td>
                 <A HREF="<?php echo SmartSieve::setUrl('rule.php?mode=forward');?>"><img src="<?php echo SmartSieve::getConf('image_dir', 'images');?>/forward.gif" alt="" title="" border="0"><br><?php echo SmartSieve::text('Forward Mail');?></A>
               </td>

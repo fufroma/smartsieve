@@ -163,8 +163,11 @@ $default->allow_custom = true;
 // list appears below. Setting this to an empty array will disable the addflag action.
 //$default->imap_flags = array('\\\\Seen', '\\\\Deleted', '\\\\Answered', '\\\\Flagged', 'Junk', 'NotJunk', '$Label1', '$Label2', '$Label3', '$Label4', '$Label5');
 
-// Should we enable the "Forward Mail" interface?
-$default->use_forward_mail_interface = true;
+// Should we enable the "Forward Mail" interface? This is enabled by default.
+//$default->use_forward_mail_interface = true;
+
+// Should we enable the "Whitelist" interface? This is enabled by default.
+//$default->use_whitelist = true;
 
 // Which page should users see following login?
 $default->initial_page = 'main.php';

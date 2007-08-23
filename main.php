@@ -223,6 +223,9 @@ if ($script->mode == 'advanced' || $script->so == false){
             } elseif ($script->rules[$i]['special'] == RULE_TAG_SPAM) {
                 $tr['tooltip'] = SmartSieve::text('Edit spam filtering');
                 $tr['img'] = SmartSieve::getConf('image_dir', 'images').'/spam.gif';
+            } elseif ($script->rules[$i]['special'] == RULE_TAG_WHITELIST) {
+                $tr['tooltip'] = SmartSieve::text('Edit whitelist');
+                $tr['img'] = SmartSieve::getConf('image_dir', 'images').'/whitelist.gif';
             }
         }
         $rows[] = $tr;
