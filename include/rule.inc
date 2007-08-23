@@ -208,7 +208,7 @@
                   <OPTION VALUE="<?php echo ACTION_REJECT;?>"<?php echo ($action['type'] == ACTION_REJECT) ? ' SELECTED="selected"' : '';?>><?php echo SmartSieve::text("Send a reject message");?></OPTION>
                   <OPTION VALUE="<?php echo ACTION_DISCARD;?>"<?php echo ($action['type'] == ACTION_DISCARD) ? ' SELECTED="selected"' : '';?>><?php echo SmartSieve::text("Discard the message");?></OPTION>
                   <OPTION VALUE="<?php echo ACTION_VACATION;?>"<?php echo ($action['type'] == ACTION_VACATION) ? ' SELECTED="selected"' : '';?>><?php echo SmartSieve::text('Send vacation message');?></OPTION>
-<?php if ($GLOBALS['managesieve']->hasExtension('imapflags')):?>
+<?php if ($GLOBALS['managesieve']->hasExtension('imapflags') && !empty($imapFlags)):?>
                   <OPTION VALUE="<?php echo ACTION_ADDFLAG;?>"<?php echo ($action['type'] == ACTION_ADDFLAG) ? ' SELECTED="selected"' : '';?>><?php echo SmartSieve::text('Set message flag');?></OPTION>
 <?php endif;?>
 <?php if ($GLOBALS['managesieve']->hasExtension('notify') && !empty($notifyMethods)):?>

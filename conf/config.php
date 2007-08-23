@@ -159,6 +159,10 @@ $default->allow_custom = true;
 // The notify action is disabled by default.
 //$default->notify_methods = array('mailto', 'sms');
 
+// What IMAP flags should we allow users to set via the "addflag" action? The default 
+// list appears below. Setting this to an empty array will disable the addflag action.
+//$default->imap_flags = array('\\\\Seen', '\\\\Deleted', '\\\\Answered', '\\\\Flagged', 'Junk', 'NotJunk', '$Label1', '$Label2', '$Label3', '$Label4', '$Label5');
+
 // Should we enable the "Forward Mail" interface?
 $default->use_forward_mail_interface = true;
 

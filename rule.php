@@ -133,9 +133,6 @@ if ($mode == SMARTSIEVE_RULE_MODE_CUSTOM) {
     }
 }
 
-// Define a list of imap flags to make available to the addflag action.
-$imapFlags = SmartSieve::getConf('imap_flags', array('\\\\Seen', '\\\\Deleted', '\\\\Answered', '\\\\Flagged', 'Junk', 'NotJunk', '$Label1', '$Label2', '$Label3', '$Label4', '$Label5'));
-
 // Perform actions.
 
 $action = SmartSieve::getFormValue('thisAction');
@@ -256,6 +253,8 @@ foreach ($rule['conditions'] as $condition) {
         $sizeUsed = true;
     }
 }
+// Define a list of imap flags to make available to the addflag action.
+$imapFlags = SmartSieve::getConf('imap_flags', array('\\\\Seen', '\\\\Deleted', '\\\\Answered', '\\\\Flagged', 'Junk', 'NotJunk', '$Label1', '$Label2', '$Label3', '$Label4', '$Label5'));
 $notifyMethods = SmartSieve::getConf('notify_methods', array());
 
 // Add dummy condition and action for "Add action" widgits.
@@ -565,7 +564,8 @@ function isSane($rule)
             }
         }
         if ($action['type'] == ACTION_ADDFLAG) {
-            if (!in_array($action['flag'], $GLOBALS['imapFlags'])) {
+            $allowed = SmartSieve::getConf('imap_flags', array('\\\\Seen', '\\\\Deleted', '\\\\Answered', '\\\\Flagged', 'Junk', 'NotJunk', '$Label1', '$Label2', '$Label3', '$Label4', '$Label5'));
+            if (!in_array($action['flag'], $allowed)) {
                 SmartSieve::setError(SmartSieve::text('This flag is not permitted'));
                 return false;
             }
