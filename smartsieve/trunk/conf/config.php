@@ -153,6 +153,12 @@ $default->allow_regex = true;
 // Note: existing custom rules will always be handled.
 $default->allow_custom = true;
 
+// Notification methods to allow. This should be an array containing valid notify 
+// methods, of which only 'mailto' and 'sms' are supported. Note, the server must 
+// support the "notify" extension, and have notifyd configured to send notifications.
+// The notify action is disabled by default.
+//$default->notify_methods = array('mailto', 'sms');
+
 // Should we enable the "Forward Mail" interface?
 $default->use_forward_mail_interface = true;
 

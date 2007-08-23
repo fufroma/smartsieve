@@ -347,6 +347,18 @@ function getSummary($rule)
             case (ACTION_ADDFLAG):
                 $complete .= SmartSieve::text('set the "%s" flag', array($action['flag']));
                 break;
+            case (ACTION_NOTIFY):
+                if ($action['method'] == 'mailto') {
+                    $complete .= SmartSieve::text('send email notification to %s "%s"',
+                        array($action['options'], $action['message']));
+                } elseif ($action['method'] == 'sms') {
+                    $complete .= SmartSieve::text('send SMS notification to %s "%s"',
+                        array($action['options'], $action['message']));
+                } else {
+                    $complete .= SmartSieve::text('send notification to %s "%s"',
+                        array($action['options'], $action['message']));
+                }
+                break;
             case (ACTION_CUSTOM):
                 // Scrap the above and just display the custom text.
                 $complete = sprintf("[%s] %s", SmartSieve::text('Custom Rule'),
