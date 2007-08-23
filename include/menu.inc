@@ -24,7 +24,7 @@
               </td>
 <?php endif;?>
               <td>
-                <a href="<?php echo SmartSieve::setUrl('rule.php?mode=vacation');?>"><img src="<?php echo SmartSieve::getConf('image_dir', 'images');?>/vacation.gif" alt="" title="" border="0"><br><?php echo SmartSieve::text('Out-of-Office');?></a>
+                <a href="<?php echo SmartSieve::setUrl('rule.php?mode=vacation');?>"><img src="<?php echo SmartSieve::getConf('image_dir', 'images');?>/vacation.gif" alt="" title="" border="0"><br><?php echo SmartSieve::text('Vacation Settings');?></a>
               </td>
               <td>
                 <a href="<?php echo SmartSieve::setUrl('rule.php');?>"><img src="<?php echo SmartSieve::getConf('image_dir', 'images');?>/new.gif" alt="" title="" border="0"><br><?php echo SmartSieve::text('New Rule');?></a>
