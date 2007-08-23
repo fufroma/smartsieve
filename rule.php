@@ -256,6 +256,8 @@ foreach ($rule['conditions'] as $condition) {
         $sizeUsed = true;
     }
 }
+$notifyMethods = SmartSieve::getConf('notify_methods', array());
+
 // Add dummy condition and action for "Add action" widgits.
 $rule['conditions'][] = array('type' => 'new');
 $rule['actions'][] = array('type' => 'new');
@@ -441,6 +443,12 @@ function getPOSTValues()
                 $action['type'] = ACTION_ADDFLAG;
                 $action['flag'] = SmartSieve::getPOST(ACTION_ADDFLAG.$i);
                 break;
+            case (ACTION_NOTIFY):
+                $action['type'] = ACTION_NOTIFY;
+                $action['method'] = SmartSieve::getPOST('notify_method'.$i);
+                $action['options'] = SmartSieve::utf8Encode(SmartSieve::getPOST('notify_options'.$i));
+                $action['message'] = SmartSieve::utf8Encode(SmartSieve::getPOST('message'.$i));
+                break;
         }
         // If delete value set, ignore this condition.
         if (SmartSieve::getPOST('deleteAction' . $i++) == '1' || $type == 'new') {
@@ -516,6 +524,7 @@ function isSane($rule)
             ($action['type'] == ACTION_REJECT && empty($action['message'])) ||
             ($action['type'] == ACTION_VACATION && empty($action['message'])) ||
             ($action['type'] == ACTION_ADDFLAG && empty($action['flag'])) ||
+            ($action['type'] == ACTION_NOTIFY && empty($action['message'])) ||
             ($action['type'] == ACTION_CUSTOM && empty($action['sieve']))) {
             SmartSieve::setError(SmartSieve::text('You must supply an argument for this action'));
             return false;
@@ -558,6 +567,13 @@ function isSane($rule)
         if ($action['type'] == ACTION_ADDFLAG) {
             if (!in_array($action['flag'], $GLOBALS['imapFlags'])) {
                 SmartSieve::setError(SmartSieve::text('This flag is not permitted'));
+                return false;
+            }
+        }
+        if ($action['type'] == ACTION_NOTIFY) {
+            $allowed = SmartSieve::getConf('notify_methods', array());
+            if (!in_array($action['method'], $allowed)) {
+                SmartSieve::setError(SmartSieve::text('This notify method is not permitted'));
                 return false;
             }
         }

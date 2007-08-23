@@ -211,6 +211,9 @@
 <?php if ($GLOBALS['managesieve']->hasExtension('imapflags')):?>
                   <OPTION VALUE="<?php echo ACTION_ADDFLAG;?>"<?php echo ($action['type'] == ACTION_ADDFLAG) ? ' SELECTED="selected"' : '';?>><?php echo SmartSieve::text('Set message flag');?></OPTION>
 <?php endif;?>
+<?php if ($GLOBALS['managesieve']->hasExtension('notify') && !empty($notifyMethods)):?>
+                  <OPTION VALUE="<?php echo ACTION_NOTIFY;?>"<?php echo ($action['type'] == ACTION_NOTIFY) ? ' SELECTED="selected"' : '';?>><?php echo SmartSieve::text('Send notification message');?></OPTION>
+<?php endif;?>
                   <OPTION VALUE="<?php echo ACTION_KEEP;?>"<?php echo ($action['type'] == ACTION_KEEP) ? ' SELECTED="selected"' : '';?>><?php echo SmartSieve::text('Keep a copy in your Inbox');?></OPTION>
                   <OPTION VALUE="<?php echo ACTION_STOP;?>"<?php echo ($action['type'] == ACTION_STOP) ? ' SELECTED="selected"' : '';?>><?php echo SmartSieve::text('Stop processing filter rules');?></OPTION>
                 </SELECT>
@@ -280,6 +283,35 @@
                   <OPTION VALUE="<?php echo $flag;?>"<?php echo ($action['flag'] == $flag) ? ' SELECTED="selected"' : '';?>><?php echo SmartSieve::utf8Decode($flag);?></OPTION>
 <?php endforeach; ?>
                 </SELECT>
+<?php elseif ($action['type'] == ACTION_NOTIFY):?>
+                <TABLE WIDTH="100%" CELLPADDING="0" BORDER="0" CELLSPACING="0">
+                  <TR>
+                    <TD>
+                      <SELECT NAME="notify_method<?php echo $i;?>" onchange="document.thisRule.submit(); return true;">
+<?php if (in_array('mailto', $notifyMethods)):?>
+                        <OPTION VALUE="<?php echo 'mailto';?>"<?php echo ($action['method'] == 'mailto' || empty($action['method'])) ? ' SELECTED="selected"' : '';?>><?php echo SmartSieve::text('by email');?></OPTION>
+<?php endif;?>
+<?php if (in_array('sms', $notifyMethods)):?>
+                        <OPTION VALUE="<?php echo 'sms';?>"<?php echo ($action['method'] == 'sms') ? ' SELECTED' : '';?>><?php echo SmartSieve::text('by SMS');?></OPTION>
+<?php endif;?>
+                      </SELECT>
+<?php if ($action['method'] == 'mailto' || empty($action['method'])):?>
+                      &nbsp;<?php echo SmartSieve::text('to email address');?> 
+                      &nbsp;<input type="text" name="notify_options<?php echo $i;?>" value="<?php echo SmartSieve::utf8Decode($action['options']);?>" size="50">
+<?php elseif ($action['method'] == 'sms'):?>
+                      &nbsp;<?php echo SmartSieve::text('to number');?> 
+                      &nbsp;<input type="text" name="notify_options<?php echo $i;?>" value="<?php echo SmartSieve::utf8Decode($action['options']);?>" size="50">
+<?php else:?>
+                      &nbsp;
+<?php endif;?>
+                    </TD>
+                  </TR>
+                  <TR>
+                    <TD>
+                      <TEXTAREA NAME="message<?php echo $i;?>" COLS="<?php echo $wrap_width;?>" WRAP="hard"><?php echo (!empty($action['message'])) ? SmartSieve::utf8Decode($action['message']) : '';?></TEXTAREA>
+                    </TD>
+                  </TR>
+                </TABLE>
 <?php elseif ($action['type'] == ACTION_DISCARD || $action['type'] == ACTION_KEEP || $action['type'] == ACTION_STOP):?>
                 &nbsp;
 <?php endif;?>

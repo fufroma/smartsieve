@@ -27,6 +27,7 @@ define ("ACTION_DISCARD", "discard");
 define ("ACTION_CUSTOM", "custom");
 define ("ACTION_VACATION", "vacation");
 define ("ACTION_ADDFLAG", "addflag");
+define ("ACTION_NOTIFY", "notify");
 define ("ACTION_STOP", "stop");
 
 // Match types.
@@ -627,6 +628,12 @@ class Script {
                                                 $this->hasCondition($rule) ? "\t" : '',
                                                 $action['flag']);
                         $this->extensions['imapflags'] = true;
+                        break;
+                    case (ACTION_NOTIFY):
+                        $newruletext .= sprintf("%snotify :method \"%s\" :options \"%s\" :message \"%s\";\n",
+                                                $this->hasCondition($rule) ? "\t" : '',
+                                                $action['method'], $action['options'], $action['message']);
+                        $this->extensions['notify'] = true;
                         break;
                     case (ACTION_CUSTOM):
                         // Scrap the above and just display the custom text.
