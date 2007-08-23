@@ -3,6 +3,7 @@ Smartsieve - ChangeLog
 
 23 Aug 2007 S Grier
 * Added support for mailto and sms notifications (Feature request #1544828).
+* Added Whitelist feature.
 
 22 Aug 2007 S Grier
 * Make script and rule status icons action widgets.

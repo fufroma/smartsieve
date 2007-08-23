@@ -120,6 +120,17 @@ elseif ($mode == SMARTSIEVE_RULE_MODE_FORWARD) {
                                    'days'=>SmartSieve::getConf('vacation_days', 7),
                                    'addresses'=>array());
     }
+} elseif ($mode == SMARTSIEVE_RULE_MODE_WHITELIST) {
+    $ruleID = $script->getSpecialRuleId(RULE_TAG_WHITELIST);
+    if ($ruleID !== null) {
+        $rule = $script->getRule($ruleID);
+    } else {
+        $rule['conditions'][] = array('type'=>TEST_ADDRESS,
+                                    'header'=>'from',
+                                    'matchStr'=>'',
+                                    'matchType'=>MATCH_IS);
+        $rule['actions'][] = array('type'=>ACTION_STOP);
+    }
 }
 // Check if this is a custom rule.
 foreach ($rule['actions'] as $action) {
@@ -277,6 +288,10 @@ switch ($mode) {
     case (SMARTSIEVE_RULE_MODE_VACATION):
         $help_url = SmartSieve::getConf('vacation_help_url', '');
         $template = '/vacation.inc';
+        break;
+    case (SMARTSIEVE_RULE_MODE_WHITELIST):
+        $help_url = SmartSieve::getConf('whitelist_help_url', '');
+        $template = '/whitelist.inc';
         break;
     default:
         $help_url = SmartSieve::getConf('rule_help_url', '');
