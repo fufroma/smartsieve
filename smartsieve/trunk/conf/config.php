@@ -166,6 +166,9 @@ $default->allow_custom = true;
 // Should we enable the "Forward Mail" interface? This is enabled by default.
 //$default->use_forward_mail_interface = true;
 
+// Should we enable the vacation interface? This is enabled by default.
+//$default->use_vacation_interface = true;
+
 // Should we enable the "Whitelist" interface? This is enabled by default.
 //$default->use_whitelist = true;
 

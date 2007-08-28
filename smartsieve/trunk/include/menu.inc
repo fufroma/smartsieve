@@ -23,9 +23,11 @@
                 <A HREF="<?php echo SmartSieve::setUrl('rule.php?mode=forward');?>"><img src="<?php echo SmartSieve::getConf('image_dir', 'images');?>/forward.gif" alt="" title="" border="0"><br><?php echo SmartSieve::text('Forward Mail');?></A>
               </td>
 <?php endif;?>
+<?php if (SmartSieve::getConf('use_vacation_interface', true)):?>
               <td>
                 <a href="<?php echo SmartSieve::setUrl('rule.php?mode=vacation');?>"><img src="<?php echo SmartSieve::getConf('image_dir', 'images');?>/vacation.gif" alt="" title="" border="0"><br><?php echo SmartSieve::text('Vacation Settings');?></a>
               </td>
+<?php endif;?>
               <td>
                 <a href="<?php echo SmartSieve::setUrl('rule.php');?>"><img src="<?php echo SmartSieve::getConf('image_dir', 'images');?>/new.gif" alt="" title="" border="0"><br><?php echo SmartSieve::text('New Rule');?></a>
               </td>
