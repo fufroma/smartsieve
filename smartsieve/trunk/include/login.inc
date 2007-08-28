@@ -5,7 +5,7 @@
 <TABLE WIDTH="300" CELLPADDING="5" BORDER="0" CELLSPACING="0">
   <TR>
     <TD CLASS="welcome" ALIGN="center" COLSPAN="2">
-      <?php echo SmartSieve::getConf('login_page_heading', '&nbsp;Welcome to SmartSieve');?> 
+      &nbsp;<?php echo SmartSieve::getConf('login_page_heading', SmartSieve::text('Welcome to SmartSieve'));?> 
     </TD>
   </TR>
 

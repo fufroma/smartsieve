@@ -88,7 +88,7 @@
                 <input type="hidden" name="matchType<?php echo $i;?>" value="is">
                 <input type="hidden" name="from<?php echo $i;?>" value="<?php echo (!empty($condition['matchStr'])) ? SmartSieve::utf8Decode($condition['matchStr']) : '';?>" SIZE="30">
                 <input type="hidden" name="delete<?php echo $i;?>" value="">
-                <input type="button" name="new" value="New Address" onclick="document.thisRule.condition<?php echo $i;?>.value='from'; document.thisRule.submit(); return false;">
+                <input type="button" name="new" value="<?php echo SmartSieve::text('New Address');?>" onclick="document.thisRule.condition<?php echo $i;?>.value='from'; document.thisRule.submit(); return false;">
               </TD>
             </TR>
 <?php endif;?>
