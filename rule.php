@@ -92,14 +92,17 @@ elseif ($mode == SMARTSIEVE_RULE_MODE_SPAM) {
     $ruleID = $script->getSpecialRuleId(RULE_TAG_SPAM);
     if ($ruleID !== null) {
         $rule = $script->getRule($ruleID);
+    } elseif (($spam = SmartSieve::getConf('spam_filter')) !== null &&
+               isset($spam['header']) &&
+               isset($spam['matchStr']) &&
+               isset($spam['matchType'])) {
+        $rule['conditions'][] = array('type'=>TEST_HEADER,
+                                      'header'=>$spam['header'],
+                                      'matchStr'=>$spam['matchStr'],
+                                      'matchType'=>$spam['matchType'],
+                                      'not'=>(!empty($spam['not'])) ? true : false);
     } else {
-        if (($spam = SmartSieve::getConf('spam_filter')) !== null) {;
-            $rule['conditions'][] = array('type'=>TEST_HEADER,
-                                          'header'=>(!empty($spam['header'])) ? $spam['header'] : '',
-                                          'matchStr'=>(!empty($spam['matchStr'])) ? $spam['matchStr'] : '',
-                                          'matchType'=>(!empty($spam['matchType'])) ? $spam['matchType'] : '',
-                                          'not'=>(!empty($spam['not'])) ? true : false);
-        }
+        $mode = SMARTSIEVE_RULE_MODE_GENERAL;
     }
 }
 // If using forward mode, look for an existing forward rule.
@@ -107,29 +110,35 @@ elseif ($mode == SMARTSIEVE_RULE_MODE_FORWARD) {
     $ruleID = $script->getSpecialRuleId(RULE_TAG_FORWARD);
     if ($ruleID !== null) {
         $rule = $script->getRule($ruleID);
-    } else {
+    } elseif (SmartSieve::getConf('use_forward_mail_interface', true) == true) {
         $rule['actions'][] = array('type'=>ACTION_REDIRECT, 'address'=>'');
+    } else {
+        $mode = SMARTSIEVE_RULE_MODE_GENERAL;
     }
 } elseif ($mode == SMARTSIEVE_RULE_MODE_VACATION) {
     $ruleID = $script->getSpecialRuleId(RULE_TAG_VACATION);
     if ($ruleID !== null) {
         $rule = $script->getRule($ruleID);
-    } else {
+    } elseif (SmartSieve::getConf('use_vacation_interface', true) == true) {
         $rule['actions'][] = array('type'=>ACTION_VACATION,
                                    'message'=>'',
                                    'days'=>SmartSieve::getConf('vacation_days', 7),
                                    'addresses'=>array());
+    } else {
+        $mode = SMARTSIEVE_RULE_MODE_GENERAL;
     }
 } elseif ($mode == SMARTSIEVE_RULE_MODE_WHITELIST) {
     $ruleID = $script->getSpecialRuleId(RULE_TAG_WHITELIST);
     if ($ruleID !== null) {
         $rule = $script->getRule($ruleID);
-    } else {
+    } elseif (SmartSieve::getConf('use_whitelist', true) == true) {
         $rule['conditions'][] = array('type'=>TEST_ADDRESS,
                                     'header'=>'from',
                                     'matchStr'=>'',
                                     'matchType'=>MATCH_IS);
         $rule['actions'][] = array('type'=>ACTION_STOP);
+    } else {
+        $mode = SMARTSIEVE_RULE_MODE_GENERAL;
     }
 }
 // Check if this is a custom rule.
@@ -138,9 +147,12 @@ foreach ($rule['actions'] as $action) {
         $mode = SMARTSIEVE_RULE_MODE_CUSTOM;
     }
 }
-if ($mode == SMARTSIEVE_RULE_MODE_CUSTOM) {
-    if (empty($ruleID)) {
+// If this is a new custom rule, display custom rule interface only if permitted to do so.
+if ($mode == SMARTSIEVE_RULE_MODE_CUSTOM && empty($ruleID)) {
+    if (SmartSieve::getConf('allow_custom', true) == true) {
         $rule['actions'][] = array('type'=>ACTION_CUSTOM, 'sieve'=>'');
+    } else {
+        $mode = SMARTSIEVE_RULE_MODE_GENERAL;
     }
 }
 
