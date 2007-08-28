@@ -4,6 +4,7 @@ Smartsieve - ChangeLog
 28 Aug 2007 S Grier
 * Honour use_forward_mail_interface, use_vacation_interface, allow_custom and use_whitelist
   options. Note, these modes will still be available to existing rules.
+* Text should go through SmartSieve::text() (Bug #1781953).
 
 23 Aug 2007 S Grier
 * Added support for mailto and sms notifications (Feature request #1544828).

@@ -97,7 +97,7 @@
                 &nbsp;
                 <SELECT NAME="condition<?php echo $i;?>" onchange="document.thisRule.submit();return true;">
 <?php if ($condition['type'] == 'new'):?>
-                  <OPTION VALUE="new" SELECTED="selected">Add condition</OPTION>
+                  <OPTION VALUE="new" SELECTED="selected"><?php echo SmartSieve::text('Add condition');?></OPTION>
 <?php endif;?>
                   <OPTION VALUE="from"<?php echo ($condition['type'] == TEST_ADDRESS && $condition['header'] == 'from') ? ' SELECTED="selected"' : '';?>><?php echo SmartSieve::text("If message 'From:' contains");?></OPTION>
                   <OPTION VALUE="to"<?php echo ($condition['type'] == TEST_ADDRESS && $condition['header'] == 'to') ? ' SELECTED="selected"' : '';?>><?php echo SmartSieve::text("If message 'To:' contains");?></OPTION>
@@ -201,7 +201,7 @@
               <TD>
                 <SELECT NAME="action<?php echo $i;?>" onchange="document.thisRule.submit(); return true;">
 <?php if ($action['type'] == 'new'):?>
-                  <OPTION VALUE="new" SELECTED="selected">Add action</OPTION>
+                  <OPTION VALUE="new" SELECTED="selected"><?php echo SmartSieve::text('Add action');?></OPTION>
 <?php endif;?>
                   <OPTION VALUE="<?php echo ACTION_FILEINTO;?>"<?php echo ($action['type'] == ACTION_FILEINTO) ? ' SELECTED="selected"' : '';?>><?php echo SmartSieve::text("File Into");?></OPTION>
                   <OPTION VALUE="<?php echo ACTION_REDIRECT;?>"<?php echo ($action['type'] == ACTION_REDIRECT) ? ' SELECTED="selected"' : '';?>><?php echo SmartSieve::text("Forward to address");?></OPTION>
