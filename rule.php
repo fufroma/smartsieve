@@ -54,21 +54,6 @@ if (($m = SmartSieve::getFormValue('mode')) !== null &&
     $mode = $m;
 }
 
-// Get the list of mailboxes for this user.
-// Set it in the session so we only do this once per login.
-if (!isset($_SESSION['smartsieve']['mailboxes']) &&
-    $_SESSION['smartsieve']['auth'] == $_SESSION['smartsieve']['authz']) {
-    $_SESSION['smartsieve']['mailboxes'] = array();
-    $mboxes = SmartSieve::getMailboxList();
-    if (is_array($mboxes)) {
-        $_SESSION['smartsieve']['mailboxes'] = $mboxes;
-    } else {
-        SmartSieve::setError(SmartSieve::text('ERROR: ') . $mboxes);
-        SmartSieve::log(sprintf('failed getting mailbox list for %s from %s: %s', 
-            $_SESSION['smartsieve']['auth'], $_SESSION['smartsieve']['server']['host'], $mboxes), LOG_ERR);
-    }
-}
-
 // Get values for this rule.
 $ruleID = null;
 $rule = array('status' => 'ENABLED',
@@ -274,6 +259,15 @@ $sizeUsed = false;
 foreach ($rule['conditions'] as $condition) {
     if ($condition['type'] == TEST_SIZE) {
         $sizeUsed = true;
+    }
+}
+// If rule has a fileinto action, get the list of mailboxes for this user.
+// Don't do this if user has authzed as another user (Bug #1775235).
+$mailboxes = array();
+foreach ($rule['actions'] as $action) {
+    if ($action['type'] == ACTION_FILEINTO &&
+        $_SESSION['smartsieve']['auth'] == $_SESSION['smartsieve']['authz']) {
+        $mailboxes = SmartSieve::getMailboxList();
     }
 }
 // Define a list of imap flags to make available to the addflag action.
