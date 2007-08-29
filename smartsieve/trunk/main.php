@@ -198,13 +198,11 @@ if ($script->mode == 'advanced' || $script->so == false){
         $tr['summary'] = getSummary($script->rules[$i]);
         $tr['class'] = 'inactive';
         $tr['statusImage'] = SmartSieve::getConf('image_dir', 'images') . '/disable.gif';
-        $tr['status'] = SmartSieve::text('DISABLED');
         $tr['statusChangeAction'] = FORM_ACTION_ENABLE;
         $tr['statusChangeText'] = SmartSieve::text('Enable this rule');
         if ($script->isRuleEnabled($i)) {
             $tr['class'] = 'active';
             $tr['statusImage'] = SmartSieve::getConf('image_dir', 'images') . '/tick.gif';
-            $tr['status'] = SmartSieve::text('ENABLED');
             $tr['statusChangeAction'] = FORM_ACTION_DISABLE;
             $tr['statusChangeText'] = SmartSieve::text('Disable this rule');
         }
