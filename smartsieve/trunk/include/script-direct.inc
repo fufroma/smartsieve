@@ -42,7 +42,7 @@
 <TR>
   <TD>
 
-    <TEXTAREA CLASS="direct" NAME="content" ROWS="30" COLS="70" WRAP="off"><?php echo $content;?></TEXTAREA>
+    <TEXTAREA CLASS="direct" NAME="content" ROWS="30" COLS="80" WRAP="off"><?php echo $content;?></TEXTAREA>
 
   </TD>
 </TR>
