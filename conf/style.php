@@ -104,6 +104,8 @@ $css['textarea']['font-size'] = '8pt';
 $css['textarea']['font-weight'] = 'normal';
 $css['textarea']['width'] = '100%';
 $css['textarea']['height'] = '200px';
+$css['textarea.direct']['height'] = '400px';
+$css['textarea.custom']['height'] = '200px';
 
 $css['input']['background-color'] = '#FFFFFF';
 $css['input']['border'] = '#b5b5b5 1px solid';

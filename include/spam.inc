@@ -74,14 +74,14 @@
               <TD>
                 <SELECT NAME="action<?php echo $i;?>" onchange="document.thisRule.submit(); return true;">
 <?php if ($action['type'] == 'new'):?>
-                  <OPTION VALUE="new" SELECTED="selected">Add action</OPTION>
+                  <OPTION VALUE="new" SELECTED="selected"><?php echo SmartSieve::text('Add action');?></OPTION>
 <?php endif;?>
                   <OPTION VALUE="<?php echo ACTION_FILEINTO;?>"<?php echo ($action['type'] == ACTION_FILEINTO) ? ' SELECTED="selected"' : '';?>><?php echo SmartSieve::text("File Into");?></OPTION>
                   <OPTION VALUE="<?php echo ACTION_REDIRECT;?>"<?php echo ($action['type'] == ACTION_REDIRECT) ? ' SELECTED="selected"' : '';?>><?php echo SmartSieve::text("Forward to address");?></OPTION>
                   <OPTION VALUE="<?php echo ACTION_REJECT;?>"<?php echo ($action['type'] == ACTION_REJECT) ? ' SELECTED="selected"' : '';?>><?php echo SmartSieve::text("Send a reject message");?></OPTION>
                   <OPTION VALUE="<?php echo ACTION_DISCARD;?>"<?php echo ($action['type'] == ACTION_DISCARD) ? ' SELECTED="selected"' : '';?>><?php echo SmartSieve::text("Discard the message");?></OPTION>
                   <OPTION VALUE="<?php echo ACTION_VACATION;?>"<?php echo ($action['type'] == ACTION_VACATION) ? ' SELECTED="selected"' : '';?>><?php echo SmartSieve::text('Send vacation message');?></OPTION>
-<?php if ($GLOBALS['managesieve']->hasExtension('imapflags')):?>
+<?php if ($GLOBALS['managesieve']->hasExtension('imapflags') && !empty($imapFlags)):?>
                   <OPTION VALUE="<?php echo ACTION_ADDFLAG;?>"<?php echo ($action['type'] == ACTION_ADDFLAG) ? ' SELECTED="selected"' : '';?>><?php echo SmartSieve::text('Set message flag');?></OPTION>
 <?php endif;?>
                   <OPTION VALUE="<?php echo ACTION_KEEP;?>"<?php echo ($action['type'] == ACTION_KEEP) ? ' SELECTED="selected"' : '';?>><?php echo SmartSieve::text('Keep a copy in your Inbox');?></OPTION>
@@ -105,7 +105,7 @@
 <?php elseif ($action['type'] == ACTION_REDIRECT):?>
                 <INPUT TYPE="text" NAME="<?php echo ACTION_REDIRECT . $i;?>" VALUE="<?php echo (!empty($action['address'])) ? SmartSieve::utf8Decode($action['address']) : '';?>" SIZE="40">
 <?php elseif ($action['type'] == ACTION_REJECT):?>
-                <TEXTAREA NAME="<?php echo ACTION_REJECT . $i;?>" ROWS="3" COLS="<?php echo $wrap_width;?>" WRAP="hard"><?php echo SmartSieve::utf8Decode($action['message']);?></TEXTAREA>
+                <TEXTAREA NAME="<?php echo ACTION_REJECT . $i;?>" ROWS="10" COLS="<?php echo $wrap_width;?>" WRAP="hard"><?php echo SmartSieve::utf8Decode($action['message']);?></TEXTAREA>
 <?php elseif ($action['type'] == ACTION_VACATION):?>
                 <TABLE WIDTH="100%" CELLPADDING="0" BORDER="0" CELLSPACING="0">
                   <TR>
@@ -113,7 +113,7 @@
                       &nbsp;
                     </TD>
                     <TD>
-                      <TEXTAREA NAME="message<?php echo $i;?>" ROWS="3" COLS="<?php echo $wrap_width;?>" WRAP="hard"><?php echo (!empty($action['message'])) ? SmartSieve::utf8Decode($action['message']) : '';?></TEXTAREA>
+                      <TEXTAREA NAME="message<?php echo $i;?>" ROWS="10" COLS="<?php echo $wrap_width;?>" WRAP="hard"><?php echo (!empty($action['message'])) ? SmartSieve::utf8Decode($action['message']) : '';?></TEXTAREA>
                     </TD>
                   </TR>
                     <TR>

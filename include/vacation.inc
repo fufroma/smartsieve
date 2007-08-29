@@ -80,7 +80,7 @@
               </TD>
               <TD>
                 <INPUT TYPE="hidden" NAME="action0" VALUE="<?php echo ACTION_VACATION;?>">
-                <TEXTAREA NAME="message0" COLS="<?php echo $wrap_width;?>" WRAP="hard" TABINDEX="1"><?php if (!empty($rule['actions'][0]['message'])) echo SmartSieve::utf8Decode($rule['actions'][0]['message']); ?></TEXTAREA>
+                <TEXTAREA NAME="message0" ROWS="10" COLS="<?php echo $wrap_width;?>" WRAP="hard"><?php if (!empty($rule['actions'][0]['message'])) echo SmartSieve::utf8Decode($rule['actions'][0]['message']); ?></TEXTAREA>
               </TD>
             </TR>
             <TR CLASS="active">
