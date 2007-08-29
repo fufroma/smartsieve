@@ -84,7 +84,7 @@
             </TR>
             <TR CLASS="active">
               <TD>
-                <TEXTAREA NAME="sieve" ROWS="3" COLS="40" WRAP="off"><?php echo $rule['actions'][0]['sieve'];?></TEXTAREA>
+                <TEXTAREA CLASS="custom" NAME="sieve" ROWS="10" COLS="40" WRAP="off"><?php echo $rule['actions'][0]['sieve'];?></TEXTAREA>
               </TD>
             </TR>
 <?php if (!isset($ruleID) || $ruleID == 'new') :?>

@@ -235,7 +235,7 @@
 <?php elseif ($action['type'] == ACTION_REDIRECT):?>
                 <INPUT TYPE="text" NAME="<?php echo ACTION_REDIRECT . $i;?>" VALUE="<?php echo (!empty($action['address'])) ? SmartSieve::utf8Decode($action['address']) : '';?>" SIZE="40">
 <?php elseif ($action['type'] == ACTION_REJECT):?>
-                <TEXTAREA NAME="<?php echo ACTION_REJECT . $i;?>" ROWS="3" COLS="<?php echo $wrap_width;?>" WRAP="hard"><?php echo SmartSieve::utf8Decode($action['message']);?></TEXTAREA>
+                <TEXTAREA NAME="<?php echo ACTION_REJECT . $i;?>" ROWS="10" COLS="<?php echo $wrap_width;?>" WRAP="hard"><?php echo SmartSieve::utf8Decode($action['message']);?></TEXTAREA>
 <?php elseif ($action['type'] == ACTION_VACATION):?>
                 <TABLE WIDTH="100%" CELLPADDING="0" BORDER="0" CELLSPACING="0">
                   <TR>
@@ -243,7 +243,7 @@
                       &nbsp;
                     </TD>
                     <TD>
-                      <TEXTAREA NAME="message<?php echo $i;?>" ROWS="3" COLS="<?php echo $wrap_width;?>" WRAP="hard"><?php echo (!empty($action['message'])) ? SmartSieve::utf8Decode($action['message']) : '';?></TEXTAREA>
+                      <TEXTAREA NAME="message<?php echo $i;?>" ROWS="10" COLS="<?php echo $wrap_width;?>" WRAP="hard"><?php echo (!empty($action['message'])) ? SmartSieve::utf8Decode($action['message']) : '';?></TEXTAREA>
                     </TD>
                   </TR>
                     <TR>
@@ -311,7 +311,7 @@
                   </TR>
                   <TR>
                     <TD>
-                      <TEXTAREA NAME="message<?php echo $i;?>" COLS="<?php echo $wrap_width;?>" WRAP="hard"><?php echo (!empty($action['message'])) ? SmartSieve::utf8Decode($action['message']) : '';?></TEXTAREA>
+                      <TEXTAREA NAME="message<?php echo $i;?>" ROWS="10" COLS="<?php echo $wrap_width;?>" WRAP="hard"><?php echo (!empty($action['message'])) ? SmartSieve::utf8Decode($action['message']) : '';?></TEXTAREA>
                     </TD>
                   </TR>
                 </TABLE>
