@@ -600,6 +600,12 @@ function isSane($rule)
         }
     }
 
+    // Call is_sane_hook callback function, if defined.
+    if (($func = SmartSieve::getConf('is_sane_hook')) !== null &&
+            function_exists($func)) {
+            return call_user_func($func, $rule);
+    }
+
     // All values sane.
     return true;
 }

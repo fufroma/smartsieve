@@ -5,6 +5,7 @@ Smartsieve - ChangeLog
 * SmartSieve::getMailboxList() now always returns an array, even on a failure.
 * Fixed Bug #1781958: "Cached imap folders list".
 * When existing fileinto folder does not exist, display as a disabled select option.
+* Add is_sane_hook config option to allow extending sanity checking done on rule values.
 
 28 Aug 2007 S Grier
 * Honour use_forward_mail_interface, use_vacation_interface, allow_custom and use_whitelist

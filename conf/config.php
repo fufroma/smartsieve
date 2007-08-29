@@ -286,6 +286,13 @@ $default->get_login_details_hook = null;
 // addresses. The function should return an array of addresses.
 $default->get_email_addresses_hook = null;
 
+// If you want to extend the sanity checking done prior to the user saving a 
+// rule you can define a function and set the function name here. The function
+// must take a rule array as a parameter, and will be expected to return boolean 
+// true to allow the rule to be saved, or false to disallow it. There is an 
+// example isSaneHook() function below.
+$default->is_sane_hook = null;
+
 /**
  * Example get_login_details_hook function.
  *
@@ -330,6 +337,29 @@ $default->get_email_addresses_hook = null;
 //        ldap_close($ds);
 //    }
 //    return $addresses;
+//}
+
+/**
+ * Example is_sane_hook function.
+ *
+ * This function will be called (if set via is_sane_hook above) prior to a user
+ * saving a rule, and will be passed a rule array as a parameter. This allows
+ * you to add custom sanity checks to those of isSane(). You must return boolean
+ * true to allow the user to save the rule, or false to disallow it.
+ *
+ * @param array $rule The rule values
+ * @return boolean True if rule values are acceptable, false if not
+ */
+//function isSaneHook($rule)
+//{
+//    foreach ($rule['actions'] as $action) {
+//        if ($action['type'] == ACTION_REDIRECT &&
+//            !preg_match("/\@example.com\$/", $action['address'])) {
+//            SmartSieve::setError(sprintf("Not allowed to forward mail to %s", $action['address']));
+//            return false;
+//        }
+//    }
+//    return true;
 //}
 
 ?>
