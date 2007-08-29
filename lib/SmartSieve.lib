@@ -677,36 +677,37 @@ class SmartSieve {
    /**
     * Get the list of mailboxes for the current user.
     *
-    * @return mixed An array of mUTF7 encoded mailbox names, or string error on failure
+    * @return array An array of mUTF7 encoded mailbox names, possibly empty
     */
     function getMailboxList()
     {
+        $mboxlist = array();
         require_once SmartSieve::getConf('lib_dir', 'lib') . '/Crypt.php';
 
-        $connstr = sprintf('{%s:%s}INBOX', $_SESSION['smartsieve']['server']['host'], $_SESSION['smartsieve']['server']['imapport']);
-        // get encrypted passwd.
+        $connstr = sprintf('{%s:%s}INBOX', $_SESSION['smartsieve']['server']['host'],
+                           $_SESSION['smartsieve']['server']['imapport']);
         $passwd = Crypto::decrypt($_SESSION['smartsieve']['passwd']);
         $conn = imap_open($connstr, $_SESSION['smartsieve']['auth'], $passwd, OP_HALFOPEN);
-        if (!$conn){
-            return 'getMailboxList: imap_open failed: ' . imap_last_error();
+        if ($conn) {
+            $connstr = sprintf('{%s:%s}', $_SESSION['smartsieve']['server']['host'],
+                               $_SESSION['smartsieve']['server']['imapport']);
+            $mboxes = imap_list($conn, $connstr, "*");
+            if (is_array($mboxes) && count($mboxes) != 0) {
+                foreach ($mboxes as $mbox) {
+                    $mboxlist[] = str_replace($connstr, '', $mbox);
+                }
+                imap_close($conn);
+                return $mboxlist;
+            }
         }
-
-        $mboxlist = array();
-        $mboxes = array();
-        $connstr = sprintf('{%s:%s}', $_SESSION['smartsieve']['server']['host'],
-            $_SESSION['smartsieve']['server']['imapport']);
-        $mboxes = imap_listmailbox($conn,$connstr,"*");
-
-        if (!is_array($mboxes) || count($mboxes) == 0) {
-            return 'getMailboxList: imap_listmailbox failed: ' . imap_last_error();
+        SmartSieve::setError(sprintf('ERROR: failed getting mailbox list: %s', imap_last_error()));
+        SmartSieve::log(sprintf('failed getting mailbox list for %s from %s: %s',
+                                $_SESSION['smartsieve']['auth'],
+                                $_SESSION['smartsieve']['server']['host'],
+                                imap_last_error()), LOG_ERR);
+        if ($conn) {
+            imap_close($conn);
         }
-
-        foreach ($mboxes as $mbox) {
-            $label = str_replace($connstr, '', $mbox);
-            $mboxlist[] = $label;
-        }
-
-        imap_close($conn);
         return $mboxlist;
     }
 
