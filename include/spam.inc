@@ -99,7 +99,7 @@
                   <OPTION VALUE="<?php echo $mbox;?>"<?php echo ($action['folder'] == $mbox) ? ' SELECTED="selected"' : '';?>><?php echo SmartSieve::mutf7Decode($mbox);?></OPTION>
 <?php endforeach; ?>
 <?php if (!empty($action['folder']) && !in_array($action['folder'], $mailboxes)):?>
-                  <OPTION VALUE="<?php echo $action['folder'];?>" SELECTED="selected" DISABLED="disabled"><?php echo SmartSieve::mutf7Decode($action['folder']);?></OPTION>
+                  <OPTION VALUE="<?php echo $action['folder'];?>" SELECTED="selected"><?php echo SmartSieve::mutf7Decode($action['folder']);?></OPTION>
 <?php endif;?>
                 </SELECT>
 <?php else:?>

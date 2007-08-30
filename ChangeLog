@@ -3,6 +3,7 @@ Smartsieve - ChangeLog
 
 30 Aug 2007 S Grier
 * Remove forward.php ms-test.php vacation.php include/forward.js include/vacation.js lib/Log.php lib/sieve.lib from CVS HEAD.
+* Further fix for Bug #1781958. Warn when a fileinto folder does not exist.
 
 29 Aug 2007 S Grier
 * SmartSieve::getMailboxList() now always returns an array, even on a failure.
