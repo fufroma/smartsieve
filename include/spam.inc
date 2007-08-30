@@ -60,7 +60,7 @@
         <TD>
           <TABLE WIDTH="100%" CELLPADDING="2" BORDER="0" CELLSPACING="0">
             <TR>
-              <TH><?php echo SmartSieve::text("ACTIONS");?></TH>
+              <TH><?php echo SmartSieve::text('Actions');?></TH>
               <TH>&nbsp;</TH>
             </TR>
           </TABLE>

@@ -9,7 +9,7 @@
       <TD CLASS="breadcrumb">
         &nbsp;<a href="<?php echo SmartSieve::setUrl('scripts.php');?>"><?php echo SmartSieve::text('Scripts');?>&nbsp;&gt;</a>
         &nbsp;<A HREF="<?php echo SmartSieve::setUrl('main.php');?>"><?php echo SmartSieve::text('Filter rules for "%s"', array($script->getName()));?>&nbsp;&gt;</A>
-        &nbsp;<?php echo SmartSieve::text('Edit Whitelist');?> 
+        &nbsp;<?php echo SmartSieve::text('Edit whitelist');?> 
       </TD>
       <TD ALIGN="right" class="heading">
 <?php if ($_SESSION['smartsieve']['workingScript'] === SmartSieve::getActiveScript()): ?>

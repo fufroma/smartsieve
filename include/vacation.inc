@@ -10,7 +10,7 @@
         &nbsp;<a href="<?php echo SmartSieve::setUrl('scripts.php');?>"><?php echo SmartSieve::text('Scripts');?>&nbsp;&gt;</a>
         &nbsp;<A HREF="<?php echo SmartSieve::setUrl('main.php');?>"><?php echo SmartSieve::text('Filter rules for "%s"', array($script->getName()));?>&nbsp;&gt;</A>
 <?php if (isset($ruleID) && $ruleID !== 'new'): ?>
-        &nbsp;<?php echo SmartSieve::text('Edit vacation message');?>
+        &nbsp;<?php echo SmartSieve::text('Edit vacation settings');?>
 <?php else: ?>
         &nbsp;<?php echo SmartSieve::text('Set vacation message');?>
 <?php endif;?>
