@@ -10,9 +10,9 @@
         &nbsp;<a href="<?php echo SmartSieve::setUrl('scripts.php');?>"><?php echo SmartSieve::text('Scripts');?>&nbsp;&gt;</a>
         &nbsp;<A HREF="<?php echo SmartSieve::setUrl('main.php');?>"><?php echo SmartSieve::text('Filter rules for "%s"', array($script->getName()));?>&nbsp;&gt;</A>
 <?php if (isset($ruleID) && $ruleID !== 'new'): ?>
-        &nbsp;<?php echo SmartSieve::text('Edit filter rule');?>
+        &nbsp;<?php echo SmartSieve::text('Edit mail forwarding');?>
 <?php else: ?>
-        &nbsp;<?php echo SmartSieve::text('New filter rule');?>
+        &nbsp;<?php echo SmartSieve::text('Set mail forwarding');?>
 <?php endif;?>
       </TD>
       <TD ALIGN="right" class="heading">
@@ -75,7 +75,7 @@
           <TABLE WIDTH="100%" BORDER="0" CELLPADDING="2" CELLSPACING="0">
             <TR CLASS="active">
               <TD>
-                <?php echo SmartSieve::text('Forward mail to address:');?></TH>
+                <?php echo SmartSieve::text('Forward to address');?>:
               </TD>
               <TD>
                 <INPUT TYPE="text" NAME="<?php echo ACTION_REDIRECT;?>0" VALUE="<?php echo $rule['actions'][0]['address'];?>" SIZE="40">
@@ -83,7 +83,7 @@
             </TR>
             <TR CLASS="active">
               <TD>
-                <?php echo SmartSieve::text('Keep a copy in Inbox:');?> 
+                <?php echo SmartSieve::text('Keep a copy in your Inbox');?>:
               </TD>
               <TD>
                 <INPUT TYPE="checkbox" NAME="action1" VALUE="<?php echo ACTION_KEEP;?>"<?php echo (!empty($rule['actions'][1]) && $rule['actions'][1]['type'] == ACTION_KEEP) ? ' CHECKED="checked"' : '';?>>
