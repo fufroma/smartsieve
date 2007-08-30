@@ -102,7 +102,7 @@
                   <OPTION VALUE="from"<?php echo ($condition['type'] == TEST_ADDRESS && $condition['header'] == 'from') ? ' SELECTED="selected"' : '';?>><?php echo SmartSieve::text("If message 'From:' contains");?></OPTION>
                   <OPTION VALUE="to"<?php echo ($condition['type'] == TEST_ADDRESS && $condition['header'] == 'to') ? ' SELECTED="selected"' : '';?>><?php echo SmartSieve::text("If message 'To:' contains");?></OPTION>
                   <OPTION VALUE="subject"<?php echo ($condition['type'] == TEST_HEADER && $condition['header'] == 'subject') ? ' SELECTED="selected"' : '';?>><?php echo SmartSieve::text("If message 'Subject:' contains");?></OPTION>
-                  <OPTION VALUE="size"<?php echo ($condition['type'] == TEST_SIZE) ? ' SELECTED="selected"' : (($sizeUsed == true) ? ' DISABLED="disabled"' : '');?>><?php echo SmartSieve::text("If message size is");?></OPTION>
+                  <OPTION VALUE="size"<?php echo ($condition['type'] == TEST_SIZE) ? ' SELECTED="selected"' : '';?>><?php echo SmartSieve::text("If message size is");?></OPTION>
                   <OPTION VALUE="header"<?php echo ($condition['type'] == TEST_HEADER && $condition['header'] !== 'subject') ? ' SELECTED="selected"' : '';?>><?php echo SmartSieve::text("If mail header");?></OPTION>
 <?php if ($managesieve->hasExtension('body')):?>
                   <OPTION VALUE="body"<?php echo ($condition['type'] == TEST_BODY) ? ' SELECTED="selected"' : '';?>><?php echo SmartSieve::text("If message body");?></OPTION>
@@ -128,11 +128,11 @@
                 <INPUT TYPE="hidden" NAME="delete<?php echo $i;?>" VALUE="">
                 &nbsp;<A HREF="" onclick="document.forms.thisRule.delete<?php echo $i;?>.value='1'; document.forms.thisRule.submit(); return false;"><IMG SRC="<?php echo SmartSieve::getConf('image_dir', 'images');?>/delete.gif" ALT="<?php echo SmartSieve::text('Delete condition');?>" TITLE="<?php echo SmartSieve::text('Delete condition');?>" BORDER="0" onmouseover="window.status='<?php echo SmartSieve::text('Delete condition');?>'; return true;" onmouseout="window.status='';"></a>
 <?php elseif ($condition['type'] == TEST_SIZE):?>
-                <SELECT NAME="gthan">
+                <SELECT NAME="gthan<?php echo $i;?>">
                   <OPTION VALUE="0"<?php echo (empty($condition['gthan'])) ? ' SELECTED="selected"' : '';?>><?php echo SmartSieve::text("less than");?></OPTION>
                   <OPTION VALUE="<?php echo SIZE_BIT;?>"<?php echo (!empty($condition['gthan'])) ? ' SELECTED="selected"' : '';?>><?php echo SmartSieve::text("greater than");?></OPTION>
                 </SELECT>
-                <INPUT TYPE="text" NAME="size" VALUE="<?php echo $condition['kbytes'];?>" SIZE="5"> <?php echo SmartSieve::text("KiloBytes");?>
+                <INPUT TYPE="text" NAME="size<?php echo $i;?>" VALUE="<?php echo $condition['kbytes'];?>" SIZE="5"> <?php echo SmartSieve::text("KiloBytes");?> 
                 <INPUT TYPE="hidden" NAME="delete<?php echo $i;?>" VALUE="">
                 &nbsp;<A HREF="" onclick="document.forms.thisRule.delete<?php echo $i;?>.value='1'; document.forms.thisRule.submit(); return false;"><IMG SRC="<?php echo SmartSieve::getConf('image_dir', 'images');?>/delete.gif" ALT="<?php echo SmartSieve::text('Delete condition');?>" TITLE="<?php echo SmartSieve::text('Delete condition');?>" BORDER="0" onmouseover="window.status='<?php echo SmartSieve::text('Delete condition');?>'; return true;" onmouseout="window.status='';"></a>
 <?php elseif ($condition['type'] == TEST_BODY):?>

@@ -143,8 +143,8 @@
 <INPUT TYPE="hidden" NAME="headerMatchStr<?php echo $i;?>" VALUE="<?php echo SmartSieve::utf8Decode($condition['matchStr']);?>">
 <?php elseif ($condition['type'] == TEST_SIZE):?>
 <INPUT TYPE="hidden" NAME="condition<?php echo $i;?>" VALUE="size">
-<INPUT TYPE="hidden" NAME="gthan" VALUE="<?php echo (!empty($condition['gthan'])) ? SIZE_BIT : 0;?>">
-<INPUT TYPE="hidden" NAME="size" VALUE="<?php echo $condition['kbytes'];?>">
+<INPUT TYPE="hidden" NAME="gthan<?php echo $i;?>" VALUE="<?php echo (!empty($condition['gthan'])) ? SIZE_BIT : 0;?>">
+<INPUT TYPE="hidden" NAME="size<?php echo $i;?>" VALUE="<?php echo $condition['kbytes'];?>">
 <?php else:?>
 <INPUT TYPE="hidden" NAME="condition<?php echo $i;?>" VALUE="<?php echo $condition['header'];?>">
 <INPUT TYPE="hidden" NAME="<?php echo $condition['header'].$i;?>" VALUE="<?php echo SmartSieve::utf8Decode($condition['matchStr']);?>">
