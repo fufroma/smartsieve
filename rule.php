@@ -265,12 +265,6 @@ switch ($action) {
 $jsfile = 'rule.js';
 $jsonload = '';
 $wrap_width = (SmartSieve::getConf('wrap_width')) ? SmartSieve::getConf('wrap_width') : 80;
-$sizeUsed = false;
-foreach ($rule['conditions'] as $condition) {
-    if ($condition['type'] == TEST_SIZE) {
-        $sizeUsed = true;
-    }
-}
 // Define a list of imap flags to make available to the addflag action.
 $imapFlags = SmartSieve::getConf('imap_flags', array('\\\\Seen', '\\\\Deleted', '\\\\Answered', '\\\\Flagged', 'Junk', 'NotJunk', '$Label1', '$Label2', '$Label3', '$Label4', '$Label5'));
 $notifyMethods = SmartSieve::getConf('notify_methods', array());
@@ -354,8 +348,8 @@ function getPOSTValues()
                 break;
             case ('size'):
                 $condition['type'] = TEST_SIZE;
-                $condition['gthan'] = SmartSieve::getPOST('gthan');
-                $condition['kbytes'] = SmartSieve::getPOST('size');
+                $condition['gthan'] = SmartSieve::getPOST('gthan'.$i);
+                $condition['kbytes'] = SmartSieve::getPOST('size'.$i);
                 break;
             case ('header'):
                 $condition['type'] = TEST_HEADER;
