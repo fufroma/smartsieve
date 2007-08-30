@@ -141,6 +141,16 @@ if ($mode == SMARTSIEVE_RULE_MODE_CUSTOM && empty($ruleID)) {
     }
 }
 
+// If rule has a fileinto action, get the list of mailboxes for this user.
+// Don't do this if user has authzed as another user (Bug #1775235).
+$mailboxes = array();
+foreach ($rule['actions'] as $action) {
+    if ($action['type'] == ACTION_FILEINTO &&
+        $_SESSION['smartsieve']['auth'] == $_SESSION['smartsieve']['authz']) {
+        $mailboxes = SmartSieve::getMailboxList();
+    }
+}
+
 // Perform actions.
 
 $action = SmartSieve::getFormValue('thisAction');
@@ -259,15 +269,6 @@ $sizeUsed = false;
 foreach ($rule['conditions'] as $condition) {
     if ($condition['type'] == TEST_SIZE) {
         $sizeUsed = true;
-    }
-}
-// If rule has a fileinto action, get the list of mailboxes for this user.
-// Don't do this if user has authzed as another user (Bug #1775235).
-$mailboxes = array();
-foreach ($rule['actions'] as $action) {
-    if ($action['type'] == ACTION_FILEINTO &&
-        $_SESSION['smartsieve']['auth'] == $_SESSION['smartsieve']['authz']) {
-        $mailboxes = SmartSieve::getMailboxList();
     }
 }
 // Define a list of imap flags to make available to the addflag action.
@@ -548,6 +549,12 @@ function isSane($rule)
             ($action['type'] == ACTION_CUSTOM && empty($action['sieve']))) {
             SmartSieve::setError(SmartSieve::text('You must supply an argument for this action'));
             return false;
+        }
+        if ($action['type'] == ACTION_FILEINTO) {
+            if (!empty($GLOBALS['mailboxes']) && !in_array($action['folder'], $GLOBALS['mailboxes'])) {
+                SmartSieve::setError(SmartSieve::text('The folder "%s" does not exist', array($action['folder'])));
+                return false;
+            }
         }
         if ($action['type'] == ACTION_REDIRECT) {
             if (strlen($action['address']) > $max_field_chars) {
