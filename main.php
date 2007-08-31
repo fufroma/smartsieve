@@ -268,6 +268,10 @@ function getSummary($rule)
                 $complete .= sprintf("'To:' %s '%s'",
                     $match, SmartSieve::utf8Decode($condition['matchStr']));
                 $started = 1;
+            } elseif ($condition['header'] == array('to', 'cc')) {
+                $complete .= sprintf("'To:' or 'Cc:' %s '%s'",
+                    $match, SmartSieve::utf8Decode($condition['matchStr']));
+                $started = 1;
             } else {
                 $complete .= sprintf("'%s' %s '%s'", $condition['header'],
                     $match, SmartSieve::utf8Decode($condition['matchStr']));

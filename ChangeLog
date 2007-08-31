@@ -1,6 +1,9 @@
 Smartsieve - ChangeLog
 ----------------------
 
+31 Aug 2007 S Grier
+* Now accepts multiple headers for the "address" test. Added a new "If To: or Cc:" option.
+
 30 Aug 2007 S Grier
 * Remove forward.php ms-test.php vacation.php include/forward.js include/vacation.js lib/Log.php lib/sieve.lib from CVS HEAD.
 * Further fix for Bug #1781958. Warn when a fileinto folder does not exist.
