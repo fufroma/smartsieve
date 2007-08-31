@@ -99,9 +99,10 @@
 <?php if ($condition['type'] == 'new'):?>
                   <OPTION VALUE="new" SELECTED="selected"><?php echo SmartSieve::text('Add condition');?></OPTION>
 <?php endif;?>
-                  <OPTION VALUE="from"<?php echo ($condition['type'] == TEST_ADDRESS && $condition['header'] == 'from') ? ' SELECTED="selected"' : '';?>><?php echo SmartSieve::text("If message 'From:' contains");?></OPTION>
-                  <OPTION VALUE="to"<?php echo ($condition['type'] == TEST_ADDRESS && $condition['header'] == 'to') ? ' SELECTED="selected"' : '';?>><?php echo SmartSieve::text("If message 'To:' contains");?></OPTION>
-                  <OPTION VALUE="subject"<?php echo ($condition['type'] == TEST_HEADER && $condition['header'] == 'subject') ? ' SELECTED="selected"' : '';?>><?php echo SmartSieve::text("If message 'Subject:' contains");?></OPTION>
+                  <OPTION VALUE="from"<?php echo ($condition['type'] == TEST_ADDRESS && $condition['header'] == 'from') ? ' SELECTED="selected"' : '';?>><?php echo SmartSieve::text("If message 'From:'");?></OPTION>
+                  <OPTION VALUE="to"<?php echo ($condition['type'] == TEST_ADDRESS && $condition['header'] == 'to') ? ' SELECTED="selected"' : '';?>><?php echo SmartSieve::text("If message 'To:'");?></OPTION>
+                  <OPTION VALUE="tocc"<?php echo ($condition['type'] == TEST_ADDRESS && $condition['header'] == array('to', 'cc')) ? ' SELECTED="selected"' : '';?>><?php echo SmartSieve::text("If message 'To:' or 'Cc:'");?></OPTION>
+                  <OPTION VALUE="subject"<?php echo ($condition['type'] == TEST_HEADER && $condition['header'] == 'subject') ? ' SELECTED="selected"' : '';?>><?php echo SmartSieve::text("If message 'Subject:'");?></OPTION>
                   <OPTION VALUE="size"<?php echo ($condition['type'] == TEST_SIZE) ? ' SELECTED="selected"' : '';?>><?php echo SmartSieve::text("If message size is");?></OPTION>
                   <OPTION VALUE="header"<?php echo ($condition['type'] == TEST_HEADER && $condition['header'] !== 'subject') ? ' SELECTED="selected"' : '';?>><?php echo SmartSieve::text("If mail header");?></OPTION>
 <?php if ($managesieve->hasExtension('body')):?>
@@ -160,7 +161,7 @@
                   <option value="regex"<?php echo ($condition['matchType'] == MATCH_REGEX && empty($condition['not'])) ? ' selected="selected"' : '';?>><?php echo SmartSieve::text('matches regular expression');?></option>
                   <option value="notregex"<?php echo ($condition['matchType'] == MATCH_REGEX && !empty($condition['not'])) ? ' selected="selected"' : '';?>><?php echo SmartSieve::text('does not match regular expression');?></option>
                 </select>
-                <INPUT TYPE="text" NAME="<?php echo $condition['header'] . $i;?>" VALUE="<?php echo SmartSieve::utf8Decode($condition['matchStr']);?>" SIZE="50">
+                <INPUT TYPE="text" NAME="matchStr<?php echo $i;?>" VALUE="<?php echo SmartSieve::utf8Decode($condition['matchStr']);?>" SIZE="50">
                 <INPUT TYPE="hidden" NAME="delete<?php echo $i;?>" VALUE="">
                 &nbsp;<A HREF="" onclick="document.forms.thisRule.delete<?php echo $i;?>.value='1'; document.forms.thisRule.submit(); return false;"><IMG SRC="<?php echo SmartSieve::getConf('image_dir', 'images');?>/delete.gif" ALT="<?php echo SmartSieve::text('Delete condition');?>" TITLE="<?php echo SmartSieve::text('Delete condition');?>" BORDER="0" onmouseover="window.status='<?php echo SmartSieve::text('Delete condition');?>'; return true;" onmouseout="window.status='';"></a>
 <?php endif;?>

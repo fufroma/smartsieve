@@ -257,7 +257,7 @@ class Script {
                 if (!empty($to)) {
                     $condition = array();
                     $condition['type'] = TEST_ADDRESS;
-                    $condition['header'] = 'to';
+                    $condition['header'] = array('to', 'cc');
                     if (preg_match("/^\s*!/", $to)) {
                         $condition['not'] = true;
                         preg_replace("/^\s*!/", '', $to);
@@ -528,32 +528,18 @@ class Script {
                         if ($condition['matchType'] == MATCH_REGEX) {
                             $this->extensions['regex'] = true;
                         }
-                        if ($condition['header'] == 'from') {
-                            $newruletext .= sprintf("%saddress %s [\"From\"] \"%s\"",
-                                (!empty($condition['not'])) ? 'not ' : '',
-                                $condition['matchType'], $condition['matchStr']);
-                        } elseif ($condition['header'] == 'to') {
-                            $newruletext .= sprintf("%saddress %s [\"To\",\"Cc\"] \"%s\"",
-                                (!empty($condition['not'])) ? 'not ' : '',
-                                $condition['matchType'], $condition['matchStr']);
-                        } else {
-                            $newruletext .= sprintf("%saddress %s \"%s\" \"%s\"",
-                                (!empty($condition['not'])) ? 'not ' : '',
-                                $condition['matchType'], $condition['header'], $condition['matchStr']);
-                        }
+                        $newruletext .= sprintf("%saddress %s %s \"%s\"",
+                            (!empty($condition['not'])) ? 'not ' : '',
+                            $condition['matchType'],
+                            (is_array($condition['header'])) ? sprintf('["%s"]', implode('","', $condition['header'])) : sprintf('"%s"', $condition['header']),
+                            $condition['matchStr']);
                     } elseif ($condition['type'] == TEST_HEADER) {
                         if ($condition['matchType'] == MATCH_REGEX) {
                             $this->extensions['regex'] = true;
                         }
-                        if ($condition['header'] == 'subject') {
-                            $newruletext .= sprintf("%sheader %s \"subject\" \"%s\"",
-                                (!empty($condition['not'])) ? 'not ' : '',
-                                $condition['matchType'], $condition['matchStr']);
-                        } else {
-                            $newruletext .= sprintf("%sheader %s \"%s\" \"%s\"",
-                                (!empty($condition['not'])) ? 'not ' : '',
-                                $condition['matchType'], $condition['header'], $condition['matchStr']);
-                        }
+                        $newruletext .= sprintf("%sheader %s \"%s\" \"%s\"",
+                            (!empty($condition['not'])) ? 'not ' : '',
+                            $condition['matchType'], $condition['header'], $condition['matchStr']);
                     } elseif ($condition['type'] == TEST_SIZE) {
                         $newruletext .= sprintf("size %s %sK",
                             ($condition['gthan']) ? ':over' : ':under', $condition['kbytes']);

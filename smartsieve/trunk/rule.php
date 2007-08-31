@@ -334,17 +334,22 @@ function getPOSTValues()
             case ('from'):
                 $condition['type'] = TEST_ADDRESS;
                 $condition['header'] = 'from';
-                $condition['matchStr'] = SmartSieve::utf8Encode(SmartSieve::getPOST('from'.$i));
+                $condition['matchStr'] = SmartSieve::utf8Encode(SmartSieve::getPOST('matchStr'.$i));
                 break;
             case ('to'):
                 $condition['type'] = TEST_ADDRESS;
                 $condition['header'] = 'to';
-                $condition['matchStr'] = SmartSieve::utf8Encode(SmartSieve::getPOST('to'.$i));
+                $condition['matchStr'] = SmartSieve::utf8Encode(SmartSieve::getPOST('matchStr'.$i));
+                break;
+            case ('tocc'):
+                $condition['type'] = TEST_ADDRESS;
+                $condition['header'] = array('to', 'cc');
+                $condition['matchStr'] = SmartSieve::utf8Encode(SmartSieve::getPOST('matchStr'.$i));
                 break;
             case ('subject'):
                 $condition['type'] = TEST_HEADER;
                 $condition['header'] = 'subject';
-                $condition['matchStr'] = SmartSieve::utf8Encode(SmartSieve::getPOST('subject'.$i));
+                $condition['matchStr'] = SmartSieve::utf8Encode(SmartSieve::getPOST('matchStr'.$i));
                 break;
             case ('size'):
                 $condition['type'] = TEST_SIZE;
