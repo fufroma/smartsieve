@@ -104,7 +104,7 @@
                   <OPTION VALUE="tocc"<?php echo ($condition['type'] == TEST_ADDRESS && $condition['header'] == array('to', 'cc')) ? ' SELECTED="selected"' : '';?>><?php echo SmartSieve::text("If message 'To:' or 'Cc:'");?></OPTION>
                   <OPTION VALUE="subject"<?php echo ($condition['type'] == TEST_HEADER && $condition['header'] == 'subject') ? ' SELECTED="selected"' : '';?>><?php echo SmartSieve::text("If message 'Subject:'");?></OPTION>
                   <OPTION VALUE="size"<?php echo ($condition['type'] == TEST_SIZE) ? ' SELECTED="selected"' : '';?>><?php echo SmartSieve::text("If message size is");?></OPTION>
-                  <OPTION VALUE="header"<?php echo ($condition['type'] == TEST_HEADER && $condition['header'] !== 'subject') ? ' SELECTED="selected"' : '';?>><?php echo SmartSieve::text("If mail header");?></OPTION>
+                  <OPTION VALUE="header"<?php echo ($condition['type'] == TEST_HEADER && $condition['header'] !== 'subject') ? ' SELECTED="selected"' : '';?>><?php echo SmartSieve::text("If message header");?></OPTION>
 <?php if ($managesieve->hasExtension('body')):?>
                   <OPTION VALUE="body"<?php echo ($condition['type'] == TEST_BODY) ? ' SELECTED="selected"' : '';?>><?php echo SmartSieve::text("If message body");?></OPTION>
 <?php endif;?>
