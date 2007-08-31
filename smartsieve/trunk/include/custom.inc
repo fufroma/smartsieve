@@ -146,8 +146,8 @@
 <INPUT TYPE="hidden" NAME="gthan<?php echo $i;?>" VALUE="<?php echo (!empty($condition['gthan'])) ? SIZE_BIT : 0;?>">
 <INPUT TYPE="hidden" NAME="size<?php echo $i;?>" VALUE="<?php echo $condition['kbytes'];?>">
 <?php else:?>
-<INPUT TYPE="hidden" NAME="condition<?php echo $i;?>" VALUE="<?php echo $condition['header'];?>">
-<INPUT TYPE="hidden" NAME="<?php echo $condition['header'].$i;?>" VALUE="<?php echo SmartSieve::utf8Decode($condition['matchStr']);?>">
+<INPUT TYPE="hidden" NAME="condition<?php echo $i;?>" VALUE="<?php echo (is_array($condition['header'])) ? implode('', $condition['header']) : $condition['header'];?>">
+<INPUT TYPE="hidden" NAME="matchStr<?php echo $i;?>" VALUE="<?php echo SmartSieve::utf8Decode($condition['matchStr']);?>">
 <?php endif;?>
 <?php if ($condition['type'] != TEST_SIZE && $condition['type'] != 'new'):?>
 <?php if ($condition['matchType'] == MATCH_IS):?>
