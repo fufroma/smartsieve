@@ -1,6 +1,9 @@
 Smartsieve - ChangeLog
 ----------------------
 
+05 Sep 2007 S Grier
+* Updated Russian translation (BorisL).
+
 31 Aug 2007 S Grier
 * Now accepts multiple headers for the "address" test. Added a new "If To: or Cc:" option.
 * Regenerated all translation files using locales_update.pl.
