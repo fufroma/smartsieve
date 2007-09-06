@@ -361,7 +361,9 @@ class Script {
                 }
 
                 $rule['control'] = ($startNewBlock) ? CONTROL_IF : CONTROL_ELSEIF;
-                $startNewBlock = ($bits[8] & CONTINUE_BIT);
+                if ($rule['status'] == 'ENABLED') {
+                    $startNewBlock = ($bits[8] & CONTINUE_BIT);
+                }
                 $rule['matchAny'] = ($bits[8] & ANYOF_BIT);
                 // Is this a spacial forward rule?
                 if ($this->hasCondition($rule) === false &&
@@ -760,7 +762,7 @@ class Script {
             }
         }
         // If rule has conditions, or is a custom rule with a condition, return true.
-        if (!empty($rule['conditions']) ||
+        if ((!empty($rule['conditions']) && !$custom) ||
             ($custom && preg_match("/^ *(els)?if/i", $custom['sieve']))) {
             return true;
         }

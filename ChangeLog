@@ -1,6 +1,10 @@
 Smartsieve - ChangeLog
 ----------------------
 
+06 Sep 2007 S Grier
+* Fix legacy parser if/elseif logic. Ignore continue bit on disabled rules.
+* Fix Script::hasCondition() for cases where an unconditional custom rule has conditions.
+
 05 Sep 2007 S Grier
 * Updated Russian translation (BorisL).
 
