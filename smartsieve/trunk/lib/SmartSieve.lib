@@ -172,7 +172,7 @@ class SmartSieve {
 
         $smartsieve = array();
 
-        include_once SmartSieve::getConf('config_dir') . '/servers.php';
+        include_once SmartSieve::getConf('config_dir', 'conf') . '/servers.php';
 
         // Server value must exist in servers.php.
         if (!array_key_exists($credentials['server'], $servers) ||
@@ -223,7 +223,7 @@ class SmartSieve {
         $passwd = Crypto::decrypt($smartsieve['passwd']);
 
         $managesieve = new Managesieve();
-        $ret = $managesieve->open($smartsieve['server']['host'], $smartsieve['server']['sieveport']);
+        $ret = $managesieve->open($smartsieve['server']['host'], $smartsieve['server']['sieveport'], SmartSieve::getConf('socket_timeout', 2));
         if ($ret !== true) {
             $err = $managesieve->getError();
             $managesieve->close();
@@ -306,7 +306,7 @@ class SmartSieve {
 
         if (!isset($charset)) {
             $lang = SmartSieve::getLang();
-            include SmartSieve::getConf('config_dir') . '/locales.php';
+            include SmartSieve::getConf('config_dir', 'conf') . '/locales.php';
             if (isset($locales[$lang]['charset'])) {
                 $charset = $locales[$lang]['charset'];
             } else {
@@ -600,7 +600,7 @@ class SmartSieve {
                 $rserver = substr($rserver, 8);
             }
             $managesieve->close();
-            $ret = $managesieve->open($rserver, $_SESSION['smartsieve']['server']['sieveport']);
+            $ret = $managesieve->open($rserver, $_SESSION['smartsieve']['server']['sieveport'], SmartSieve::getConf('socket_timeout', 2));
             if ($ret === true) {
                 require_once SmartSieve::getConf('lib_dir', 'lib') . '/Crypt.php';
                 $passwd = Crypto::decrypt($_SESSION['smartsieve']['passwd']);
@@ -724,7 +724,7 @@ class SmartSieve {
     {
         $url = '';
         if ($prependRoot) {
-            $baseurl = SmartSieve::getConf('baseurl', '');
+            $baseurl = SmartSieve::getConf('baseurl', '/smartsieve/');
             if (substr($baseurl, -1) != '/') {
                 $baseurl .= '/';
             }

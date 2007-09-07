@@ -8,8 +8,7 @@
  */
 
 
-require './conf/config.php';
-include "$default->lib_dir/SmartSieve.lib";
+include './lib/SmartSieve.lib';
 require SmartSieve::getConf('config_dir', 'conf') . '/style.php';
 
 

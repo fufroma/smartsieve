@@ -97,7 +97,7 @@
           <input type="button" name="disable" value="<?php echo SmartSieve::text('Disable');?>" onClick="Submit('disable'); return false;">
           <input type="button" name="delete" value="<?php echo SmartSieve::text('Delete');?>" onClick="Submit('delete'); return false;">
           <input type="button" name="new" value="<?php echo SmartSieve::text('New Rule');?>" onClick="window.location='<?php echo SmartSieve::setUrl('rule.php');?>';">
-<?php if (SmartSieve::getConf('allow_custom')):?>
+<?php if (SmartSieve::getConf('allow_custom', true) !== false):?>
           <input type="button" name="custom" value="<?php echo SmartSieve::text('Custom Rule');?>" onClick="window.location='<?php echo SmartSieve::setUrl('rule.php?mode=custom');?>';">
 <?php endif;?>
         </TD>

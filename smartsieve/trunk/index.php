@@ -9,15 +9,7 @@
  */
 
 
-require './conf/config.php';
-require "$default->lib_dir/SmartSieve.lib";
-require SmartSieve::getConf('lib_dir', 'lib') . "/Managesieve.php";
-require SmartSieve::getConf('lib_dir', 'lib') . "/Script.php";
-
-ini_set('session.use_trans_sid', 0);
-session_set_cookie_params(0, SmartSieve::getConf('cookie_path', ''), SmartSieve::getConf('cookie_domain', ''));
-session_name(SmartSieve::getConf('session_name', session_name()));
-session_start();
+require './lib/base.php';
 
 SmartSieve::checkAuthentication();
 
