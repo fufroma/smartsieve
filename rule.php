@@ -8,15 +8,7 @@
  */
 
 
-require './conf/config.php';
-require "$default->lib_dir/SmartSieve.lib";
-require SmartSieve::getConf('lib_dir', 'lib') . "/Managesieve.php";
-require SmartSieve::getConf('lib_dir', 'lib') . "/Script.php";
-
-ini_set('session.use_trans_sid', 0);
-session_set_cookie_params(0, SmartSieve::getConf('cookie_path', ''), SmartSieve::getConf('cookie_domain', ''));
-session_name(SmartSieve::getConf('session_name', session_name()));
-@session_start();
+require './lib/base.php';
 
 // Rule modes.
 define("SMARTSIEVE_RULE_MODE_GENERAL", 'general');
@@ -134,7 +126,7 @@ foreach ($rule['actions'] as $action) {
 }
 // If this is a new custom rule, display custom rule interface only if permitted to do so.
 if ($mode == SMARTSIEVE_RULE_MODE_CUSTOM && empty($ruleID)) {
-    if (SmartSieve::getConf('allow_custom', true) == true) {
+    if (SmartSieve::getConf('allow_custom', true) !== false) {
         $rule['actions'][] = array('type'=>ACTION_CUSTOM, 'sieve'=>'');
     } else {
         $mode = SMARTSIEVE_RULE_MODE_GENERAL;

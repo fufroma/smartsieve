@@ -1,6 +1,12 @@
 Smartsieve - ChangeLog
 ----------------------
 
+07 Sep 2007 S Grier
+* Clean up config.php.
+* Drop vacation_text, require_vacation_addresses, vacation_text and require_vacation_days config options.
+* Honour socket_timeout config option.
+* Move generic dependencies to lib/base.php.
+
 06 Sep 2007 S Grier
 * Fix legacy parser if/elseif logic. Ignore continue bit on disabled rules.
 * Fix Script::hasCondition() for cases where an unconditional custom rule has conditions.
