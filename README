@@ -12,11 +12,7 @@ intended to be intuitive to use, and simple to configure.
 
 SmartSieve will be of interest to institutions running Cyrus imapd 
 to provide imap based mail access and who require a user-friendly 
-way for users to manage mail filtering and vacation messaging. It 
-will be of particular interest to those currently deploying Websieve 
-for this purpose. SmartSieve is compatible with Websieve in that 
-Sieve scripts created using Websieve can be read and modified using 
-SmartSieve.
+way for users to manage mail filtering and vacation messaging.
 
 SmartSieve is not a Sieve script 'parser'. It cannot directly read 
 and understand the Sieve language itself. For this reason, the GUI 

@@ -3,6 +3,34 @@ Smartsieve - Changes file
 
 $Id$
 
+1.0.0-RC2 [ 1.0.0-RC2 of 25 Sep 07 ]
+
+* Improved rule creation GUI. Now supports multiple conditions of the same type, and 
+  multiple actions per-rule. Can now add conditions and actions as needed.
+* SmartSieve now stores script content as serialized PHP data. Legacy scripts will be
+  converted on the fly, but downgrading will then not be possible.
+* Improved look-and-feel with cleaner appearance and more intuitive navigation and layout.
+* Added support for the sieve body extension.
+* Added support for the stop control, and the addflag and notify (sms + mailto) actions.
+* Can now explicity set the match type for each condition, including the :is match type.
+* New Block Spam GUI, made available via the spam_filter config option.
+* New Whitelist GUI.
+* Added menu_items config option for setting custom menu items.
+* Add get_email_addresses_hook config option to allow pulling in addresses from an 
+  external source for the vacation GUI.
+* Added is_sane_hook config option for extending rule sanity checking.
+* Logging is now done via the PEAR Log:: class.
+* Can now save a new rule at a certain position within the list of existing rules. And
+  a new widget allows you to move a rule to a new position.
+* Now checks the folder on a fileinto action exists and throws an error if not.
+* vacation_text, require_vacation_addresses, vacation_text and require_vacation_days
+  config options dropped.
+* Fix bug #1647342: "vacation/rule/forward pages do not honour direct edit mode".
+* Fix bug #1647116: ""Enable"/"Disable" options do not save changes".
+* Add workaround for Bug #1775235: "Proxy user: wrong folders displayed".
+* Fix #1243957: "Improved recognition of Web/Smart scripts".
+* Fix bug #1781958: "Cached imap folders list".
+
 1.0.0-RC1 [ 1_0_0-RC1 of 08 Dec 06 ]
 
 * New improved managesieve library.
