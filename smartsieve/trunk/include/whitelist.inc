@@ -75,7 +75,7 @@
                 &nbsp;
                 <input type="hidden" name="condition<?php echo $i;?>" value="from">
                 <input type="hidden" name="matchType<?php echo $i;?>" value="is">
-                <input type="text" name="from<?php echo $i;?>" value="<?php echo (!empty($condition['matchStr'])) ? SmartSieve::utf8Decode($condition['matchStr']) : '';?>" SIZE="30">
+                <input type="text" name="matchStr<?php echo $i;?>" value="<?php echo (!empty($condition['matchStr'])) ? SmartSieve::utf8Decode($condition['matchStr']) : '';?>" SIZE="30">
                 <input type="hidden" name="delete<?php echo $i;?>" value="">
                 &nbsp;<A HREF="" onclick="document.forms.thisRule.delete<?php echo $i;?>.value='1'; document.forms.thisRule.submit(); return false;"><IMG SRC="<?php echo SmartSieve::getConf('image_dir', 'images');?>/delete.gif" ALT="<?php echo SmartSieve::text('Delete condition');?>" TITLE="<?php echo SmartSieve::text('Delete condition');?>" BORDER="0" onmouseover="window.status='<?php echo SmartSieve::text('Delete condition');?>'; return true;" onmouseout="window.status='';"></a>
               </TD>
@@ -86,7 +86,7 @@
                 &nbsp;
                 <input type="hidden" name="condition<?php echo $i;?>" value="new">
                 <input type="hidden" name="matchType<?php echo $i;?>" value="is">
-                <input type="hidden" name="from<?php echo $i;?>" value="<?php echo (!empty($condition['matchStr'])) ? SmartSieve::utf8Decode($condition['matchStr']) : '';?>" SIZE="30">
+                <input type="hidden" name="matchStr<?php echo $i;?>" value="">
                 <input type="hidden" name="delete<?php echo $i;?>" value="">
                 <input type="button" name="new" value="<?php echo SmartSieve::text('New Address');?>" onclick="document.thisRule.condition<?php echo $i;?>.value='from'; document.thisRule.submit(); return false;">
               </TD>
