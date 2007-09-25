@@ -1,6 +1,9 @@
 Smartsieve - ChangeLog
 ----------------------
 
+25 Sep 2007 S Grier
+* release_1_0_0-RC2.
+
 07 Sep 2007 S Grier
 * Clean up config.php.
 * Drop vacation_text, require_vacation_addresses, vacation_text and require_vacation_days config options.
