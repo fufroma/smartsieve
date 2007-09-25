@@ -1,5 +1,5 @@
 <?php
-/*
+/**
  * servers.php: this file contains the configurations for 
  * the cyrus servers we can connect to. If you have set the 
  * $default->user_select_server option in conf.php to true, 
@@ -27,13 +27,12 @@
  * php-4.1.2 or later with imap-ssl enabled, you will need to 
  * set this to '143/imap/notls' if you do not want imap-ssl.
  *
- * maildomain: ie. username@maildomain. You should not include 
- * the @ character. if require_vacation_addresses is true in 
- * conf/config.php, this will be used in the :addresses vacation 
- * rule argument when the user does not supply any addresses. 
- * if empty, SmartSieve will demand the user supply at least one. 
- * if require_vacation_addresses is false in conf/config.php 
- * this value has no effect.
+ * maildomain: If your users have email addresses of the form
+ * username@yourdomain and you want to suggest this as a vacation
+ * address to your users when they create a new vacation rule, set
+ * this to your mail domain. Do not include the '@' character.
+ * Note: you can also suggest vacation addresses to your users via
+ * the get_email_addresses_hook option in config.php.
  *
  * auth_domain: You can use this option to set a domain value 
  * which will be appended to usernames to make them fully-qualified. 
