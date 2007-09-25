@@ -137,6 +137,12 @@ REQUIREMENTS
    PHP manual for information on which character encodings are supported 
    by which extension.
 
+7. SmartSieve uses the PEAR Log class for writing to it's log file. If
+   you want to enable SmartSieve's logging facility you will need to
+   install the PEAR Log class:
+
+     /usr/local/php/bin/pear install Log
+
 
 INSTALLING SMARTSIEVE
 
@@ -177,7 +183,7 @@ will encrypt passwords during use, you should make sure session.save_path
 is set to a directory which only the web server can read and write to.
 
 Edit the SmartSieve configuration files as necessary. They can be 
-found under conf/. You will certainly need to add entries for each of 
+found under conf/. You will at least need to add entries for each of 
 the mail servers you wish to access in conf/servers.php.
 
 You should now be able to access SmartSieve by pointing a web browser 
