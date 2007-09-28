@@ -7,6 +7,11 @@
  * See the inclosed NOTICE file for conditions of use and distribution.
  */
 
+// Define conf dir location, if not already defined by an auto_prepend_file.
+if (!defined('SMARTSIEVE_CONF_DIR')) {
+    define("SMARTSIEVE_CONF_DIR", './conf');
+}
+
 
 /**
  * Class SmartSieve contains the generic SmartSieve functions 
@@ -438,10 +443,14 @@ class SmartSieve {
     */
     function getConf($option, $def=null)
     {
-        require_once "conf/config.php";
-        global $default;
+        static $default, $conf;
+        if (!isset($default) && !isset($conf)) {
+            require_once SMARTSIEVE_CONF_DIR . '/config.php';
+        }
         if (isset($default->$option)) {
             return $default->$option;
+        } elseif (isset($conf[$option])) {
+            return $conf[$option];
         }
         return $def;
     }
