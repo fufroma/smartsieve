@@ -1,6 +1,9 @@
 Smartsieve - ChangeLog
 ----------------------
 
+28 Sep 2007 S Grier
+* Fix SmartSieve::getConf(). Allow $conf[$option] + maintain old $default->$option.
+
 25 Sep 2007 S Grier
 * Fix whitelist.inc.
 * release_1_0_0-RC2.
