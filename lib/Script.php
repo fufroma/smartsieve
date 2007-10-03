@@ -455,7 +455,8 @@ class Script {
                 $started = true;
             }
         }
-        $newrequire .= (strlen($newrequire) > 0) ? "];\n\n" : '';
+        $newrequire .= (strlen($newrequire) > 0) ? "];\n" : '';
+        $newrequire .= "\n";
  
         // Generate an encoded version of script content.
  
