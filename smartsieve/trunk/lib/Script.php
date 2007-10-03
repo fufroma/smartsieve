@@ -435,6 +435,7 @@ class Script {
         // Generate the sieve content from rules.
 
         $newscriptbody = '';
+        $this->extensions = array();
  
         foreach ($this->rules as $rule) {
             $newscriptbody .= $this->getSieveForRule($rule);
