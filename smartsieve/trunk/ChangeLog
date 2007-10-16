@@ -1,6 +1,9 @@
 Smartsieve - ChangeLog
 ----------------------
 
+16 Oct 2007 S Grier
+* Fixed Bug #1814397: "fileinto action in custom rule causes "fileinto not required"".
+
 03 Oct 2007 S Grier
 * Reset extensions list for each Script::updateScript() call.
 

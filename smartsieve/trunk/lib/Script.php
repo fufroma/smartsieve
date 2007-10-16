@@ -641,6 +641,8 @@ class Script {
                               stripos($action['sieve'], 'setflag') !== false ||
                               stripos($action['sieve'], 'removeflag') !== false) {
                             $this->extensions['imapflags'] = true;
+                        } if (stripos($action['sieve'], 'fileinto') !== false) {
+                            $this->extensions['fileinto'] = true;
                         }
                         continue 2;
                         break;
