@@ -1,6 +1,9 @@
 Smartsieve - ChangeLog
 ----------------------
 
+25 Feb 2008 S Grier
+* Updated German translation (Olaf J. Pauli).
+
 16 Oct 2007 S Grier
 * Fixed Bug #1814397: "fileinto action in custom rule causes "fileinto not required"".
 
