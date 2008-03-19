@@ -1,6 +1,10 @@
 Smartsieve - ChangeLog
 ----------------------
 
+19 Mar 2008 S Grier
+* Fix Bug #1919775: "Script names containing only numbers cause various issues".
+* Fix Bug #1919789: "The wrong script name is displayed after a script is renamed".
+
 25 Feb 2008 S Grier
 * Updated German translation (Olaf J. Pauli).
 

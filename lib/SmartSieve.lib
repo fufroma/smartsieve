@@ -590,7 +590,7 @@ class SmartSieve {
     function scriptExists($name)
     {
         $slist = array_keys(SmartSieve::getScriptList());
-        return in_array($name, $slist, true);
+        return in_array($name, $slist);
     }
 
    /**
