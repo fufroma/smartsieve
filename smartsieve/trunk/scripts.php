@@ -39,7 +39,7 @@ switch ($action) {
             $slist = array_keys(SmartSieve::getScriptList());
             if (isset($slist[$sids[0]])) {
                 $s = $slist[$sids[0]];
-                $ret = $managesieve->setActive($s);
+                $ret = $managesieve->setActive("$s");
                 if ($ret === false) {
                     SmartSieve::setError(SmartSieve::text('activatescript failed').': ' . $managesieve->getError());
                 } else {
@@ -92,13 +92,13 @@ switch ($action) {
                 $slist = array_keys(SmartSieve::getScriptList());
                 if (isset($slist[$sid])) {
                     $sname = $slist[$sid];
-                    $ret = $managesieve->deleteScript($sname);
+                    $ret = $managesieve->deleteScript("$sname");
                     if ($ret === false) {
                         SmartSieve::setError('deletescript '.SmartSieve::text('failed: ') . $managesieve->getError());
                     } else {
                         SmartSieve::setNotice(SmartSieve::text('Script "%s" successfully deleted', array($sname)));
-                        if (isset($scripts[$sname])) {
-                            unset($scripts[$sname]);
+                        if (isset($scripts["$sname"])) {
+                            unset($scripts["$sname"]);
                         }
                         if ($_SESSION['smartsieve']['workingScript'] == $sname) {
                             SmartSieve::setWorkingScript();
@@ -127,7 +127,7 @@ switch ($action) {
             } elseif (!SmartSieve::scriptExists($oldscript)) {
                 SmartSieve::setError(SmartSieve::text('Script "%s" does not exist', array($oldscript)));
             } else {
-                $resp = $managesieve->getScript($oldscript);
+                $resp = $managesieve->getScript("$oldscript");
                 if ($resp === false || !is_array($resp)) {
                     SmartSieve::setError('getscript '.SmartSieve::text('failed: ') . $managesieve->getError());
                 } else {
@@ -145,14 +145,15 @@ switch ($action) {
                             $managesieve->deleteScript($newscript);
                         } else {
                             // Successfully copied old to new. Delete old.
-                            $ret = $managesieve->deleteScript($oldscript);
+                            $ret = $managesieve->deleteScript("$oldscript");
                             if ($ret === false) {
                                 SmartSieve::setError('deletescript '.SmartSieve::text('failed: ') . $managesieve->getError());
                             } else {
                                 SmartSieve::setNotice(SmartSieve::text('Successfully renamed "%s" as "%s"', array($oldscript,$newscript)));
-                                if (isset($scripts[$oldscript])) {
-                                    $scripts[$newscript] = $scripts[$oldscript];
-                                    unset($scripts[$oldscript]);
+                                if (isset($scripts["$oldscript"])) {
+                                    $scripts[$newscript] = $scripts["$oldscript"];
+                                    unset($scripts["$oldscript"]);
+                                    $scripts[$newscript]->setName($newscript);
                                 }
                                 if ($_SESSION['smartsieve']['workingScript'] == $oldscript) {
                                     SmartSieve::setWorkingScript();

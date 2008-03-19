@@ -904,6 +904,17 @@ class Script {
     }
 
    /**
+    * Set the script name.
+    *
+    * @param string $name The name to set
+    * @return void
+    */
+    function setName($name)
+    {
+        $this->name = $name;
+    }
+
+   /**
     * Is filter rule enabled.
     *
     * @param integer $id The array index of rule to check
