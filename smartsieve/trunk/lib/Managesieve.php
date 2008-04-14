@@ -770,6 +770,11 @@ class Managesieve {
         if ($this->getResponse() === F_OK) {
             if (stream_socket_enable_crypto($this->_socket, true, STREAM_CRYPTO_METHOD_TLS_CLIENT)) {
                 $this->_tls = true;
+                // Cyrus v2.3.11 and above issues a CAPABILITY response at this point.
+                // For earlier versions we must issue a CAPABILITY command.
+                if (implode(".", $this->getServerVersion()) >= "2.3.11") {
+                    return $this->parseCapability();
+                }
                 return ($this->capability() !== false) ? true : false;
             }
             // Issue bogus capability command.
@@ -1033,6 +1038,21 @@ class Managesieve {
         return MS_VERSION;
     }
 
+   /**
+    * Return the version of the timsieved server.
+    *
+    * @return array Array containing major, minor and bugfix version numbers
+    */
+    function getServerVersion()
+    {
+        // "Cyrus timsieved vX.X.XX"
+        // "Cyrus timsieved (Murder) vX.X.XX"
+        if (!empty($this->_capabilities) &&
+            preg_match("/^Cyrus timsieved (\(Murder\) )?v([0-9])\.([0-9])\.([0-9]+)/", $this->_capabilities['implementation'], $m)) {
+            return array($m[2], $m[3], $m[4]);
+        }
+        return array();
+    }
 
 
 } // class Managesieve
