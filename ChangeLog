@@ -1,6 +1,9 @@
 Smartsieve - ChangeLog
 ----------------------
 
+14 Apr 2008 S Grier
+* Add workaround for Cyrus 2.3.11 STARTTLS behaviour change (http://bugzilla.andrew.cmu.edu/show_bug.cgi?id=3048)
+
 19 Mar 2008 S Grier
 * Fix Bug #1919775: "Script names containing only numbers cause various issues".
 * Fix Bug #1919789: "The wrong script name is displayed after a script is renamed".
