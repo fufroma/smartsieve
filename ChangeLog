@@ -1,6 +1,9 @@
 Smartsieve - ChangeLog
 ----------------------
 
+01 Oct 2008 S Grier
+* Fixed Bug #2138613: "auth_domain with full address gives credentials error".
+
 14 Apr 2008 S Grier
 * Add workaround for Cyrus 2.3.11 STARTTLS behaviour change (http://bugzilla.andrew.cmu.edu/show_bug.cgi?id=3048)
 
