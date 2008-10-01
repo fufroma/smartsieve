@@ -196,14 +196,14 @@ class SmartSieve {
 
         $smartsieve['auth'] = $credentials['auth'];
         $auth_domain = SmartSieve::getServerValue($credentials['server'], 'auth_domain');
-        if (!empty($auth_domain) && strpos($credentials['auth'], '@') === false) {
+        if (!empty($auth_domain) && strpos($smartsieve['auth'], '@') === false) {
             $smartsieve['auth'] .= '@' . $auth_domain;
         }
         $smartsieve['authz'] = $credentials['authz'];
-        if ($credentials['authz'] == '') {
-            $smartsieve['authz'] = $credentials['auth'];
+        if ($smartsieve['authz'] == '') {
+            $smartsieve['authz'] = $smartsieve['auth'];
         }
-        if (!empty($auth_domain) && strpos($credentials['authz'], '@') === false) {
+        if (!empty($auth_domain) && strpos($smartsieve['authz'], '@') === false) {
             $smartsieve['authz'] .= '@' . $auth_domain;
         }
         require_once SmartSieve::getConf('lib_dir', 'lib') . '/Crypt.php';
