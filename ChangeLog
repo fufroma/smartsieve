@@ -1,6 +1,10 @@
 Smartsieve - ChangeLog
 ----------------------
 
+09 Oct 2008 S Grier
+* Add utf8_fileinto option to UTF-8 encode mailbox names in fileinto actions
+  (defaults to off). This is needed for Cyrus v2.3.12 and newer.
+
 01 Oct 2008 S Grier
 * Fixed Bug #2138613: "auth_domain with full address gives credentials error".
 
