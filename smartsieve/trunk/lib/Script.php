@@ -571,7 +571,7 @@ class Script {
                     case (ACTION_FILEINTO):
                         $newruletext .= sprintf("%sfileinto \"%s\";\n",
                                                 $this->hasCondition($rule) ? "\t" : '',
-                                                $action['folder']);
+                                                SmartSieve::getConf('utf8_fileinto') === true ? SmartSieve::mutf7ToUtf8($action['folder']) : $action['folder']);
                         $this->extensions['fileinto'] = true;
                         break;
                     case (ACTION_REJECT):

@@ -434,6 +434,47 @@ class SmartSieve {
     }
 
    /**
+    * Convert a modified UTF-7 encoded string into UTF-8.
+    *
+    * @param string $string The modified UTF-7 string to convert.
+    * @return string The string encoded in UTF-8
+    */
+    function mutf7ToUtf8($string)
+    {
+        /* try mbstring if available. */
+        if (extension_loaded('mbstring')) {
+            $decoded = @mb_convert_encoding($string, 'UTF-8', 'UTF7-IMAP');
+            if ($decoded) {
+                return $decoded;
+            }
+        }
+
+        /* try iconv if available. use transliterations to avoid warnings about 
+         * incompatible characters. also, add extra ascii char to avoid iconv bug. */
+        if (extension_loaded('iconv')) {
+            /* convert the modified UTF-7 string to UTF-7. */
+            $utf7 = SmartSieve::modifiedToPlainUTF7($string);
+            $decoded = @iconv('UTF-7', 'UTF-8' . '//TRANSLIT', $utf7 . "\0");
+            if ($decoded) {
+                return $decoded;
+            }
+        }
+
+        // try recode if available.
+        if (extension_loaded('recode')) {
+            /* convert the modified UTF-7 string to UTF-7. */
+            $utf7 = SmartSieve::modifiedToPlainUTF7($string);
+            $decoded = recode_string('UTF-7..UTF-8', $utf7);
+            if ($decoded) {
+                return $decoded;
+            }
+        }
+
+        // If all else fails, return the mUTF-7 string.
+        return $string;
+    }
+
+   /**
     * Get the value of a config option. Returns the value of the setting 
     * or null if not set, thereby avoiding Undefined variable warnings.
     *

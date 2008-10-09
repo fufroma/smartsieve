@@ -217,6 +217,12 @@
 // than an empty string. Currently, 'plain' and 'digest-md5' are supported.
 //$default->sasl_mech = null;
 
+// If you are using Cyrus imapd 2.3.12 or you have the sieve_utf8fileinto 
+// option enabled (defaults to off in 2.3.13 and newer) you should set the 
+// following to true to make sure fileinto actions work for mailbox names 
+// containing non-ascii characters.
+// $default->utf8_fileinto = false;
+
 /**
  * Logging options.
  */
