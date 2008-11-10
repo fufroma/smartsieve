@@ -1,6 +1,13 @@
 Smartsieve - ChangeLog
 ----------------------
 
+10 Nov 2008 S Grier
+* Changes to Crypt::mcrypt:
+  - Use MCRYPT_DEV_URANDOM to improve entropy gathering performance.
+  - Now persists the IV value by prefixing the encryption result. Means we can
+    now use modes other than ECB.
+  - Change default mode to MCRYPT_MODE_CFB.
+
 09 Oct 2008 S Grier
 * Add utf8_fileinto option to UTF-8 encode mailbox names in fileinto actions
   (defaults to off). This is needed for Cyrus v2.3.12 and newer.

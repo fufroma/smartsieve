@@ -70,9 +70,7 @@ class Crypto_MCRYPT extends Crypto {
     function Crypto_MCRYPT($args=array())
     {
         $this->key = $args['key'];
-        // FIXME: we currently only support the ECB mode, because the same IV
-        // is needed for encrypt/decrypt, but we don't yet store it.
-        $this->mode = isset($args['mode']) ? $args['mode'] : MCRYPT_MODE_ECB;
+        $this->mode = isset($args['mode']) ? $args['mode'] : MCRYPT_MODE_CFB;
         $this->cipher = isset($args['cipher']) ? $args['cipher'] : MCRYPT_BLOWFISH;
         $this->cipher_dir = isset($args['cipher_dir']) ? $args['cipher_dir'] : '';
         $this->mode_dir = isset($args['mode_dir']) ? $args['mode_dir'] : '';
@@ -82,17 +80,22 @@ class Crypto_MCRYPT extends Crypto {
    /**
     * Encrypt a string.
     *
+    * For encryption we generate an IV which we prefix onto the encryption result
+    * to be used when decrypting. The IV is not used in ECB mode. Note the IV value
+    * does not need to be secret. See http://www.ciphersbyritter.com/GLOSSARY.HTM#IV
+    * for an explanation.
+    *
     * @param string $string Item to be encrypted
     * @return string The encrypted string
     */
     function encrypt($string)
     {
-        // An IV is not needed with the ECB mode, but...
-        $iv = mcrypt_create_iv(mcrypt_enc_get_iv_size($this->_td), MCRYPT_DEV_RANDOM);
+        // Create an IV (not used in ECB mode).
+        $iv = mcrypt_create_iv(mcrypt_enc_get_iv_size($this->_td), MCRYPT_DEV_URANDOM);
         mcrypt_generic_init($this->_td, $this->key, $iv);
         $encrypted_data = mcrypt_generic($this->_td, $string);
         mcrypt_generic_deinit($this->_td);
-        return $encrypted_data;
+        return $iv.$encrypted_data;
     }
 
    /**
@@ -103,8 +106,10 @@ class Crypto_MCRYPT extends Crypto {
     */
     function decrypt($encrypted_data)
     {
-        // FIXME: can only use ECB mode until we can get the IV encrypt creates.
-        $iv = mcrypt_create_iv(mcrypt_enc_get_iv_size($this->_td), MCRYPT_DEV_RANDOM);
+        // Retrieve the IV prefixed onto the encrypted data.
+        $ivSize = mcrypt_enc_get_iv_size($this->_td);
+        $iv = substr($encrypted_data, 0, $ivSize);
+        $encrypted_data = substr($encrypted_data, $ivSize);
         // Reinitialize the encryption buffer before decrypt.
         mcrypt_generic_init($this->_td, $this->key, $iv);
         $decrypted = mdecrypt_generic($this->_td, $encrypted_data);
