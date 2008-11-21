@@ -1,6 +1,9 @@
 Smartsieve - ChangeLog
 ----------------------
 
+21 Nov 2008 S Grier
+* Fixed Bug #2318164: "Deleting multiple rules deletes the wrong rules".
+
 10 Nov 2008 S Grier
 * Changes to Crypt::mcrypt:
   - Use MCRYPT_DEV_URANDOM to improve entropy gathering performance.

@@ -87,6 +87,8 @@ switch ($action) {
     case (FORM_ACTION_DELETE):
         $changes = false;
         $ruleIDs = SmartSieve::getPOST('ruleID');
+        // Sort IDs into reverse order to cope with index renumbering problem.
+        rsort($ruleIDs, SORT_NUMERIC);
         if (is_array($ruleIDs)) {
             foreach ($ruleIDs as $ruleID) {
                 $changes = $script->deleteRule($ruleID);
