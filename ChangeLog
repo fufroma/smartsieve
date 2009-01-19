@@ -1,6 +1,9 @@
 Smartsieve - ChangeLog
 ----------------------
 
+19 Jan 2009 S Grier
+* Updated French translation (Philippe Brangier).
+
 21 Nov 2008 S Grier
 * Fixed Bug #2318164: "Deleting multiple rules deletes the wrong rules".
 
