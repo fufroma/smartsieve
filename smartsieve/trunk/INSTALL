@@ -64,7 +64,10 @@ REQUIREMENTS
 4. SmartSieve will only work in conjunction with a Sieve enabled 
    email server which uses the managesieve protocol for remote 
    management of sieve scripts. It is currently only known to work 
-   with the Cyrus imap server (http://cyrusimap.web.cmu.edu).
+   with the Cyrus imap server (http://cyrusimap.web.cmu.edu), and
+   with Dovecot (http://www.dovecot.org).
+
+   i) Cyrus-imapd
 
    You will need to configure Cyrus to run the timsieved daemon to 
    handle sieve requests. The master daemon's configuration file 
@@ -83,6 +86,19 @@ REQUIREMENTS
    imapd must be running deliver in lmtpd mode, and able to send mail 
    using sendmail or equivalent. See the cyrus-imapd documentation 
    for more on this.
+
+   ii) Dovecot
+
+   SmartSieve is known to work with Dovecot 1.0 with the CMUSieve 
+   plugin and pysieved, although later versions may also work. You 
+   will need to configure your MTA to use the Dovecot LDA (deliver) 
+   for message delivery, and you may need to setuid root on the 
+   deliver binary for this to work.
+
+   You will also need to configure either pysieved or Dovecot's 
+   native Managesieve implementation. SmartSieve is known to work
+   with pysieved, so is recommended over the native implementation.
+   See http://woozle.org/~neale/src/pysieved/.
 
 5. SmartSieve requires a cryptography library to do encryption. 
    SmartSieve supports PHP's interface to the libmcrypt library. To 

@@ -4,15 +4,16 @@ SMARTSIEVE SIEVE SCRIPT MANAGER
 SmartSieve-1.0
 
 SmartSieve is a web based graphical user interface for creating and 
-managing Sieve scripts on a Cyrus imap mail server. It provides a 
-way for non-technical Cyrus imap users to generate Sieve rules for 
-mail filtering and vacation messaging without prior knowledge of the 
+managing Sieve scripts on a sieve-enabled mail server. It provides a 
+way for non-technical email users to generate Sieve rules for mail 
+filtering and vacation messaging without prior knowledge of the 
 Sieve scripting language. SmartSieve is written in PHP and is 
 intended to be intuitive to use, and simple to configure.
 
 SmartSieve will be of interest to institutions running Cyrus imapd 
-to provide imap based mail access and who require a user-friendly 
-way for users to manage mail filtering and vacation messaging.
+or Dovecot to provide imap based mail access and who require a 
+user-friendly way for users to manage mail filtering and vacation 
+messaging.
 
 SmartSieve is not a Sieve script 'parser'. It cannot directly read 
 and understand the Sieve language itself. For this reason, the GUI 
