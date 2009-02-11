@@ -1,6 +1,9 @@
 Smartsieve - ChangeLog
 ----------------------
 
+11 Feb 2009 S Grier
+* Update INSTALL and README with Dovecot info.
+
 19 Jan 2009 S Grier
 * Updated French translation (Philippe Brangier).
 
