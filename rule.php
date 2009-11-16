@@ -125,7 +125,7 @@ foreach ($rule['actions'] as $action) {
     }
 }
 // If this is a new custom rule, display custom rule interface only if permitted to do so.
-if ($mode == SMARTSIEVE_RULE_MODE_CUSTOM && empty($ruleID)) {
+if ($mode == SMARTSIEVE_RULE_MODE_CUSTOM && !isset($ruleID)) {
     if (SmartSieve::getConf('allow_custom', true) !== false) {
         $rule['actions'][] = array('type'=>ACTION_CUSTOM, 'sieve'=>'');
     } else {
