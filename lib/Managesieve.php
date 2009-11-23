@@ -28,6 +28,7 @@ define ("S_AUTHENTICATED", 3);
 
 // Managesieve flags.
 define ("MS_FLAG_NOAUTOSTARTTLSCAPABILITY", 1);
+define ("MS_FLAG_NOAUTOAUTHENTICATECAPABILITY", 2);
 
 // Version info
 define ("MS_VERSION", '$Revision$');
@@ -612,7 +613,7 @@ class Managesieve {
 
                 if ($this->getResponse() == F_OK) {
                     $this->_state = S_AUTHENTICATED;
-                    return true;
+                    return ($this->flags & MS_FLAG_NOAUTOAUTHENTICATECAPABILITY) ? true : $this->parseCapability();
                 }
                 $this->_errstr = "authenticate: authentication failure connecting to $this->server: " . $this->responseToString();
                 return false;
@@ -685,7 +686,7 @@ class Managesieve {
 
                 if ($this->resp['state'] == F_OK) {
                     $this->_state = S_AUTHENTICATED;
-                    return true;
+                    return ($this->flags & MS_FLAG_NOAUTOAUTHENTICATECAPABILITY) ? true : $this->parseCapability();
                 }
                 $this->_errstr = "authenticate: authentication failure connecting to $this->server: " . $this->responseToString();
                 return false;

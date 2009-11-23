@@ -193,6 +193,7 @@ class SmartSieve {
         $server['maildomain'] = SmartSieve::getServerValue($credentials['server'], 'maildomain');
         $server['use_starttls'] = SmartSieve::getServerValue($credentials['server'], 'use_starttls', true);
         $server['starttls_auto_capability'] = SmartSieve::getServerValue($credentials['server'], 'starttls_auto_capability');
+        $server['authenticate_auto_capability'] = SmartSieve::getServerValue($credentials['server'], 'authenticate_auto_capability');
         $smartsieve['server'] = $server;
 
         $smartsieve['auth'] = $credentials['auth'];
@@ -243,6 +244,10 @@ class SmartSieve {
             ||
             $smartsieve['server']['starttls_auto_capability'] === false) {
             $managesieve->setFlag(MS_FLAG_NOAUTOSTARTTLSCAPABILITY);
+        }
+        // Should we expect a CAPABILITY response following successful AUTHENTICATE?
+        if ($smartsieve['server']['authenticate_auto_capability'] !== true) {
+            $managesieve->setFlag(MS_FLAG_NOAUTOAUTHENTICATECAPABILITY);
         }
 
         if (in_array('starttls', $managesieve->_capabilities) &&

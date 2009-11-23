@@ -5,6 +5,8 @@ Smartsieve - ChangeLog
 * Fixed bug #2902522: SmartSieve should expect CAPABILITY response following STARTTLS.
 * Fix "Undefined variable: line" warnings.
 * Parse the other capabilities defined in draft-martin-managesieve-12.
+* Add authenticate_auto_capability option to handle servers that issue a CAPABILITY response
+  following a successful AUTHENTICATE.
 
 16 Nov 2009 S Grier
 * Fixed bug #2898434: "Cannot save custom rule when it is the first rule".

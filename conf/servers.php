@@ -26,6 +26,15 @@
  * false for servers that do not issue an auto CAPABILITY response,
  * or boolean true for those that do. The default is true.
  *
+ * authenticate_auto_capability: draft-martin-managesieve-12 demands
+ * that managesieve servers re-issue a CAPABILITY response following
+ * a successful AUTHENTICATE. Currently, only Cyrus-imapd complies
+ * with this, and only with sieve_sasl_send_unsolicited_capability
+ * enabled, which is not the default. We therefore default to false
+ * here. But set this to boolean true if your server does this, or
+ * if you're running Cyrus-imapd with sieve_sasl_send_unsolicited_capability
+ * enabled.
+ *
  * imapport: port to connect to imapd; usually 143. If you
  * want to do imap-ssl set this to '993/imap/ssl', or even 
  * '143/imap/tls'. Note that if you are using a self-signed 
