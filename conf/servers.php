@@ -18,6 +18,14 @@
  * and where the server supports it. Set this to false if you want
  * to disable TLS.
  *
+ * starttls_auto_capability: some managesieve servers (notably 
+ * Cyrus-imapd 2.2.10-2.3.10) did not issue a CAPABILITY response
+ * following a successful STARTTLS, as required by sections 1.7 and
+ * 2.2 of draft-martin-managesieve-12. SmartSieve should spot these
+ * broken servers automatically, but if not set this to boolean
+ * false for servers that do not issue an auto CAPABILITY response,
+ * or boolean true for those that do. The default is true.
+ *
  * imapport: port to connect to imapd; usually 143. If you
  * want to do imap-ssl set this to '993/imap/ssl', or even 
  * '143/imap/tls'. Note that if you are using a self-signed 

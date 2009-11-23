@@ -26,6 +26,9 @@ define ("S_NOCONNECTION", 1);
 define ("S_CONNECTED", 2);
 define ("S_AUTHENTICATED", 3);
 
+// Managesieve flags.
+define ("MS_FLAG_NOAUTOSTARTTLSCAPABILITY", 1);
+
 // Version info
 define ("MS_VERSION", '$Revision$');
 
@@ -41,6 +44,13 @@ define ("MS_VERSION", '$Revision$');
  * @version $Revision$
  */
 class Managesieve {
+
+   /**
+    * Bitwise value consisting of one or more of the MS_FLAG_* constants.
+    * @var int
+    * @access public
+    */
+    var $flags = null;
 
    /**
     * The managesieve server to connect to.
@@ -138,14 +148,26 @@ class Managesieve {
     /**
      * Class constructor. 
      */
-    function Managesieve()
+    function Managesieve($flags = null)
     {
         $this->_errstr = '';
         $this->_state = S_NOCONNECTION;
+        $this->flags = $flags;
     }
 
 
     // class methods
+
+   /**
+    * Set flags.
+    *
+    * @param flag The flag to set. One of the MS_FLAG_* constants.
+    * @return void
+    */
+    function setFlag($flag)
+    {
+        $this->flags = $this->flags | $flag;
+    }
 
    /**
     * Open a connection to the server and parse server capabilities.
@@ -770,12 +792,13 @@ class Managesieve {
         if ($this->getResponse() === F_OK) {
             if (stream_socket_enable_crypto($this->_socket, true, STREAM_CRYPTO_METHOD_TLS_CLIENT)) {
                 $this->_tls = true;
-                // Cyrus v2.3.11 and above issues a CAPABILITY response at this point.
-                // For earlier versions we must issue a CAPABILITY command.
-                if (implode(".", $this->getServerVersion()) >= "2.3.11") {
-                    return $this->parseCapability();
+                // Some servers do not automatically re-issue a CAPABILITY response as-per
+                // draft-martin-managesieve-12 sections 1.7 + 2.2 (Cyrus-imapd 2.3.10 and earlier).
+                // We must issue a CAPABILITY command for these.
+                if ($this->flags & MS_FLAG_NOAUTOSTARTTLSCAPABILITY) {
+                    return ($this->capability() !== false) ? true : false;
                 }
-                return ($this->capability() !== false) ? true : false;
+                return $this->parseCapability();
             }
             // Issue bogus capability command.
             fputs($this->_socket, "CAPABILITY\r\n");
@@ -1054,6 +1077,24 @@ class Managesieve {
         return array();
     }
 
+   /**
+    * Get the vendor of the managesieve server.
+    *
+    * @return string The name of the vendor
+    */
+    function getServerVendor()
+    {
+        if (!empty($this->_capabilities)) {
+            if (substr($this->_capabilities['implementation'], 0, 15) == 'Cyrus timsieved') {
+                return 'Cyrus';
+            } elseif (substr($this->_capabilities['implementation'], 0, 8) == 'pysieved') {
+                return 'pysieved';
+            } elseif (substr($this->_capabilities['implementation'], 0, 7) == 'dovecot') {
+                return 'dovecot';
+            }
+        }
+        return 'unknown';
+    }
 
 } // class Managesieve
 

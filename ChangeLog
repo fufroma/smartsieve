@@ -1,6 +1,9 @@
 Smartsieve - ChangeLog
 ----------------------
 
+23 Nov 2009 S Grier
+* Fixed bug #2902522: SmartSieve should expect CAPABILITY response following STARTTLS.
+
 16 Nov 2009 S Grier
 * Fixed bug #2898434: "Cannot save custom rule when it is the first rule".
 

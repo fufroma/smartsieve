@@ -192,6 +192,7 @@ class SmartSieve {
         $server['imapport'] = SmartSieve::getServerValue($credentials['server'], 'imapport', '143');
         $server['maildomain'] = SmartSieve::getServerValue($credentials['server'], 'maildomain');
         $server['use_starttls'] = SmartSieve::getServerValue($credentials['server'], 'use_starttls', true);
+        $server['starttls_auto_capability'] = SmartSieve::getServerValue($credentials['server'], 'starttls_auto_capability');
         $smartsieve['server'] = $server;
 
         $smartsieve['auth'] = $credentials['auth'];
@@ -234,6 +235,16 @@ class SmartSieve {
             $managesieve->close();
             return $err;
         }
+
+        // Cyrus-imapd 2.3.10 and earlier did not send a CAPABILITY response following STARTTLS.
+        if (($managesieve->getServerVendor() == 'Cyrus' &&
+            implode(".", $managesieve->getServerVersion()) < "2.3.11" &&
+            $smartsieve['server']['starttls_auto_capability'] !== true)
+            ||
+            $smartsieve['server']['starttls_auto_capability'] === false) {
+            $managesieve->setFlag(MS_FLAG_NOAUTOSTARTTLSCAPABILITY);
+        }
+
         if (in_array('starttls', $managesieve->_capabilities) &&
             function_exists('stream_socket_enable_crypto') &&
             $smartsieve['server']['use_starttls'] !== false) {
