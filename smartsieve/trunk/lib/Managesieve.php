@@ -253,8 +253,19 @@ class Managesieve {
                 case "STARTTLS":
                     $this->_capabilities['starttls'] = true;
                     break;
+                case "RENAME":
+                    $this->_capabilities['rename'] = true;
+                    break;
+                case "NOOP":
+                    $this->_capabilities['noop'] = true;
+                    break;
+                case "LANGUAGE":
+                    $this->_capabilities['language'] = $tokens[3];
+                case "NOTIFY":
+                    $this->_capabilities['notify'] = explode(" ", $tokens[3]);
+                    break;
                 default:
-                    $this->_capabilities['unknown_banners'][] = $line;
+                    $this->_capabilities['unknown_banners'][] = $this->resp['data'];
                     break;
             }
         }
