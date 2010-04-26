@@ -1,6 +1,9 @@
 Smartsieve - ChangeLog
 ----------------------
 
+26 Apr 2010 S Grier
+* Add Polish translation (Krzysztof Stryjek).
+
 23 Nov 2009 S Grier
 * Fixed bug #2902522: SmartSieve should expect CAPABILITY response following STARTTLS.
 * Fix "Undefined variable: line" warnings.
