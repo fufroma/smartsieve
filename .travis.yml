@@ -4,3 +4,11 @@ php:
   - 5.5
   - 5.6
   - 7
+
+before_script:
+ - chmod +x tests/syntax.sh
+ - chmod +x tests/codestyle.sh
+ 
+script:
+ - tests/syntax.sh
+ - tests/codestyle.sh
