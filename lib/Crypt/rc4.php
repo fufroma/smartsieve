@@ -39,7 +39,7 @@ class Crypto_RC4 extends Crypto {
     * @param array $args Additional parameters. Will use $args['key'].
     * @return void
     */
-    function Crypto_RC4($args=array())
+    function __construct($args=array())
     {
         require_once 'Crypt/Rc4.php';
         $this->key = $args['key'];

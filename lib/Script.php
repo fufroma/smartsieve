@@ -140,7 +140,7 @@ class Script {
     * @param string Script name
     * @return void
     */
-    function Script($scriptname)
+    function __construct($scriptname)
     {
         $this->name = $scriptname;
         $this->content = '';

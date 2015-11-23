@@ -32,7 +32,7 @@ class Crypto_HCEMD5 extends Crypto {
     * @param array $args Additional parameters. Will use $args['key'].
     * @return void
     */
-    function Crypto_HCEMD5($args=array())
+    function __construct($args=array())
     {
         require_once 'Crypt/HCEMD5.php';
         $this->_hcemd5 = new Crypt_HCEMD5($args['key']);

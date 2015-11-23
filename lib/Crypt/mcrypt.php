@@ -67,7 +67,7 @@ class Crypto_MCRYPT extends Crypto {
     * @param array $args Additional parameters. Will use $args['key'].
     * @return void
     */
-    function Crypto_MCRYPT($args=array())
+    function __construct($args=array())
     {
         $this->key = $args['key'];
         $this->mode = isset($args['mode']) ? $args['mode'] : MCRYPT_MODE_CFB;

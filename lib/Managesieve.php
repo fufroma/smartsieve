@@ -149,7 +149,7 @@ class Managesieve {
     /**
      * Class constructor. 
      */
-    function Managesieve($flags = null)
+    function __construct($flags = null)
     {
         $this->_errstr = '';
         $this->_state = S_NOCONNECTION;

@@ -30,7 +30,7 @@ class Crypto {
     * @param array $args Additional parameters.
     * @return void
     */
-    function Crypto($args=array())
+    function __construct($args=array())
     {
         SmartSieve::log('Crypto: Crypto parent class does not provide encryption', LOG_WARNING);
         SmartSieve::setError(SmartSieve::text('The cryptographic library used is not providing adequate encryption'));
