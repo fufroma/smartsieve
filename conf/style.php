@@ -126,5 +126,3 @@ $css['select']['font-family'] = 'helvetica,sans-serif';
 $css['select']['font-size'] = '8pt';
 $css['select']['font-weight'] = 'normal';
 $css['select']['height'] = '22px';
-
-?>

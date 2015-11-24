@@ -3,4 +3,3 @@
 	// phrase is only a dummy, english is default language of project
 	$phrase = array (
 			);
-?>

@@ -31,5 +31,3 @@ $locales['pl_PL']['charset'] = 'UTF-8';
 
 $locales['ru_RU']['display'] = 'Russian (&#x0420;&#x0443;&#x0441;&#x0441;&#x043a;&#x0438;&#x0439;) (KOI8-R)';
 $locales['ru_RU']['charset'] = 'KOI8-R';
-
-?>

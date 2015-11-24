@@ -186,4 +186,3 @@
 				'Sieve Scripts' => 'Sieve-Filter Skripte',
 				'any of' => 'eine der Bedingungen',				
 			);
-?>

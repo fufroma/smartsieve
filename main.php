@@ -403,7 +403,3 @@ function getMatchType($matchType, $not=false)
     }
     return $translated;
 }
-
-
-?>
-

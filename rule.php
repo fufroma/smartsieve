@@ -650,5 +650,3 @@ function getAllAddresses($addresses)
     }
     return $all;
 }
-
-?>

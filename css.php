@@ -34,5 +34,3 @@ if (is_array($css)){
         echo "}\n\n";
     }
 }
-
-?>

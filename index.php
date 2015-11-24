@@ -17,5 +17,3 @@ SmartSieve::checkAuthentication();
 header(sprintf('Location: %s',
     SmartSieve::setUrl(SmartSieve::getConf('initial_page', 'main.php'))));
 exit;
-
-?>

@@ -186,4 +186,3 @@
 				'Sieve Scripts' => 'Skrypty Sieve',
 				'any of' => 'jedna z',
 			);
-?>

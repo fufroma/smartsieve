@@ -4,5 +4,3 @@
  * It serves as a convenient place to put any message of the day text.
  *
  */
-?>
-

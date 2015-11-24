@@ -930,5 +930,3 @@ class Script {
     }
 
 }
-
-?>

@@ -76,5 +76,3 @@ $servers['example2'] = array(
     'imapport' => '143',
     'maildomain' => ''
 );
-
-?>

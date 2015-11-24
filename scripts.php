@@ -190,5 +190,3 @@ include SmartSieve::getConf('include_dir', 'include') . '/scripts.inc';
 include SmartSieve::getConf('include_dir', 'include') . '/common-footer.inc';
 
 SmartSieve::close();
-
-?>

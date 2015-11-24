@@ -1109,6 +1109,3 @@ class Managesieve {
     }
 
 } // class Managesieve
-
-
-?>

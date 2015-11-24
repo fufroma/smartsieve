@@ -186,4 +186,3 @@
 				'Sieve Scripts' => 'Scripts sieve',
 				'any of' => 'une des conditions est remplie',
 			);
-?>
