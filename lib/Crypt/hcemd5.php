@@ -23,7 +23,7 @@ class Crypto_HCEMD5 extends Crypto {
     * @var object reference
     * @access private
     */
-    var $_hcemd5;
+	var $_hcemd5;
 
 
    /**
@@ -32,11 +32,11 @@ class Crypto_HCEMD5 extends Crypto {
     * @param array $args Additional parameters. Will use $args['key'].
     * @return void
     */
-    function __construct($args=array())
-    {
-        require_once 'Crypt/HCEMD5.php';
-        $this->_hcemd5 = new Crypt_HCEMD5($args['key']);
-    }
+	function __construct($args=array())
+	{
+		require_once 'Crypt/HCEMD5.php';
+		$this->_hcemd5 = new Crypt_HCEMD5($args['key']);
+	}
 
    /**
     * Encrypt a string.
@@ -44,11 +44,11 @@ class Crypto_HCEMD5 extends Crypto {
     * @param string $string Item to be encrypted
     * @return string The encrypted string
     */
-    function encrypt($string)
-    {
-        $encrypted = $this->_hcemd5->encodeMimeSelfRand($string);
-        return $encrypted;
-    }
+	function encrypt($string)
+	{
+		$encrypted = $this->_hcemd5->encodeMimeSelfRand($string);
+		return $encrypted;
+	}
 
    /**
     * Decrypt a string.
@@ -56,11 +56,11 @@ class Crypto_HCEMD5 extends Crypto {
     * @param string $string The encrypted string to decrypt
     * @return string The decrypted string
     */
-    function decrypt($string)
-    {
-        $decrypted = $this->_hcemd5->decodeMimeSelfRand($string);
-        return $decrypted;
-    }
+	function decrypt($string)
+	{
+		$decrypted = $this->_hcemd5->decodeMimeSelfRand($string);
+		return $decrypted;
+	}
 
 }
 

@@ -15,5 +15,5 @@ SmartSieve::checkAuthentication();
 
 // If we get here, we must have a valid session. Redirect to initial page.
 header(sprintf('Location: %s',
-    SmartSieve::setUrl(SmartSieve::getConf('initial_page', 'main.php'))));
+	SmartSieve::setUrl(SmartSieve::getConf('initial_page', 'main.php'))));
 exit;

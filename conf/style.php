@@ -1,9 +1,9 @@
 <?php
 /**
- * This file holds the SmartSieve stylesheet configuration.
- *
- * $Id$
- */
+	 * This file holds the SmartSieve stylesheet configuration.
+	 *
+	 * $Id$
+	 */
 
 
 $css['body']['background-color'] = '#FFFFFF';
