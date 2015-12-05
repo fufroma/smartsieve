@@ -23,14 +23,14 @@ class Crypto_RC4 extends Crypto {
     * @var object reference
     * @access private
     */
-    var $_rc4;
+	var $_rc4;
 
    /**
     * The secret key.
     * @var string
     * @access public
     */
-    var $key;
+	var $key;
 
 
    /**
@@ -39,12 +39,12 @@ class Crypto_RC4 extends Crypto {
     * @param array $args Additional parameters. Will use $args['key'].
     * @return void
     */
-    function __construct($args=array())
-    {
-        require_once 'Crypt/Rc4.php';
-        $this->key = $args['key'];
-        $this->_rc4 = new Crypt_RC4($this->key);
-    }
+	function __construct($args=array())
+	{
+		require_once 'Crypt/Rc4.php';
+		$this->key = $args['key'];
+		$this->_rc4 = new Crypt_RC4($this->key);
+	}
 
    /**
     * Encrypt a string.
@@ -52,12 +52,12 @@ class Crypto_RC4 extends Crypto {
     * @param string $string Item to be encrypted
     * @return string The encrypted string
     */
-    function encrypt($string)
-    {
-        $this->_rc4->key($this->key);
-        $this->_rc4->crypt($string);
-        return $string;
-    }
+	function encrypt($string)
+	{
+		$this->_rc4->key($this->key);
+		$this->_rc4->crypt($string);
+		return $string;
+	}
 
    /**
     * Decrypt a string.
@@ -65,12 +65,12 @@ class Crypto_RC4 extends Crypto {
     * @param string $string The encrypted string to decrypt
     * @return string The decrypted string
     */
-    function decrypt($string)
-    {
-        $this->_rc4->key($this->key);
-        $this->_rc4->decrypt($string);
-        return $string;
-    }
+	function decrypt($string)
+	{
+		$this->_rc4->key($this->key);
+		$this->_rc4->decrypt($string);
+		return $string;
+	}
 
 }
 

@@ -24,7 +24,7 @@ $smartsieve = &$_SESSION['smartsieve'];
 
 // Change working script if requested.
 if (isset($_POST['script'])) {
-    SmartSieve::setWorkingScript(SmartSieve::getFormValue('script'));
+	SmartSieve::setWorkingScript(SmartSieve::getFormValue('script'));
 }
 
 $script = &$_SESSION['scripts'][$_SESSION['smartsieve']['workingScript']];
@@ -120,7 +120,7 @@ switch ($action) {
 
     case (FORM_ACTION_CHANGEORDER):
         $ridx = SmartSieve::getPOST('rindex');
-        $newidx = SmartSieve::getPOST('toPosition')-1;
+        $newidx = SmartSieve::getPOST('toPosition') - 1;
         $script->changeRuleOrder($ridx, $newidx);
         if (!$script->updateScript()) {
             SmartSieve::setError(SmartSieve::text('ERROR: ') . $script->errstr);
@@ -177,7 +177,7 @@ include SmartSieve::getConf('include_dir', 'include') . '/common-head.inc';
 include SmartSieve::getConf('include_dir', 'include') . '/menu.inc';
 include SmartSieve::getConf('include_dir', 'include') . '/common_status.inc';
 
-if ($script->mode == 'advanced' || $script->so == false){
+if ($script->mode == 'advanced' || $script->so == false) {
     if (isset($_POST['content'])) {
         $content = SmartSieve::getPOST('content');
     } else {
@@ -186,7 +186,7 @@ if ($script->mode == 'advanced' || $script->so == false){
     include SmartSieve::getConf('include_dir', 'include') . '/script-direct.inc';
 } else {
     $rows = array();
-    for ($i=0; $i<count($script->rules); $i++) {
+    for ($i = 0; $i < count($script->rules); $i++) {
         $tr = array();
         $tr['summary'] = getSummary($script->rules[$i]);
         $tr['class'] = 'inactive';
@@ -200,23 +200,23 @@ if ($script->mode == 'advanced' || $script->so == false){
             $tr['statusChangeText'] = SmartSieve::text('Disable this rule');
         }
         $tr['id'] = $i;
-        $tr['position'] = $i+1;
+        $tr['position'] = $i + 1;
         $tr['link'] = SmartSieve::setUrl(sprintf("rule.php?ruleID=%s", $i));
         $tr['tooltip'] = SmartSieve::text('Edit this rule');
         if (!empty($script->rules[$i]['special'])) {
             $tr['link'] = SmartSieve::setUrl(sprintf("rule.php?mode=%s", $script->rules[$i]['special']));
             if ($script->rules[$i]['special'] == RULE_TAG_VACATION) {
                 $tr['tooltip'] = SmartSieve::text('Edit vacation settings');
-                $tr['img'] = SmartSieve::getConf('image_dir', 'images').'/vacation.gif';
+                $tr['img'] = SmartSieve::getConf('image_dir', 'images') . '/vacation.gif';
             } elseif ($script->rules[$i]['special'] == RULE_TAG_FORWARD) {
                 $tr['tooltip'] = SmartSieve::text('Edit mail forwarding');
-                $tr['img'] = SmartSieve::getConf('image_dir', 'images').'/forward.gif';
+                $tr['img'] = SmartSieve::getConf('image_dir', 'images') . '/forward.gif';
             } elseif ($script->rules[$i]['special'] == RULE_TAG_SPAM) {
                 $tr['tooltip'] = SmartSieve::text('Edit spam filtering');
-                $tr['img'] = SmartSieve::getConf('image_dir', 'images').'/spam.gif';
+                $tr['img'] = SmartSieve::getConf('image_dir', 'images') . '/spam.gif';
             } elseif ($script->rules[$i]['special'] == RULE_TAG_WHITELIST) {
                 $tr['tooltip'] = SmartSieve::text('Edit whitelist');
-                $tr['img'] = SmartSieve::getConf('image_dir', 'images').'/whitelist.gif';
+                $tr['img'] = SmartSieve::getConf('image_dir', 'images') . '/whitelist.gif';
             }
         }
         $rows[] = $tr;
@@ -232,7 +232,7 @@ SmartSieve::close();
  * Build summary for a filter rule.
  *
  * @param array $rule The rule to build summary for
- * @return text The summary text
+ * @return string The summary text
  */
 function getSummary($rule)
 {
@@ -338,9 +338,9 @@ function getSummary($rule)
                     }
                 }
                 $complete .= (!empty($action['days'])) ? sprintf(" %s ",
-                    SmartSieve::text("every %s days",array($action['days']))) : '';
+                    SmartSieve::text("every %s days", array($action['days']))) : '';
                 $complete .= sprintf(" %s",
-                    SmartSieve::text('with message "%s"',array(SmartSieve::utf8Decode($action['message']))));
+                    SmartSieve::text('with message "%s"', array(SmartSieve::utf8Decode($action['message']))));
                 break;
             case (ACTION_ADDFLAG):
                 $complete .= SmartSieve::text('set the "%s" flag', array($action['flag']));
@@ -383,23 +383,23 @@ function getSummary($rule)
  * @param boolean $not Invert logic
  * @return string Human readable text
  */
-function getMatchType($matchType, $not=false)
+function getMatchType($matchType, $not = false)
 {
-    $translated = SmartSieve::text('contains');
-    switch ($matchType) {
-        case (MATCH_IS):
-            $translated = ($not) ? SmartSieve::text('is not') : SmartSieve::text('is');
-            break;
-        case (MATCH_MATCHES):
-            $translated = ($not) ? SmartSieve::text('does not match') : SmartSieve::text('matches');
-            break;
-        case (MATCH_REGEX):
-            $translated = ($not) ? SmartSieve::text('does not match regexp') : SmartSieve::text('matches regexp');
-            break;
-        case (MATCH_CONTAINS):
-        default:
-            $translated = ($not) ? SmartSieve::text('does not contain') : SmartSieve::text('contains');
-            break;
-    }
-    return $translated;
+	$translated = SmartSieve::text('contains');
+	switch ($matchType) {
+		case (MATCH_IS):
+			$translated = ($not) ? SmartSieve::text('is not') : SmartSieve::text('is');
+			break;
+		case (MATCH_MATCHES):
+			$translated = ($not) ? SmartSieve::text('does not match') : SmartSieve::text('matches');
+			break;
+		case (MATCH_REGEX):
+			$translated = ($not) ? SmartSieve::text('does not match regexp') : SmartSieve::text('matches regexp');
+			break;
+		case (MATCH_CONTAINS):
+		default:
+			$translated = ($not) ? SmartSieve::text('does not contain') : SmartSieve::text('contains');
+			break;
+	}
+	return $translated;
 }
