@@ -30,7 +30,7 @@ class SmartSieve {
     *
     * @return void Sends a 302 redirect on failure
     */
-    function checkAuthentication()
+    public static function checkAuthentication()
     {
         if (isset($_SESSION['smartsieve']) && is_array($_SESSION['smartsieve'])) {
             if (SmartSieve::authenticate() !== true) {
@@ -56,7 +56,7 @@ class SmartSieve {
     *
     * @return mixed array of login details on success, boolean false if not
     */
-    function getLoginDetails()
+    public static function getLoginDetails()
     {
         $details = array();
         /* If user has submitted login page, get details from POST request. */
@@ -80,7 +80,7 @@ class SmartSieve {
     * @param array $credentials Login credentials as returned by ::getLoginDetails()
     * @return boolean true on success, false if not
     */
-    function login($credentials)
+    public static function login($credentials)
     {
         if (empty($credentials) || !is_array($credentials)) {
             return false;
@@ -123,7 +123,7 @@ class SmartSieve {
     *
     * @return void
     */
-    function destroy()
+    public static function destroy()
     {
         if (isset($_SESSION['smartsieve'])) {
             $_SESSION['smartsieve'] = null;
@@ -141,7 +141,7 @@ class SmartSieve {
     *
     * @return void Possibly a 302 redirect
     */
-    function logout()
+    public static function logout()
     {
         if (isset($_SESSION['smartsieve']) && is_array($_SESSION['smartsieve'])) {
             SmartSieve::log(sprintf('logout: %s',
@@ -166,7 +166,7 @@ class SmartSieve {
     *                                 string $server)
     * @return mixed boolean true on success, string error if not
     */
-    function setSession($credentials)
+    public static function setSession($credentials)
     {
         global $servers;
         if (empty($credentials['auth'])) {
@@ -209,7 +209,7 @@ class SmartSieve {
             $smartsieve['authz'] .= '@' . $auth_domain;
         }
         require_once SmartSieve::getConf('lib_dir', 'lib') . '/Crypt.php';
-        $smartsieve['passwd'] = Crypto::encrypt($credentials['passwd']);
+        $smartsieve['passwd'] = Crypto::encryptData($credentials['passwd']);
         $_SESSION['smartsieve'] = $smartsieve;
         return true;
     }
@@ -219,7 +219,7 @@ class SmartSieve {
     *
     * @return mixed true on success, string error if not
     */
-    function authenticate()
+    public static function authenticate()
     {
         if (!isset($_SESSION['smartsieve']) || !is_array($_SESSION['smartsieve'])) {
             return 'authenticate: no session started';
@@ -227,7 +227,7 @@ class SmartSieve {
         $smartsieve = $_SESSION['smartsieve'];
 
         require_once SmartSieve::getConf('lib_dir', 'lib') . '/Crypt.php';
-        $passwd = Crypto::decrypt($smartsieve['passwd']);
+        $passwd = Crypto::decryptData($smartsieve['passwd']);
 
         $managesieve = new Managesieve();
         $ret = $managesieve->open($smartsieve['server']['host'], $smartsieve['server']['sieveport'], SmartSieve::getConf('socket_timeout', 2));
@@ -276,7 +276,7 @@ class SmartSieve {
     *
     * @return boolean true
     */
-    function close()
+    public static function close()
     {
         if (isset($GLOBALS['managesieve']) && is_object($GLOBALS['managesieve'])) {
             $GLOBALS['managesieve']->close();
@@ -297,7 +297,7 @@ class SmartSieve {
     * @var array $args vsprintf style arguments
     * @return string The (possibly translated) text
     */
-    function text($string = '', $args = array())
+    public static function text($string = '', $args = array())
     {
         static $lang, $phrase;
 
@@ -321,7 +321,7 @@ class SmartSieve {
     *
     * @return string The charset to use
     */
-    function getCharset()
+    public static function getCharset()
     {
         static $charset;
 
@@ -342,7 +342,7 @@ class SmartSieve {
     *
     * @return string The language to use
     */
-    function getLang()
+    public static function getLang()
     {
         // Get lang if login form submitted.
         if (isset($_POST['lang'])) {
@@ -367,7 +367,7 @@ class SmartSieve {
     * @param string $string The mUTF-7 string to decode
     * @return string The string decoded into the current charset
     */
-    function mutf7Decode($string)
+    public static function mutf7Decode($string)
     {
         $charset = SmartSieve::getCharset();
 
@@ -413,7 +413,7 @@ class SmartSieve {
     * @param string $string The mUTF-7 string to convert
     * @return string The converted UTF-7 string
     */
-    function modifiedToPlainUTF7($string)
+    public static function modifiedToPlainUTF7($string)
     {
         $utf7 = '';
         $base64 = false;
@@ -455,7 +455,7 @@ class SmartSieve {
     * @param string $string The modified UTF-7 string to convert.
     * @return string The string encoded in UTF-8
     */
-    function mutf7ToUtf8($string)
+    public static function mutf7ToUtf8($string)
     {
         /* try mbstring if available. */
         if (extension_loaded('mbstring')) {
@@ -498,7 +498,7 @@ class SmartSieve {
     * @param string $def Default value
     * @return mixed Config value, possibly null
     */
-    function getConf($option, $def=null)
+    public static function getConf($option, $def=null)
     {
         static $default, $conf;
         if (!isset($default) && !isset($conf)) {
@@ -520,7 +520,7 @@ class SmartSieve {
     * @param string $def Default value
     * @return mixed Server value, possibly null
     */
-    function getServerValue($skey, $val, $def=null)
+    public static function getServerValue($skey, $val, $def=null)
     {
         require_once "conf/servers.php";
         global $servers;
@@ -537,7 +537,7 @@ class SmartSieve {
     * @param integer $level One of the LOG_* contants
     * @return boolean True on success, false if not
     */
-    function log($msg, $level=LOG_INFO)
+    public static function log($msg, $level=LOG_INFO)
     {
         if (SmartSieve::getConf('logging') !== true) {
             return true;
@@ -563,7 +563,7 @@ class SmartSieve {
     * @param string $msg The error message to set
     * @return mixed boolean true or array of string messages
     */
-    function setError($msg=null)
+    public static function setError($msg=null)
     {
         if (!isset($_SESSION['errors']) || !is_array($_SESSION['errors'])) {
             $_SESSION['errors'] = array();
@@ -584,7 +584,7 @@ class SmartSieve {
     * @param string $msg The message to set
     * @return mixed boolean true or array of string messages
     */
-    function setNotice($msg=null)
+    public static function setNotice($msg=null)
     {
         if (!isset($_SESSION['notices']) || !is_array($_SESSION['notices'])) {
             $_SESSION['notices'] = array();
@@ -603,7 +603,7 @@ class SmartSieve {
     *
     * @return mixed array of scripts if success, or string error if not
     */
-    function getScriptList()
+    public static function getScriptList()
     {
         if (!isset($GLOBALS['managesieve']) || !is_object($GLOBALS['managesieve'])) {
             $ret = SmartSieve::authenticate();
@@ -629,7 +629,7 @@ class SmartSieve {
     *
     * @return mixed string name of active script, or null if none active
     */
-    function getActiveScript()
+    public static function getActiveScript()
     {
         $slist = SmartSieve::getScriptList();
         if (!is_array($slist)) {
@@ -644,7 +644,7 @@ class SmartSieve {
     * @param string $name Name of script
     * @return boolean true if script exists on server, false if not
     */
-    function scriptExists($name)
+    public static function scriptExists($name)
     {
         $slist = array_keys(SmartSieve::getScriptList());
         return in_array($name, $slist);
@@ -655,7 +655,7 @@ class SmartSieve {
     *
     * @return boolean true on success, or void redirect if not
     */
-    function handleReferral()
+    public static function handleReferral()
     {
         global $managesieve;
         $resp = $managesieve->getLastResponse();
@@ -669,7 +669,7 @@ class SmartSieve {
             $ret = $managesieve->open($rserver, $_SESSION['smartsieve']['server']['sieveport'], SmartSieve::getConf('socket_timeout', 2));
             if ($ret === true) {
                 require_once SmartSieve::getConf('lib_dir', 'lib') . '/Crypt.php';
-                $passwd = Crypto::decrypt($_SESSION['smartsieve']['passwd']);
+                $passwd = Crypto::decryptData($_SESSION['smartsieve']['passwd']);
                 $ret = $managesieve->authenticate($_SESSION['smartsieve']['auth'], $passwd, 
                     $_SESSION['smartsieve']['authz'], SmartSieve::getConf('sasl_mech'));
                 if ($ret === true) {
@@ -696,7 +696,7 @@ class SmartSieve {
     * @param string $script The script to edit
     * @return void
     */
-    function setWorkingScript($script=null)
+    public static function setWorkingScript($script=null)
     {
         // If not allowing multiple scripts select the default.
         if (SmartSieve::getConf('allow_multi_scripts') === false) {
@@ -745,14 +745,14 @@ class SmartSieve {
     *
     * @return array An array of mUTF7 encoded mailbox names, possibly empty
     */
-    function getMailboxList()
+    public static function getMailboxList()
     {
         $mboxlist = array();
         require_once SmartSieve::getConf('lib_dir', 'lib') . '/Crypt.php';
 
         $connstr = sprintf('{%s:%s}INBOX', $_SESSION['smartsieve']['server']['host'],
                            $_SESSION['smartsieve']['server']['imapport']);
-        $passwd = Crypto::decrypt($_SESSION['smartsieve']['passwd']);
+        $passwd = Crypto::decryptData($_SESSION['smartsieve']['passwd']);
         $conn = imap_open($connstr, $_SESSION['smartsieve']['auth'], $passwd, OP_HALFOPEN);
         if ($conn) {
             $connstr = sprintf('{%s:%s}', $_SESSION['smartsieve']['server']['host'],
@@ -786,7 +786,7 @@ class SmartSieve {
     * @param boolean $prependRoot Prepend the webroot
     * @return string The formatted url
     */
-    function setUrl($uri, $prependRoot=true)
+    public static function setUrl($uri, $prependRoot=true)
     {
         $url = '';
         if ($prependRoot) {
@@ -814,22 +814,10 @@ class SmartSieve {
     * @param string $var Value to remove magic quotes from
     * @return string Value stripped of any magic quotes
     */
-    function removeMagicQuotes($var)
+    public static function removeMagicQuotes($var)
     {
-        static $magicQuotes;
-        if (!isset($magicQuotes)) {
-            $magicQuotes = get_magic_quotes_gpc();
-        }
-        if ($magicQuotes == true) {
-            if (is_array($var)) {
-                $new = array();
-                foreach ($var as $key=>$val) {
-                    $new[$key] = SmartSieve::removeMagicQuotes($val);
-                }
-                return $new;
-            }
-            return stripslashes($var);
-        }
+        /* Magic quotes were removed in PHP 5.4, and get_magic_quotes_gpc()
+         * was removed in PHP 8.0. Kept as a no-op for API compatibility. */
         return $var;
     }
 
@@ -840,7 +828,7 @@ class SmartSieve {
     * @param mixed $def Default to return if value not found
     * @return mixed Value if set, or default if not (possibly null)
     */
-    function getGET($var, $def=null)
+    public static function getGET($var, $def=null)
     {
         return (isset($_GET[$var])) ? SmartSieve::removeMagicQuotes($_GET[$var]) : $def;
     }
@@ -852,7 +840,7 @@ class SmartSieve {
     * @param mixed $def Default to return if value not found
     * @return mixed Value if set, or default if not (possibly null)
     */
-    function getPOST($var, $def=null)
+    public static function getPOST($var, $def=null)
     {
         return (isset($_POST[$var])) ? SmartSieve::removeMagicQuotes($_POST[$var]) : $def;
     }
@@ -864,7 +852,7 @@ class SmartSieve {
     * @param mixed $def Default to return if value not found
     * @return mixed Value if set, or default if not
     */
-    function getFormValue($var, $def=null)
+    public static function getFormValue($var, $def=null)
     {
         return (($val = SmartSieve::getPOST($var)) !== null) ? $val : 
             SmartSieve::getGET($var, $def);
@@ -877,7 +865,7 @@ class SmartSieve {
     * @param string $string  The string to convert
     * @return string  UTF-8 encoded string
     */
-    function utf8Encode($string)
+    public static function utf8Encode($string)
     {
         $charset = SmartSieve::getCharset();
 
@@ -901,9 +889,13 @@ class SmartSieve {
             }
         }
 
-        /* If all else fails, use utf8_encode(). If $string contains 
+        /* If all else fails, assume ISO-8859-1 and convert manually
+         * (utf8_encode() is deprecated since PHP 8.2). If $string contains
          * non-ISO-8859-1 characters, they will not be encoded correctly. */
-        return utf8_encode($string);
+        return preg_replace_callback('/[\x80-\xFF]/', function ($m) {
+            $c = ord($m[0]);
+            return chr(0xC0 | $c >> 6) . chr(0x80 | ($c & 0x3F));
+        }, $string);
     }
 
    /**
@@ -912,7 +904,7 @@ class SmartSieve {
     * @param string $string  The UTF-8 string to convert
     * @return string  The decoded string
     */
-    function utf8Decode($string)
+    public static function utf8Decode($string)
     {
         $charset = SmartSieve::getCharset();
 
@@ -936,9 +928,12 @@ class SmartSieve {
             }
         }
 
-        /* If all else fails, use utf8_decode(). If $string contains
+        /* If all else fails, convert to ISO-8859-1 manually
+         * (utf8_decode() is deprecated since PHP 8.2). If $string contains
          * non-ISO-8859-1 characters, they will not be decoded correctly. */
-        return utf8_decode($string);
+        return preg_replace_callback('/[\xC2\xC3](.)/s', function ($m) {
+            return chr((ord($m[1]) & 0x3F) | ((ord($m[0]) & 0x03) << 6));
+        }, $string);
     }
 
 }

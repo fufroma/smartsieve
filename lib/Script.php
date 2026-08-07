@@ -670,7 +670,7 @@ class Script {
     *
     * @return string The script content minus encoded lines
     */
-	function removeEncoding()
+	public static function removeEncoding()
 	{
 		global $script;
 		$raw = '';
@@ -756,7 +756,7 @@ class Script {
     * @param array $rule The rule to check
     * @return boolean True if rule has a condition, false if not
     */
-	function hasCondition($rule)
+	public static function hasCondition($rule)
 	{
 		$custom = null;
 		// A custom rule might have a condition in it.

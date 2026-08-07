@@ -539,6 +539,24 @@ class Managesieve {
     * @param mech string containing user specified SASL mechanism
     * @return false|string string containing mechanism to use or boolean false
     */
+	/**
+	 * Convert an ISO-8859-1 string to UTF-8. Replacement for the
+	 * deprecated utf8_encode() function (deprecated since PHP 8.2).
+	 *
+	 * @param string $string The string to convert
+	 * @return string UTF-8 encoded string
+	 */
+	function _utf8($string)
+	{
+		if (function_exists('mb_convert_encoding')) {
+			return mb_convert_encoding($string, 'UTF-8', 'ISO-8859-1');
+		}
+		if (function_exists('iconv')) {
+			return iconv('ISO-8859-1', 'UTF-8', $string);
+		}
+		return $string;
+	}
+
 	function _selectSaslMech($mech=null)
 	{
 		// List of SASL mechanisms this class supports.
@@ -651,11 +669,11 @@ class Managesieve {
 				   return false;
 				}
 				// build the $response_value
-				$string_a1 = utf8_encode($this->auth).":";
-				$string_a1 .= utf8_encode($result['realm']).":";
-				$string_a1 .= utf8_encode($passwd);
+				$string_a1 = $this->_utf8($this->auth).":";
+				$string_a1 .= $this->_utf8($result['realm']).":";
+				$string_a1 .= $this->_utf8($passwd);
 				$string_a1 = pack('H*', md5($string_a1));
-				$A1 = $string_a1.":".$result['nonce'].":".$cnonce.":".utf8_encode($this->authz);
+				$A1 = $string_a1.":".$result['nonce'].":".$cnonce.":".$this->_utf8($this->authz);
 				$A1 = md5($A1);
 				$A2 = md5("AUTHENTICATE:$digest_uri_value");
 				$string_response = $result['nonce'].":".$ncount.":".$cnonce.":".$qop_value;
@@ -664,7 +682,7 @@ class Managesieve {
 				$reply = "charset=utf-8,username=\"" . $this->auth . "\",realm=\"" . $result['realm'] . "\",";
 				$reply .= "nonce=\"" . $result['nonce'] . "\",nc=$ncount,cnonce=\"" . $cnonce . "\",";
 				$reply .= "digest-uri=\"" . $digest_uri_value . "\",response=" . $response_value . ",";
-				$reply .= "qop=" . $qop_value . ",authzid=\"" . utf8_encode($this->authz)."\"";
+				$reply .= "qop=" . $qop_value . ",authzid=\"" . $this->_utf8($this->authz)."\"";
 				$response = base64_encode($reply);
 				fputs($this->_socket, "\"$response\"\r\n");
 

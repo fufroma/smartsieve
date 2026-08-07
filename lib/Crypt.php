@@ -43,7 +43,7 @@ class Crypto {
     * @param array $args Parameters to pass to crypto library.
     * @return object Reference to a Crypto object instance
     */
-	function &factory($driver=null, $args=array())
+	public static function factory($driver=null, $args=array())
 	{
 		if ($driver !== null) {
 			@require_once sprintf('%s/Crypt/%s.php', SmartSieve::getConf('lib_dir', 'lib'), strtolower($driver));
@@ -63,11 +63,8 @@ class Crypto {
     * @param string $string Item to be encrypted
     * @return string The encrypted string
     */
-	function encrypt($string)
+	public static function encryptData($string)
 	{
-		if (isset($this) && is_object($this)) {
-			return $string;
-		}
 		static $crypto;
 		if (!isset($crypto) || !is_object($crypto)) {
 			$args = SmartSieve::getConf('crypt_args', array());
@@ -83,11 +80,8 @@ class Crypto {
     * @param string $string The encrypted string to decrypt
     * @return string The decrypted string
     */
-	function decrypt($string)
+	public static function decryptData($string)
 	{
-	if (isset($this) && is_object($this)) {
-			return $string;
-		}
 		static $crypto;
 		if (!isset($crypto) || !is_object($crypto)) {
 			$args = SmartSieve::getConf('crypt_args', array());
@@ -95,6 +89,29 @@ class Crypto {
 			$crypto = Crypto::factory(Crypto::getCryptLib(), $args);
 		}
 		return $crypto->decrypt($string);
+	}
+
+	/**
+	 * Default instance encrypt method. The parent class does not provide
+	 * encryption; drivers must override this.
+	 *
+	 * @param string $string Item to be encrypted
+	 * @return string The string, unencrypted
+	 */
+	public function encrypt($string)
+	{
+		return $string;
+	}
+
+	/**
+	 * Default instance decrypt method. Drivers must override this.
+	 *
+	 * @param string $string The string to decrypt
+	 * @return string The string, unmodified
+	 */
+	public function decrypt($string)
+	{
+		return $string;
 	}
 
    /**
@@ -107,20 +124,13 @@ class Crypto {
     *
     * @return string A 32 bit secret key. Possibly sets a cookie value.
     */
-	function generateKey()
+	public static function generateKey()
 	{
-		static $srand;
 		if (isset($_COOKIE) && isset($_COOKIE[session_name()])) {
 			if (isset($_COOKIE['smartsieve_key'])) {
 				$key = $_COOKIE['smartsieve_key'];
 			} else {
-				// Seed the generator. Should only happen once.
-				// As of PHP-4.2 this is no longer necessary.
-				if (!isset($srand)) {
-					mt_srand((double)microtime() * 1000000);
-					$srand = true;
-				}
-				$key = md5(uniqid(mt_rand(), 1));
+				$key = bin2hex(random_bytes(16));
 				$_COOKIE['smartsieve_key'] = $key;
 				setcookie('smartsieve_key', $key, 0, SmartSieve::getConf('cookie_path', ''),
 					SmartSieve::getConf('cookie_domain', ''), 0);
@@ -140,7 +150,7 @@ class Crypto {
     *
     * @return string The 32 bit secret key
     */
-	function getKey()
+	public static function getKey()
 	{
 		if (isset($_COOKIE['smartsieve_key'])) {
 			return $_COOKIE['smartsieve_key'];
@@ -150,17 +160,17 @@ class Crypto {
 
    /**
     * Select which encryption library to use. Use the lib specified in the
-    * config file if set. If not, check for mcrypt, PEAR's Rc4, and PEAR's
-    * HCEMD5, in that order. Function mcrypt_module_open is only found in
-    * libmcrypt 2.4.x and above.
+    * config file if set. If not, check for OpenSSL, PEAR's Rc4, and PEAR's
+    * HCEMD5, in that order. The mcrypt extension was removed in PHP 7.2
+    * and is no longer supported.
     *
     * @return string|null The crypto library to use, or null
     */
-	function getCryptLib()
+	public static function getCryptLib()
 	{
 		$libs = array();
-		if (extension_loaded('mcrypt') && function_exists('mcrypt_module_open')) {
-			$libs[] = 'mcrypt';
+		if (extension_loaded('openssl')) {
+			$libs[] = 'openssl';
 		}
 		if (@include_once('Crypt/Rc4.php')) {
 			$libs[] = 'rc4';
