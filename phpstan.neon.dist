@@ -1,0 +1,19 @@
+parameters:
+    level: 0
+    phpVersion: 80400
+    paths:
+        - lib
+        - index.php
+        - login.php
+        - main.php
+        - rule.php
+        - scripts.php
+        - css.php
+    excludePaths:
+        - lib/Crypt/rc4.php    # optional PEAR Crypt_RC4 wrapper
+        - lib/Crypt/hcemd5.php # optional PEAR Crypt_HCEMD5 wrapper
+    scanFiles:
+        - lib/SmartSieve.lib
+    ignoreErrors:
+        # Optional runtime includes (PEAR Crypt_RC4/Crypt_HCEMD5, crypto drivers)
+        - identifier: includeOnce.fileNotFound
