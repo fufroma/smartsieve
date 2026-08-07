@@ -180,7 +180,7 @@ class Managesieve {
     */
 	function open($server, $port, $socket_timeout=2)
 	{
-		unset($this->resp);
+		$this->resp = array();
 		$this->_errstr = '';
 
 		if (is_resource($this->_socket)){
@@ -217,7 +217,7 @@ class Managesieve {
     */
 	function parseCapability()
 	{
-		unset($this->resp);
+		$this->resp = array();
 		$this->_errstr = '';
 
 		if (!is_resource($this->_socket)){
@@ -321,7 +321,7 @@ class Managesieve {
     */
 	function getResponse()
 	{
-		unset($this->resp);
+		$this->resp = array();
 		$this->resp = array();
 		$this->_errstr = '';
 		$line = $this->read();
@@ -594,7 +594,7 @@ class Managesieve {
     */
 	function authenticate($auth, $passwd, $authz=null, $sasl_mech=null)
 	{
-		unset($this->resp);
+		$this->resp = array();
 		$this->_errstr = '';
 
 		if (!is_resource($this->_socket)){
@@ -711,7 +711,7 @@ class Managesieve {
 				break;
 
 			default:
-				$this->_errstr = "authenticate: mechanism '" . $selected_mech . "' not supported";
+				$this->_errstr = "authenticate: mechanism '" . $sasl_mech . "' not supported";
 				return false;
 				break;
 
@@ -726,7 +726,7 @@ class Managesieve {
     */
 	function logout()
 	{
-		unset($this->resp);
+		$this->resp = array();
 		$this->_errstr = '';
 
 		if (!is_resource($this->_socket)){
@@ -750,7 +750,7 @@ class Managesieve {
     */
 	function close() 
 	{
-		unset($this->resp);
+		$this->resp = array();
 		$this->_errstr = '';
 
 		if (is_resource($this->_socket)) {
@@ -776,7 +776,7 @@ class Managesieve {
     */
 	function capability()
 	{
-		unset($this->resp);
+		$this->resp = array();
 		$this->_errstr = '';
                                                                                            
 		if (!is_resource($this->_socket)) {
@@ -802,7 +802,7 @@ class Managesieve {
     */
 	function starttls()
 	{
-		unset($this->resp);
+		$this->resp = array();
 		$this->_errstr = '';
 
 		if (!is_resource($this->_socket)) {
@@ -846,7 +846,7 @@ class Managesieve {
     */
 	function listScripts()
 	{
-		unset($this->resp);
+		$this->resp = array();
 		$this->_errstr = '';
 
 		if (!is_resource($this->_socket)) {
@@ -886,7 +886,7 @@ class Managesieve {
     */
 	function getScript($name)
 	{
-		unset($this->resp);
+		$this->resp = array();
 		$this->_errstr = '';
 
 		if (!is_resource($this->_socket)) {
@@ -916,7 +916,7 @@ class Managesieve {
     */
 	function setActive($name='')
 	{
-		unset($this->resp);
+		$this->resp = array();
 		$this->_errstr = '';
 
 		if (!is_resource($this->_socket)) {
@@ -943,7 +943,7 @@ class Managesieve {
     */
 	function haveSpace($name, $size)
 	{
-		unset($this->resp);
+		$this->resp = array();
 		$this->_errstr = '';
 
 		if (!is_resource($this->_socket)) {
@@ -969,7 +969,7 @@ class Managesieve {
     */
 	function putScript($name,$text='')
 	{
-		unset($this->resp);
+		$this->resp = array();
 		$this->_errstr = '';
 
 		if (!is_resource($this->_socket)) {
@@ -1002,7 +1002,7 @@ class Managesieve {
     */
 	function deleteScript($name)
 	{
-		unset($this->resp);
+		$this->resp = array();
 		$this->_errstr = '';
 
 		if (!is_resource($this->_socket)) {
